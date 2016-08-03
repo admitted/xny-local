@@ -232,6 +232,8 @@ public class MainServlet extends HttpServlet
             new AccDataBean().ExecCmd(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("Acc_Sale.do"))				         //销售数据
         	new AccSaleBean().ExecCmd(request, response, m_Rmi, false);  
+        else if (strUrl.equalsIgnoreCase("Device_Detail_Scene.do"))				 //场景图上传
+        	new DeviceDetailBean().DetailSenceUp(request, response, m_Rmi, false);  
        
     }
     

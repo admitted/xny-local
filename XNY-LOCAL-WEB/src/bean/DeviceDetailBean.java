@@ -1,12 +1,21 @@
 package bean;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
 import rmi.Rmi;
 import rmi.RmiBean;
 import util.*;
@@ -99,18 +108,65 @@ public class DeviceDetailBean extends RmiBean
 		outprint.write(Resp);
 	}
 	
+	/** 图片导入
+	 * @param request
+	 * @param response
+	 * @param pRmi
+	 * @param pFromZone
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public void DetailSenceUp(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
+	{	
+		getHtmlData(request);
+		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus.getHtmlData(request, pFromZone);
+		
+		DiskFileItemFactory factory = new DiskFileItemFactory();    	
+		ServletFileUpload sfu = new ServletFileUpload(factory); 	
+		String value = "";
+		try {				
+				List<FileItem> items = sfu.parseRequest(request);
+				for(int i=0;i<items.size();i++)
+				{
+					FileItem item = items.get(i);
+					if(item.isFormField()){						
+						String fieldName = item.getFieldName();
+						System.out.println("["+fieldName+"]"); 
+						value = item.getString();
+						System.out.println("["+value+"]");
+					}
+					else
+					{
+						ServletContext sctx = request.getSession().getServletContext();
+						String path = sctx.getRealPath("/skin/images/CPM_Scene/");
+						System.out.println("["+path+"]"); //[/www/XNY-LOCAL/XNY-LOCAL-WEB/skin/images/CPM_Scene]
+						String fileName = item.getName();						
+						String[] str = fileName.split("\\.");	
+						String newName = value+"."+str[1];
+						System.out.println("newName["+newName+"]");
+						File file = new File(path + File.separator + newName);
+						item.write(file);						
+					}  
+				}			
+			} catch (Exception e) 
+			{
+				e.printStackTrace();
+			}		
+	}
+	
 	public String getSql(int pCmd)
 	{  
 		String Sql = "";
 		switch (pCmd)
 		{  
 		    case 0://查询
-		    	Sql = " select t.id, t.cname, t.brief, t.status, t.onoff, t.ctype, t.ctime, t.memo, t.link_url, t.link_port, t.link_id, t.link_pwd, t.pwd, t.sign, t.longitude, t.latitude, t.unit_price " +
+		    	Sql = " select t.id, t.cname, t.brief, t.status, t.onoff, t.ctype, t.ctime, t.memo, t.link_url, t.link_port, t.link_id, t.link_pwd, t.pwd, t.sign, t.longitude, t.latitude, t.unit_price ,t.scene_img" +
 	    	 	   	  " from device_detail t " +
  	 		          " order by t.id ";
 			   break;
 		    case 1://视频监控
-		    	Sql = " select t.id, t.cname, t.brief, t.status, t.onoff, t.ctype, t.ctime, t.memo, t.link_url, t.link_port, t.link_id, t.link_pwd, t.pwd, t.sign, t.longitude, t.latitude, t.unit_price" +
+		    	Sql = " select t.id, t.cname, t.brief, t.status, t.onoff, t.ctype, t.ctime, t.memo, t.link_url, t.link_port, t.link_id, t.link_pwd, t.pwd, t.sign, t.longitude, t.latitude, t.unit_price ,t.scene_img" +
   	 	   	  		  " from device_detail t " +
   	 	   	  		  " order by t.id ";
 		    	break;
@@ -125,6 +181,10 @@ public class DeviceDetailBean extends RmiBean
 		    	break;
 		    case 12://删除
 		    	Sql = " delete from device_detail where id = '"+ Id +"' ";
+		    	break;
+		    case 13://更新场景图
+		    	Sql = " update device_detail t set t.scene_img = '"+ Scene_Img +"' " +
+		    		  " where t.id = '"+ Id +"'";
 		    	break;
 		    case 15://地图拖拽同步更新
 				Sql = " update device_detail t set t.longitude = '"+ Longitude +"', t.latitude = '"+ Latitude +"' " +
@@ -176,6 +236,7 @@ public class DeviceDetailBean extends RmiBean
 			setLongitude(pRs.getString(15));
 			setLatitude(pRs.getString(16));
 			setUnit_Price(pRs.getString(17));
+			setScene_Img(pRs.getString(18));
 		}
 		catch (SQLException sqlExp)
 		{
@@ -207,6 +268,7 @@ public class DeviceDetailBean extends RmiBean
 			setLatitude(CommUtil.StrToGB2312(request.getParameter("Latitude")));
 			setUnit_Price(CommUtil.StrToGB2312(request.getParameter("Unit_Price")));
 			setSid(CommUtil.StrToGB2312(request.getParameter("Sid")));
+			setScene_Img(CommUtil.StrToGB2312(request.getParameter("Scene_Img")));
 		}
 		catch (Exception Exp)
 		{
@@ -232,11 +294,22 @@ public class DeviceDetailBean extends RmiBean
 	private String Longitude;
 	private String Latitude;
 	private String Unit_Price;
+	private String Scene_Img;
 	
 	private String Sid;
 	
 	
 	
+	public String getScene_Img()
+	{
+		return Scene_Img;
+	}
+
+	public void setScene_Img(String scene_Img)
+	{
+		Scene_Img = scene_Img;
+	}
+
 	public String getUnit_Price()
 	{
 		return Unit_Price;

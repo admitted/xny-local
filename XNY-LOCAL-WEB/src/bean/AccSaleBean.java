@@ -249,10 +249,10 @@ public class AccSaleBean extends RmiBean
 			  	  	 " order by t.cpm_id ";
 			   break;
 			case 2://月销售总表
-				   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.ctime, t.unit_price, sum(t.value) value, sum(t.salary) salary, t.des " +
-						 " from (SELECT * FROM view_acc_sale_day WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))  ORDER BY ctime DESC) t " + 
-						 " GROUP BY CPM_ID ";
-				   break;
+			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.ctime, t.unit_price, sum(t.value) value, sum(t.salary) salary, t.des " +
+					 " from (SELECT * FROM view_acc_sale_day WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))  ORDER BY ctime DESC) t " + 
+					 " GROUP BY CPM_ID ";
+			   break;
 		}
 		return Sql;
 	}
