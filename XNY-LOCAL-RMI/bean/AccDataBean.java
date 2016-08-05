@@ -277,10 +277,10 @@ public class AccDataBean extends RmiBean
 			  	  	 " order by t.cpm_id ";
 			   break;
 			case 2://月用量总表
-				   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, (t.e_value - sum(t.value)) as b_value , t.e_value, sum(t.value) value , t.unit,  t.des " +
-						 " from (SELECT * FROM view_acc_data_day WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))  ORDER BY ctime DESC) t " + 
-						 " GROUP BY CPM_ID ";
-				   break;
+			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, (t.e_value - sum(t.value)) as b_value , t.e_value, sum(t.value) value , t.unit,  t.des " +
+					 " from (SELECT * FROM view_acc_data_day WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))  ORDER BY ctime DESC) t " + 
+					 " GROUP BY CPM_ID ";
+			   break;
 			
 			case 20://数据图表
 			   Sql = " {? = call rmi_graph('"+ Id +"', '"+ currStatus.getFunc_Sub_Id() +"', '"+ currStatus.getVecDate().get(0).toString().substring(0,10) +"')}";

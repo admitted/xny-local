@@ -63,7 +63,7 @@ public class AppDeviceDataReqBean extends BaseCmdBean
 				System.out.println("Cumulative:" + Cumulative);
 
 				String Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Cumulative + "', " + "'" + Dev_Unit + "')";
-				
+//				System.out.println("BSql-1[" + Sql + "]");
 				
 				if (m_DbUtil.doUpdate(Sql))
 				{
@@ -90,7 +90,7 @@ public class AppDeviceDataReqBean extends BaseCmdBean
 //				System.out.println("Stress:" + Stress);
 
 				String Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Cumulative + "', " + "'" + Dev_Unit + "')";
-				
+//				System.out.println("BSql-2[" + Sql + "]");
 				
 				if (m_DbUtil.doUpdate(Sql))
 				{
@@ -102,6 +102,7 @@ public class AppDeviceDataReqBean extends BaseCmdBean
 			else if (!Dev_CData.equalsIgnoreCase("NULL") && Dev_CData.length() > 0)
 			{
 				String Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Dev_CData.toString() + "', " + "'" + Dev_Unit + "')";
+//				System.out.println("BSql-3[" + Sql + "]");
 				if (m_DbUtil.doUpdate(Sql))
 				{
 					ret = Cmd_Sta.STA_SUCCESS;

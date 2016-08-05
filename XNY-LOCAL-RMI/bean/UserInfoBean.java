@@ -81,12 +81,10 @@ public class UserInfoBean extends RmiBean
 						request.getSession().setAttribute("User_Corp_Info_" + Sid, (CorpInfoBean)((ArrayList<?>)msgBean.getMsg()).get(0));
 					}
 					
-					
 					//设备配置
 					DeviceDetailBean deviceDetailBean = new DeviceDetailBean();
 					msgBean = pRmi.RmiExec(0, deviceDetailBean, 0);
-					request.getSession().setAttribute("User_Device_Detail_" + Sid, (Object)msgBean.getMsg());
-					
+					request.getSession().setAttribute("User_Device_Detail_" + Sid, (Object)msgBean.getMsg());	
 					
 					//人员信息
 			    	msgBean = pRmi.RmiExec(4, this, 0);
@@ -97,7 +95,7 @@ public class UserInfoBean extends RmiBean
 			    	msgBean = pRmi.RmiExec(0, roleBean, 0);
 			    	request.getSession().setAttribute("User_FP_Role_" + Sid, ((Object)msgBean.getMsg()));
 			    	
-			    	//所有管理权限
+			    	//所有管理权限 
 			    	msgBean = pRmi.RmiExec(1, roleBean, 0);
 			    	request.getSession().setAttribute("User_Manage_Role_" + Sid, ((Object)msgBean.getMsg()));
 					

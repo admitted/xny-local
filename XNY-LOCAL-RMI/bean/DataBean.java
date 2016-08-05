@@ -295,7 +295,8 @@ public class DataBean extends RmiBean
 //						item.write(file);						
 //					}  
 //				}			
-//			} catch (Exception e) 
+//			} 
+//	         catch (Exception e) 
 //			{
 //				e.printStackTrace();
 //			}		
@@ -399,7 +400,7 @@ public class DataBean extends RmiBean
 					  " GROUP BY t.cpm_id, t.id" +				  
 					  " ORDER BY t.cpm_id, t.id";
 				break;
-																
+					
 			case 20://Êý¾ÝÍ¼±í
 				Sql = " {? = call rmi_graph('"+ Id +"', '"+ currStatus.getFunc_Sub_Id() +"', '"+ currStatus.getVecDate().get(0).toString().substring(0,10) +"')}";
 				break;

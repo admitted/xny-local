@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,99 +19,105 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.jspsmart.upload.SmartUpload;
+
 import rmi.Rmi;
 import rmi.RmiBean;
 import util.*;
 
-
-/** 站级CPM
+/**
+ * 站级CPM
+ * 
  * @author cui
- *
+ * 
  */
 public class DeviceDetailBean extends RmiBean
-{	
-	public final static long serialVersionUID =RmiBean.RMI_DEVICE_DETAIL;
+{
+	public final static long	serialVersionUID	= RmiBean.RMI_DEVICE_DETAIL;
+
 	public long getClassId()
 	{
 		return serialVersionUID;
 	}
-	
+
 	public DeviceDetailBean()
 	{
 		super.className = "DeviceDetailBean";
-	} 
-	
+	}
+
 	public void ExecCmd(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
 	{
 		getHtmlData(request);
-		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
-		
+
 		msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
-		switch(currStatus.getCmd())
+		switch (currStatus.getCmd())
 		{
-			case 12://删除
-			case 11://编辑
-			case 10://添加
+			case 12:// 删除
+			case 11:// 编辑
+			case 10:// 添加
 				currStatus.setResult(MsgBean.GetResult(msgBean.getStatus()));
 				msgBean = pRmi.RmiExec(0, this, 0);
-			case 0://查询
-				request.getSession().setAttribute("Device_Detail_" + Sid, (Object)msgBean.getMsg());
+			case 0:// 查询
+				request.getSession().setAttribute("Device_Detail_" + Sid, (Object) msgBean.getMsg());
 				currStatus.setJsp("Device_Detail.jsp?Sid=" + Sid);
 				break;
-			case 1://视频监控
-				request.getSession().setAttribute("User_Device_Detail_" + Sid, (Object)msgBean.getMsg());
+			case 1:// 视频监控
+				request.getSession().setAttribute("User_Device_Detail_" + Sid, (Object) msgBean.getMsg());
 				currStatus.setJsp("Dvr_Info.jsp?Sid=" + Sid);
 				break;
 		}
-		
+
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
-	   	response.sendRedirect(currStatus.getJsp());
+		response.sendRedirect(currStatus.getJsp());
 	}
-	
-	//获取状态RealStatus、doDefence、doRightClick
+
+	// 获取状态RealStatus、doDefence、doRightClick
 	public void ToPo(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
 	{
 		getHtmlData(request);
-		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
-		
+
 		PrintWriter outprint = response.getWriter();
 		String Resp = "9999";
-		
+
 		msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
-		if(msgBean.getStatus() == MsgBean.STA_SUCCESS)
+		if (msgBean.getStatus() == MsgBean.STA_SUCCESS)
 		{
-			Resp = ((String)msgBean.getMsg());
+			Resp = ((String) msgBean.getMsg());
 		}
-		
+
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 		outprint.write(Resp);
 	}
-	
-	//地图接口doDragging、doAddMarke、doDel
+
+	// 地图接口doDragging、doAddMarke、doDel
 	public void doDragging(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
 	{
 		getHtmlData(request);
-		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
-		
+
 		PrintWriter outprint = response.getWriter();
 		String Resp = "9999";
-		
+
 		msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
-		if(msgBean.getStatus() == MsgBean.STA_SUCCESS)
+		if (msgBean.getStatus() == MsgBean.STA_SUCCESS)
 		{
 			Resp = "0000";
 			msgBean = pRmi.RmiExec(0, this, 0);
-			request.getSession().setAttribute("Device_Detail_" + Sid, ((Object)msgBean.getMsg()));
+			request.getSession().setAttribute("Device_Detail_" + Sid, ((Object) msgBean.getMsg()));
 		}
-    	
+
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 		outprint.write(Resp);
 	}
-	
-	/** 图片导入
+
+
+	/**
+	 * 图片导入
 	 * @param request
 	 * @param response
 	 * @param pRmi
@@ -116,104 +125,92 @@ public class DeviceDetailBean extends RmiBean
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	public void DetailSenceUp(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
-	{	
-		getHtmlData(request);
-		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
-		currStatus.getHtmlData(request, pFromZone);
-		
-		DiskFileItemFactory factory = new DiskFileItemFactory();    	
-		ServletFileUpload sfu = new ServletFileUpload(factory); 	
-		String value = "";
-		try {				
-				List<FileItem> items = sfu.parseRequest(request);
-				for(int i=0;i<items.size();i++)
-				{
-					FileItem item = items.get(i);
-					if(item.isFormField()){						
-						String fieldName = item.getFieldName();
-						System.out.println("["+fieldName+"]"); 
-						value = item.getString();
-						System.out.println("["+value+"]");
-					}
-					else
-					{
-						ServletContext sctx = request.getSession().getServletContext();
-						String path = sctx.getRealPath("/skin/images/CPM_Scene/");
-						System.out.println("["+path+"]"); //[/www/XNY-LOCAL/XNY-LOCAL-WEB/skin/images/CPM_Scene]
-						String fileName = item.getName();						
-						String[] str = fileName.split("\\.");	
-						String newName = value+"."+str[1];
-						System.out.println("newName["+newName+"]");
-						File file = new File(path + File.separator + newName);
-						item.write(file);						
-					}  
-				}			
-			} catch (Exception e) 
+	public void DetailSenceUp(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone, ServletConfig pConfig) throws ServletException, IOException
+	{
+		try
+		{
+			SmartUpload mySmartUpload = new SmartUpload();
+			mySmartUpload.initialize(pConfig, request, response);
+			mySmartUpload.setAllowedFilesList("jpg,bmp,JPG,BMP,");
+			mySmartUpload.upload();
+
+			Sid = mySmartUpload.getRequest().getParameter("Sid");
+			currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
+			Id = mySmartUpload.getRequest().getParameter("Id");
+			
+
+			if (mySmartUpload.getFiles().getCount() > 0 && mySmartUpload.getFiles().getFile(0).getFilePathName().trim().length() > 0)
 			{
-				e.printStackTrace();
-			}		
+				if (mySmartUpload.getFiles().getFile(0).getSize() / 1024 <= 3072)// 最大3M
+				{
+					String FileSaveRoute = "/www/XNY-LOCAL/XNY-LOCAL-WEB/skin/images/CPM_Scene/";
+					// 上传现有文档
+					com.jspsmart.upload.File myFile = mySmartUpload.getFiles().getFile(0);
+					Scene_Img = Id + "." + myFile.getFileExt();
+					myFile.saveAs(FileSaveRoute + Scene_Img);
+				}
+			}
+			msgBean = pRmi.RmiExec(13, this, 0);
+			currStatus.setResult(MsgBean.GetResult(msgBean.getStatus()));
+
+			currStatus.setJsp("Device_Detail_Scene.jsp?Sid=" + Sid + "&Cpm_Id=" + Id + "&Scene_Img=" + Scene_Img);
+			request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);	
+		   	response.sendRedirect(currStatus.getJsp());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
-	
+
 	public String getSql(int pCmd)
-	{  
+	{
 		String Sql = "";
 		switch (pCmd)
-		{  
-		    case 0://查询
-		    	Sql = " select t.id, t.cname, t.brief, t.status, t.onoff, t.ctype, t.ctime, t.memo, t.link_url, t.link_port, t.link_id, t.link_pwd, t.pwd, t.sign, t.longitude, t.latitude, t.unit_price ,t.scene_img" +
-	    	 	   	  " from device_detail t " +
- 	 		          " order by t.id ";
-			   break;
-		    case 1://视频监控
-		    	Sql = " select t.id, t.cname, t.brief, t.status, t.onoff, t.ctype, t.ctime, t.memo, t.link_url, t.link_port, t.link_id, t.link_pwd, t.pwd, t.sign, t.longitude, t.latitude, t.unit_price ,t.scene_img" +
-  	 	   	  		  " from device_detail t " +
-  	 	   	  		  " order by t.id ";
-		    	break;
-		    case 10://添加
-		    	Sql = " insert into device_detail(id, cname, brief, status, ctype, ctime, memo, link_url, link_port, link_id, link_pwd, pwd ,unit_price)" +
-		    			"values('"+ Id +"', '"+ CName +"', '"+ Brief +"', '"+ Status +"', '"+ CType +"', '"+ CTime +"', '"+ Memo +"', '"+ Link_Url +"', '"+ Link_Port +"', '"+ Link_Id +"', '"+ Link_Pwd +"', '"+ Pwd +"', '"+ Unit_Price +"')";
-		    	break;	   
-		    case 11://修改
-		    	Sql = " update device_detail t set t.cname = '"+ CName +"', t.brief = '"+ Brief +"', t.status = '"+ Status+"', t.ctype = '"+ CType +"', t.ctime = '"+ CTime +"', " +
-		    		  " t.memo = '"+ Memo +"', t.link_url = '"+ Link_Url +"', t.link_port = '"+ Link_Port +"', t.link_id = '"+ Link_Id +"', t.link_pwd = '"+ Link_Pwd +"', t.pwd = '"+ Pwd +"' , t.unit_price = '"+ Unit_Price +"' " +
-		    		  " where t.id = '"+ Id +"'";
-		    	break;
-		    case 12://删除
-		    	Sql = " delete from device_detail where id = '"+ Id +"' ";
-		    	break;
-		    case 13://更新场景图
-		    	Sql = " update device_detail t set t.scene_img = '"+ Scene_Img +"' " +
-		    		  " where t.id = '"+ Id +"'";
-		    	break;
-		    case 15://地图拖拽同步更新
-				Sql = " update device_detail t set t.longitude = '"+ Longitude +"', t.latitude = '"+ Latitude +"' " +
-					  " where t.id = '"+ Id +"'";
+		{
+			case 0:// 查询
+				Sql = " select t.id, t.cname, t.brief, t.status, t.onoff, t.ctype, t.ctime, t.memo, t.link_url, t.link_port, t.link_id, t.link_pwd, t.pwd, t.sign, t.longitude, t.latitude, t.unit_price ,t.scene_img" + " from device_detail t " + " order by t.id ";
 				break;
-			case 16://删除标注接口
-				Sql = " update device_detail t set t.sign = '0' " +
-				      " where t.id = '"+ Id +"'";
+			case 1:// 视频监控
+				Sql = " select t.id, t.cname, t.brief, t.status, t.onoff, t.ctype, t.ctime, t.memo, t.link_url, t.link_port, t.link_id, t.link_pwd, t.pwd, t.sign, t.longitude, t.latitude, t.unit_price ,t.scene_img" + " from device_detail t " + " order by t.id ";
 				break;
-			case 17://添加标注接口
-				Sql = " update device_detail t set t.sign = '1', t.longitude = '"+ Longitude +"', t.latitude = '"+ Latitude +"' " +
-					  " where t.id = '"+ Id +"'";
+			case 10:// 添加
+				Sql = " insert into device_detail(id, cname, brief, status, ctype, ctime, memo, link_url, link_port, link_id, link_pwd, pwd ,unit_price)" + "values('" + Id + "', '" + CName + "', '" + Brief + "', '" + Status + "', '" + CType + "', '" + CTime + "', '" + Memo + "', '" + Link_Url + "', '" + Link_Port + "', '" + Link_Id + "', '" + Link_Pwd + "', '" + Pwd + "', '" + Unit_Price + "')";
 				break;
-			case 21://获取状态
-				Sql = "{? = call Func_Status_Get('"+ Id +"')}";
+			case 11:// 修改
+				Sql = " update device_detail t set t.cname = '" + CName + "', t.brief = '" + Brief + "', t.status = '" + Status + "', t.ctype = '" + CType + "', t.ctime = '" + CTime + "', " + " t.memo = '" + Memo + "', t.link_url = '" + Link_Url + "', t.link_port = '" + Link_Port + "', t.link_id = '" + Link_Id + "', t.link_pwd = '" + Link_Pwd + "', t.pwd = '" + Pwd + "' , t.unit_price = '" + Unit_Price + "' " + " where t.id = '" + Id + "'";
 				break;
-			case 22://获取数据
-				Sql = "{? = call Func_Data_Get('"+ Id +"', "+ CType +")}";
+			case 12:// 删除
+				Sql = " delete from device_detail where id = '" + Id + "' ";
 				break;
-			case 23://获取未标注企业
+			case 13:// 更新场景图
+				Sql = " update device_detail t set t.scene_img = '" + Scene_Img + "' " + " where t.id = '" + Id + "'";
+				break;
+			case 15:// 地图拖拽同步更新
+				Sql = " update device_detail t set t.longitude = '" + Longitude + "', t.latitude = '" + Latitude + "' " + " where t.id = '" + Id + "'";
+				break;
+			case 16:// 删除标注接口
+				Sql = " update device_detail t set t.sign = '0' " + " where t.id = '" + Id + "'";
+				break;
+			case 17:// 添加标注接口
+				Sql = " update device_detail t set t.sign = '1', t.longitude = '" + Longitude + "', t.latitude = '" + Latitude + "' " + " where t.id = '" + Id + "'";
+				break;
+			case 21:// 获取状态
+				Sql = "{? = call Func_Status_Get('" + Id + "')}";
+				break;
+			case 22:// 获取数据
+				Sql = "{? = call Func_Data_Get('" + Id + "', " + CType + ")}";
+				break;
+			case 23:// 获取未标注企业
 				Sql = "{? = call Func_UnMarke_Get('')}";
 				break;
-			case 24://GIS实时通知
-				Sql = "{? = call Func_News_Get('"+ Id +"')}";
+			case 24:// GIS实时通知
+				Sql = "{? = call Func_News_Get('" + Id + "')}";
 				break;
 		}
 		return Sql;
 	}
-	
+
 	public boolean getData(ResultSet pRs)
 	{
 		boolean IsOK = true;
@@ -244,7 +241,7 @@ public class DeviceDetailBean extends RmiBean
 		}
 		return IsOK;
 	}
-	
+
 	public boolean getHtmlData(HttpServletRequest request)
 	{
 		boolean IsOK = true;
@@ -276,30 +273,28 @@ public class DeviceDetailBean extends RmiBean
 		}
 		return IsOK;
 	}
-	
-	private String Id;
-	private String CName;
-	private String Brief;
-	private String Status;
-	private String OnOff;
-	private String CType;
-	private String CTime;
-	private String Memo;
-	private String Link_Url;
-	private String Link_Port;
-	private String Link_Id;
-	private String Link_Pwd;
-	private String Pwd;
-	private String Sign;
-	private String Longitude;
-	private String Latitude;
-	private String Unit_Price;
-	private String Scene_Img;
-	
-	private String Sid;
-	
-	
-	
+
+	private String	Id;
+	private String	CName;
+	private String	Brief;
+	private String	Status;
+	private String	OnOff;
+	private String	CType;
+	private String	CTime;
+	private String	Memo;
+	private String	Link_Url;
+	private String	Link_Port;
+	private String	Link_Id;
+	private String	Link_Pwd;
+	private String	Pwd;
+	private String	Sign;
+	private String	Longitude;
+	private String	Latitude;
+	private String	Unit_Price;
+	private String	Scene_Img;
+
+	private String	Sid;
+
 	public String getScene_Img()
 	{
 		return Scene_Img;
@@ -320,139 +315,173 @@ public class DeviceDetailBean extends RmiBean
 		Unit_Price = unit_Price;
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return Id;
 	}
 
-	public void setId(String id) {
+	public void setId(String id)
+	{
 		Id = id;
 	}
 
-	public String getCName() {
+	public String getCName()
+	{
 		return CName;
 	}
 
-	public void setCName(String cName) {
+	public void setCName(String cName)
+	{
 		CName = cName;
 	}
 
-	public String getBrief() {
+	public String getBrief()
+	{
 		return Brief;
 	}
 
-	public void setBrief(String brief) {
+	public void setBrief(String brief)
+	{
 		Brief = brief;
 	}
 
-	public String getStatus() {
+	public String getStatus()
+	{
 		return Status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(String status)
+	{
 		Status = status;
 	}
 
-	public String getOnOff() {
+	public String getOnOff()
+	{
 		return OnOff;
 	}
 
-	public void setOnOff(String onOff) {
+	public void setOnOff(String onOff)
+	{
 		OnOff = onOff;
 	}
 
-	public String getCType() {
+	public String getCType()
+	{
 		return CType;
 	}
 
-	public void setCType(String cType) {
+	public void setCType(String cType)
+	{
 		CType = cType;
 	}
 
-	public String getCTime() {
+	public String getCTime()
+	{
 		return CTime;
 	}
 
-	public void setCTime(String cTime) {
+	public void setCTime(String cTime)
+	{
 		CTime = cTime;
 	}
 
-	public String getMemo() {
+	public String getMemo()
+	{
 		return Memo;
 	}
 
-	public void setMemo(String memo) {
+	public void setMemo(String memo)
+	{
 		Memo = memo;
 	}
 
-	public String getLink_Url() {
+	public String getLink_Url()
+	{
 		return Link_Url;
 	}
 
-	public void setLink_Url(String linkUrl) {
+	public void setLink_Url(String linkUrl)
+	{
 		Link_Url = linkUrl;
 	}
-	
-	public String getLink_Port() {
+
+	public String getLink_Port()
+	{
 		return Link_Port;
 	}
 
-	public void setLink_Port(String linkPort) {
+	public void setLink_Port(String linkPort)
+	{
 		Link_Port = linkPort;
 	}
 
-	public String getLink_Id() {
+	public String getLink_Id()
+	{
 		return Link_Id;
 	}
 
-	public void setLink_Id(String linkId) {
+	public void setLink_Id(String linkId)
+	{
 		Link_Id = linkId;
 	}
 
-	public String getLink_Pwd() {
+	public String getLink_Pwd()
+	{
 		return Link_Pwd;
 	}
 
-	public void setLink_Pwd(String linkPwd) {
+	public void setLink_Pwd(String linkPwd)
+	{
 		Link_Pwd = linkPwd;
 	}
 
-	public String getPwd() {
+	public String getPwd()
+	{
 		return Pwd;
 	}
 
-	public void setPwd(String pwd) {
+	public void setPwd(String pwd)
+	{
 		Pwd = pwd;
 	}
 
-	public String getSign() {
+	public String getSign()
+	{
 		return Sign;
 	}
 
-	public void setSign(String sign) {
+	public void setSign(String sign)
+	{
 		Sign = sign;
 	}
 
-	public String getLongitude() {
+	public String getLongitude()
+	{
 		return Longitude;
 	}
 
-	public void setLongitude(String longitude) {
+	public void setLongitude(String longitude)
+	{
 		Longitude = longitude;
 	}
 
-	public String getLatitude() {
+	public String getLatitude()
+	{
 		return Latitude;
 	}
 
-	public void setLatitude(String latitude) {
+	public void setLatitude(String latitude)
+	{
 		Latitude = latitude;
 	}
 
-	public String getSid() {
+	public String getSid()
+	{
 		return Sid;
 	}
 
-	public void setSid(String sid) {
+	public void setSid(String sid)
+	{
 		Sid = sid;
 	}
 }

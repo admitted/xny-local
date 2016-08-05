@@ -233,8 +233,11 @@ public class MainServlet extends HttpServlet
         else if (strUrl.equalsIgnoreCase("Acc_Sale.do"))				         //销售数据
         	new AccSaleBean().ExecCmd(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("Device_Detail_Scene.do"))				 //场景图上传
-        	new DeviceDetailBean().DetailSenceUp(request, response, m_Rmi, false);  
-       
+        	new DeviceDetailBean().DetailSenceUp(request, response, m_Rmi, false ,Config);  
+        else if (strUrl.equalsIgnoreCase("Device_Detail_Map.do"))				 //设备属性查找
+        	new DataNowBean().ToPo(request, response, m_Rmi, false);  
+        else if (strUrl.equalsIgnoreCase("Device_Detail_Draging.do"))			 //设备属性-添加修改删除查找
+        	new DataNowBean().ExecCmd(request, response, m_Rmi, false);  
     }
     
     /** 
