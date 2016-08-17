@@ -256,7 +256,7 @@ public class MainServlet extends HttpServlet
     	    	try
     			{   
     	    		if(i != 0) sleep(500);
-    	    		ok = m_Rmi.Test(); //与RMI交互 ，成功则返回 true
+    	    		ok = m_Rmi.Test();     //与RMI交互 ，成功则返回 true
     	    		i = 3;
     	    		ok = true;
     			}

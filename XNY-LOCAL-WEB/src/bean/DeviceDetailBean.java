@@ -131,14 +131,13 @@ public class DeviceDetailBean extends RmiBean
 		{
 			SmartUpload mySmartUpload = new SmartUpload();
 			mySmartUpload.initialize(pConfig, request, response);
-			mySmartUpload.setAllowedFilesList("jpg,bmp,JPG,BMP,");
+			mySmartUpload.setAllowedFilesList("jpg,bmp,JPG,BMP,gif,GIF");
 			mySmartUpload.upload();
 
 			Sid = mySmartUpload.getRequest().getParameter("Sid");
 			currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 			Id = mySmartUpload.getRequest().getParameter("Id");
 			
-
 			if (mySmartUpload.getFiles().getCount() > 0 && mySmartUpload.getFiles().getFile(0).getFilePathName().trim().length() > 0)
 			{
 				if (mySmartUpload.getFiles().getFile(0).getSize() / 1024 <= 3072)// ×î´ó3M
