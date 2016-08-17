@@ -17,6 +17,10 @@
 <script type='text/javascript' src='../skin/js/des.js'></script>
 <script type='text/javascript' src='http://api.map.baidu.com/api?v=1.2&services=true'></script>
 <script type='text/javascript' src='../skin/js/changeMore.js'></script>
+<!--Zdialog-->
+<script type='text/javascript' src='../skin/js/zDrag.js'   charset='gb2312'></script>
+<script type='text/javascript' src='../skin/js/zDialog.js' charset='gb2312'></script>
+
 <script language=javascript>document.oncontextmenu=function(){window.event.returnValue=false;};</script>
 <style type='text/css'>
 html,body{width:100%; height:100%; margin:0; padding:0;}
@@ -197,19 +201,7 @@ function addMarker(point, pId, pCName, pIcon, pStatus, pX, pY, pType)
 			 	map.addOverlay(marker);		 	
 			 	marker.addEventListener("click", function()
 			 	{
-			 		switch(parseInt(pStatus))
-			 		{
-			 			case 0:
-			 					doPro();
-			 					//doDefence(pId, pCName, pStatus);
-			 				break;
-			 			case 1:
-			 					doCpmOnOff(pId, pCName, pStatus);
-			 				break;
-			 			case 2:
-			 					doDefence(pId, pCName, pStatus);
-			 				break;
-			 		}
+			 		 doEnv(pId, pCName);
 				});
 				mkrs.push(marker);
 				if('2' == pStatus)
@@ -218,6 +210,7 @@ function addMarker(point, pId, pCName, pIcon, pStatus, pX, pY, pType)
 				}
 			break;
 	}
+	
 }
 
 //状态更新
@@ -539,222 +532,25 @@ function doDefence(pId, pCName, pStatus)
 	messContent += "  <img src='../skin/images/alarm_low.gif' style='cursor:hand' onClick='doAla()'>";
 	messContent += "</div>";
 	
-	//ipad禁掉实时视频
-	var pHead = '';
-	if(1 == fBrowserRedirect() || 2 == fBrowserRedirect())
-	{
-		pHead = "<font color='red'>["+pCName+"]</font>&nbsp;&nbsp;&nbsp;" + "<a href='#' onClick=\"doDefence('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><font color=blue><U>实时告警</U></font></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doEnv('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时数据</U></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doNet('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时状态</U></a>";
-	}
-	else
-	{
-		pHead = "<font color='red'>["+pCName+"]</font>&nbsp;&nbsp;&nbsp;" + "<a href='#' onClick=\"doDefence('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><font color=blue><U>实时告警</U></font></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doEnv('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时数据</U></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doNet('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时状态</U></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doDvr('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时视频</U></a>";
-	}
 	showMessageBox(pHead, messContent , 600, 500);
 }
 
 //实时数据
-function doEnv(pId, pCName, pStatus)
+function doEnv(pCpm_Id,pCpm_Name)
 {
-	var messContent = "<div style='width:100%;height:403px;text-align:center;border:1px solid #0068a6;overflow-x:no;overflow-y:auto;'>";
-	if(window.XMLHttpRequest)
-	{
-	  reqInfo = new XMLHttpRequest();
-	}
-	else if(window.ActiveXObject)
-	{
-	  reqInfo = new ActiveXObject('Microsoft.XMLHTTP');
-	}
-	reqInfo.onreadystatechange = function()
-	{
-	  var state = reqInfo.readyState;
-	  if(state == 4)
-	  {
-	    if(reqInfo.status == 200)
-	    {
-	      var Resp = reqInfo.responseText;
-	      if(null != Resp && Resp.length >= 4 && Resp.substring(0,4) == '0000')
-	      {
-	      	var list = Resp.substring(4).split('^');
-  				messContent += "<table align='center' style='margin:auto' cellpadding='0' cellspacing='0' border='0' width='97%'>";
-  				messContent += "  <tr height='25px'>";
-  				messContent += "    <td width='10%' align='center' style='background:#a1d1fa;'>站点</td>";
-  				messContent += "    <td width='10%' align='center' style='background:#a1d1fa;'>设备</td>";
-  				messContent += "    <td width='10%' align='center' style='background:#a1d1fa;'>参数</td>";
-  				messContent += "    <td width='15%' align='center' style='background:#a1d1fa;'>时间</td>";
-  				messContent += "    <td width='10%' align='center' style='background:#a1d1fa;'>数值</td>";
-  				messContent += "    <td width='10%' align='center' style='background:#a1d1fa;'>级别</td>";
-  				messContent += "    <td width='15%' align='center' style='background:#a1d1fa;'>描述</td>";
-  				messContent += "  </tr>";
-  				for(var i=0; i<list.length && list[i].length>0; i++)
-					{
-						var sublist = list[i].split('~');
-						messContent += "<tr height='25px'>";
-    				messContent += "  <td width='10%' align='center'>"+ sublist[0] +"</td>";
-    				messContent += "  <td width='10%' align='center'>"+ sublist[1] +"</td>";
-    				messContent += "  <td width='10%' align='center'>"+ sublist[2] +"</td>";
-    				messContent += "  <td width='15%' align='center'>"+ sublist[3] +"</td>";
-    				messContent += "  <td width='10%' align='center'>"+ sublist[4] + sublist[5] +"</td>";
-    				messContent += "  <td width='10%' align='center'>"+ sublist[6] +"</td>";
-    				messContent += "  <td width='15%' align='center'>"+ sublist[7] +"</td>";
-    				messContent += "</tr>";
-					}
-					messContent += "</table>";
-	      }
-	      else
-	      {
-	      	messContent += "查询失败...";
-	      }
-	    }
-	    else
-	    {
-	    	messContent += "查询失败...";
-	    }
-	  }
-	};
-	var url = 'ToPo.do?Cmd=22&Sid=<%=Sid%>&Id='+pId+'&CType=2&currtime='+new Date();
-	reqInfo.open('post',url,false);
-	reqInfo.send(null);
-	
-	messContent += "</div>";
-	messContent += "<div style='width:100%;height:60px;text-align:center;border:1px solid #0068a6;overflow-x:no;overflow-y:auto;'>";
-	messContent += "  <img src='../skin/images/data_low.gif' style='cursor:hand' onClick='doDat()'>";
-	messContent += "</div>";
-	
-	//ipad禁掉实时视频
-	var pHead = '';
-	if(1 == fBrowserRedirect() || 2 == fBrowserRedirect())
-	{
-		pHead = "<font color='red'>["+pCName+"]</font>&nbsp;&nbsp;&nbsp;" + "<a href='#' onClick=\"doDefence('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时告警</U></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doEnv('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><font color=blue><U>实时数据</U></font></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doNet('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时状态</U></a>";
-	}
-	else
-	{
-		pHead = "<font color='red'>["+pCName+"]</font>&nbsp;&nbsp;&nbsp;" + "<a href='#' onClick=\"doDefence('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时告警</U></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doEnv('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><font color=blue><U>实时数据</U></font></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doNet('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时状态</U></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick=\"doDvr('"+pId+"', '"+pCName+"', '"+pStatus+"')\"><U>实时视频</U></a>";
-	}
-	showMessageBox(pHead, messContent , 600, 500);
+	  var Pdiag    = new Dialog();
+		Pdiag.Top    = "50%";
+		Pdiag.Width  = 704;
+		Pdiag.Height = 504;
+		Pdiag.Title  = pCpm_Name;
+		Pdiag.URL    = "Device_Detail_Draging.do?Sid=<%=Sid%>&Cpm_Id=" + pCpm_Id +"&Scene_Img="+ pCpm_Id +'.jpg';
+		Pdiag.CancelEvent=function()
+		{
+			Pdiag.close();	  //关闭窗口
+//			RealStatus();		//页面刷新
+		};
+		Pdiag.show();
 }
 
-//实时状态
-function doNet(pId, pCName, pStatus)
-{
-	if(window.XMLHttpRequest)
-	{
-	  reqInfo = new XMLHttpRequest();
-	}
-	else if(window.ActiveXObject)
-	{
-	  reqInfo = new ActiveXObject('Microsoft.XMLHTTP');
-	}
-	reqInfo.onreadystatechange = function()
-	{
-	  var state = reqInfo.readyState;
-	  if(state == 4)
-	  {
-	    if(reqInfo.status == 200)
-	    {
-	      var Resp = reqInfo.responseText;
-	      if(null != Resp && Resp.length >= 4 && Resp.substring(0,4) == '0000')
-	      {
-	      	var list = Resp.substring(4).split('~');
-	      	var pLink_Url = list[0];
-	      	var pLink_Port= list[1];
-	      	var pLink_Id  = list[2];
-	      	var pLink_Pwd = list[3];
-	      	
-					if(pLink_Url.Trim().length < 1 || pLink_Id.Trim().length < 1 || pLink_Pwd.Trim().length < 1)
-					{
-						alert('当前站点配置错误，无法远程查看!');
-						return;
-					}
-					
-					//链接
-					var D_LinkStr = '';
-					if(pLink_Port.Trim().length < 1)
-						D_LinkStr = 'http://' + pLink_Url + '/cgi-bin/login.cgi?username=' + pLink_Id + '&password=' + pLink_Pwd + '&link=01';
-					else
-						D_LinkStr = 'http://' + pLink_Url + ':' + pLink_Port + '/cgi-bin/login.cgi?username=' + pLink_Id + '&password=' + pLink_Pwd + '&link=01';
-						
-					DES.init(DesKey, D_LinkStr);
-					var E_LinkStr  = DES.Encrypt();
-					parent.location = "L_Main.jsp?Sid=<%=Sid%>&p1="+E_LinkStr+"&p2="+pCName+"&p3=1";
-	      }
-	      else
-	      {
-	      	alert('失败,请重新操作');
-	      	return;
-	      }
-	    }
-	    else
-	    {
-	    	alert('失败,请重新操作');
-	    	return;
-	    }
-	  }
-	};
-	var url = 'ToPo.do?Cmd=22&Sid=<%=Sid%>&Id='+pId+'&CType=3&currtime='+new Date();
-	reqInfo.open('post',url,false);
-	reqInfo.send(null);
-}
-
-//实时视频
-function doDvr(pId, pCName, pStatus)
-{
-	if(window.XMLHttpRequest)
-	{
-	  reqInfo = new XMLHttpRequest();
-	}
-	else if(window.ActiveXObject)
-	{
-	  reqInfo = new ActiveXObject('Microsoft.XMLHTTP');
-	}
-	reqInfo.onreadystatechange = function()
-	{
-	  var state = reqInfo.readyState;
-	  if(state == 4)
-	  {
-	    if(reqInfo.status == 200)
-	    {
-	      var Resp = reqInfo.responseText;
-	      if(null != Resp && Resp.length >= 4 && Resp.substring(0,4) == '0000')
-	      {
-	      	var list = Resp.substring(4).split('~');
-	      	var pLink_Url = list[0];
-	      	var pLink_Port= list[1];
-	      	var pLink_Id  = list[2];
-	      	var pLink_Pwd = list[3];
-	      	
-					if(pLink_Url.Trim().length < 1 || pLink_Id.Trim().length < 1 || pLink_Pwd.Trim().length < 1)
-					{
-						alert('当前站点配置错误，无法远程查看!');
-						return;
-					}
-					
-					//链接
-					var D_LinkStr = '';
-					if(pLink_Port.Trim().length < 1)
-						D_LinkStr = 'http://' + pLink_Url + '/cgi-bin/login.cgi?username=' + pLink_Id + '&password=' + pLink_Pwd + '&link=04';
-					else
-						D_LinkStr = 'http://' + pLink_Url + ':' + pLink_Port + '/cgi-bin/login.cgi?username=' + pLink_Id + '&password=' + pLink_Pwd + '&link=04';
-						
-					DES.init(DesKey, D_LinkStr);
-					var E_LinkStr  = DES.Encrypt();
-					parent.location = "L_Main.jsp?Sid=<%=Sid%>&p1="+E_LinkStr+"&p2="+pCName+"&p3=1";
-	      }
-	      else
-	      {
-	      	alert('失败,请重新操作');
-	      	return;
-	      }
-	    }
-	    else
-	    {
-	    	alert('失败,请重新操作');
-	    	return;
-	    }
-	  }
-	};
-	var url = 'ToPo.do?Cmd=22&Sid=<%=Sid%>&Id='+pId+'&CType=3&currtime='+new Date();
-	reqInfo.open('post',url,false);
-	reqInfo.send(null);
-}
 </SCRIPT>
 </html>

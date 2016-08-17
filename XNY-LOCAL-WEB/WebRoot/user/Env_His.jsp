@@ -69,8 +69,9 @@
 	<table width="100%" style='margin:auto;' border=0 cellPadding=0 cellSpacing=0 bordercolor="#3491D6" borderColorDark="#ffffff">
 		<tr height='25px' class='sjtop'>
 			<td width='70%' align='left'>
-				加气站点:
-				<select  name='Func_Cpm_Id' style='width:100px;height:20px' onChange="doSelect()" >					
+				场站站点:
+				<select  name='Func_Cpm_Id' style='width:100px;height:20px' onChange="doSelect()" >		
+					  <option value='9999'                             >请选择站点</option>			
 						<%					
 								if(Manage_List.length() > 0 && null != User_Device_Detail)
 								{
@@ -211,14 +212,14 @@
 		</tr>
 	</table>
 </div>
-<input type="hidden" name="Cmd" value="2">
-<input type="hidden" name="Sid" value="<%=Sid%>"/>
-<input type="hidden" name="Id" value=""/>
-<input type="hidden" name="Level" value=""/>
-<input name="BTime" type="hidden" value="">
-<input name="ETime" type="hidden" value="">
-<input name="CurrPage" type="hidden" value="<%=currStatus.getCurrPage()%>">
-<input type="button" id="CurrButton"  onClick="doSelect()" style="display:none">
+<input type="hidden"   name="Cmd"       value="2"        >
+<input type="hidden"   name="Sid"       value="<%=Sid%>"/>
+<input type="hidden"   name="Id"        value=""        />
+<input type="hidden" 	 name="Level"     value=""        />
+<input name="BTime"    type="hidden"    value=""         >
+<input name="ETime"    type="hidden"    value=""         >
+<input name="CurrPage" type="hidden"    value="<%=currStatus.getCurrPage()%>">
+<input type="button"   id="CurrButton"  onClick="doSelect()" style="display:none">
 </form>
 </body>
 <SCRIPT LANGUAGE=javascript>

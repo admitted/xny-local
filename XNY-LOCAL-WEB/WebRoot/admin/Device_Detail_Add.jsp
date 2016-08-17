@@ -119,9 +119,9 @@
 							<td width='30%' align='left'>
 								<input type='text' name='Link_Id'  style='width:90%;height:18px;' value='' maxlength='20'>
 							</td>
-							<td width='20%' align='center'>链接密码</td>
+							<td width='20%' align='center'>加气价格</td>
 							<td width='30%' align='left'>
-								<input type='text' name='Link_Pwd' style='width:90%;height:18px;' value='' maxlength='6'>
+								<input type='text' name='Unit_Price' style='width:90%;height:18px;' value='' maxlength='6'>
 							</td>
 						</tr>
 					</table>

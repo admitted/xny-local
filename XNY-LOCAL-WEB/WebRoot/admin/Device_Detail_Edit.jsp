@@ -11,6 +11,11 @@
 <script type="text/javascript" src="../skin/js/util.js"></script>
 <script type="text/javascript" src="../skin/js/My97DatePicker/WdatePicker.js"></script>
 <script language=javascript>document.oncontextmenu=function(){window.event.returnValue=false;};</script>
+<STYLE>
+	.mydiv {
+	FONT-SIZE: 12px; BORDER-TOP: #3491d6 1px solid; HEIGHT: 535px; BORDER-RIGHT: #3491d6 1px solid; WIDTH: 705px; BORDER-BOTTOM: #3491d6 1px solid; POSITION: absolute; FONT-WEIGHT: bold; TEXT-ALIGN: center; LEFT: 20%; BORDER-LEFT: #3491d6 1px solid; Z-INDEX: 999; LINE-HEIGHT: 40px; TOP: 5%; BACKGROUND-COLOR: #3491d6
+	}
+</STYLE>
 </head>
 <%
 	
@@ -40,6 +45,9 @@
 	String Link_Id = "";
 	String Link_Pwd = "";
 	String Pwd = "";
+	String Unit_Price = "";
+	String Scene_Img = "";
+	
 	if(Device_Detail != null)
 	{
 		Iterator iterator = Device_Detail.iterator();
@@ -58,7 +66,9 @@
 				Link_Port = statBean.getLink_Port();
 				Link_Id = statBean.getLink_Id();
 				Link_Pwd = statBean.getLink_Pwd();
-				Pwd = statBean.getPwd();		
+				Pwd = statBean.getPwd();	
+				Unit_Price = statBean.getUnit_Price();	
+				Scene_Img = statBean.getScene_Img();	
 				
 				if(null == CType){CType = "";}
 				if(null == Memo){Memo = "";}
@@ -67,6 +77,8 @@
 				if(null == Link_Id){Link_Id = "";}
 				if(null == Link_Pwd){Link_Pwd = "";}
 				if(null == Pwd){Pwd = "";}
+				if(null == Scene_Img){Scene_Img = "";}
+				if(null == Unit_Price){Unit_Price = "";}
 			}
 		}
  	}
@@ -74,12 +86,16 @@
 %>
 <body style="background:#CADFFF">
 <form name="Device_Detail_Edit" action="Device_Detail.do" method="post" target="mFrame">
+<DIV id=objDiv class=mydiv style="MARGIN: auto; DISPLAY: none">
+	<IFRAME id=childFrame style="HEIGHT: 100%; WIDTH: 100%" src="Device_Detail_Draging.do?Sid=<%=Sid%>&Cpm_Id=<%=Id%>&Scene_Img=<%=Scene_Img%>" frameBorder=0 allowTransparency name=childFrame scrolling=no></IFRAME>
+</DIV>
 <div id="down_bg_2">
 	<div id="cap"><img src="../skin/images/device_detail.gif"></div><br><br><br>
 	<div id="right_table_center">
 		<table width="60%" style='margin:auto;' border=0 cellPadding=0 cellSpacing=0 bordercolor="#3491D6" borderColorDark="#ffffff">
 			<tr height='30'>
 				<td width='100%' align='right'>
+					<img src="../skin/images/mini_button_equip.gif" style='cursor:hand;' onClick='doScene()'>
 					<img src="../skin/images/mini_button_submit.gif" style='cursor:hand;' onClick='doEdit()'>
 					<img src="../skin/images/button10.gif"           style='cursor:hand;' onclick='doNO()'>
 				</td>
@@ -162,9 +178,9 @@
 							<td width='30%' align='left'>
 								<input type='text' name='Link_Id' style='width:90%;height:18px;' value='<%=Link_Id%>' maxlength='20'>
 							</td>
-							<td width='20%' align='center'>链接密码</td>
+							<td width='20%' align='center'>加气价格</td>
 							<td width='30%' align='left'>
-								<input type='text' name='Link_Pwd' style='width:90%;height:18px;' value='<%=Link_Pwd%>' maxlength='6'>
+								<input type='text' name='Unit_Price' style='width:90%;height:18px;' value='<%=Unit_Price%>' maxlength='6'>
 							</td>
 						</tr>
 					</table>
@@ -182,7 +198,10 @@ function doNO()
 {
 	location = "Device_Detail.jsp?Sid=<%=Sid%>";
 }
-
+function doScene()
+{
+	document.getElementById('objDiv').style.display = 'block';
+}
 function doEdit()
 {
   if(Device_Detail_Edit.Id.value.Trim().length != 10)

@@ -28,6 +28,7 @@
 %>
 <body  style=" background:#CADFFF">
 <form name="Device_Detail" action="Device_Detail.do" method="post" target="mFrame">
+
 <div id="down_bg_2">
   <div id="cap"><img src="../skin/images/device_detail.gif"></div><br><br><br>
   <div id="right_table_center">
