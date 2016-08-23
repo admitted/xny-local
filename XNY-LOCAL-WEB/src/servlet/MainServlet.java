@@ -206,10 +206,10 @@ public class MainServlet extends HttpServlet
         	new AlertInfoBean().GISDeal(request, response, m_Rmi, false);
         
         /**************************************user-log***************************************************/ 
-       	else if (strUrl.equalsIgnoreCase("Alarm_Info.do"))	                 	 //联动日志
-        	new AlarmInfoBean().ExecCmd(request, response, m_Rmi, false);
-        else if (strUrl.equalsIgnoreCase("Alarm_Info_Export.do"))	             //联动日志-导出
-        	new AlarmInfoBean().ExportToExcel(request, response, m_Rmi, false);
+       	else if (strUrl.equalsIgnoreCase("linkage_Info.do"))	                 //联动日志
+        	new LinkageInfoBean().ExecCmd(request, response, m_Rmi, false);
+        else if (strUrl.equalsIgnoreCase("linkage_Info_Export.do"))	             //联动日志-导出
+        	new LinkageInfoBean().ExportToExcel(request, response, m_Rmi, false);
         else if (strUrl.equalsIgnoreCase("Alert_Info.do"))	                 	 //告警日志
         	new AlertInfoBean().ExecCmd(request, response, m_Rmi, false);
         else if (strUrl.equalsIgnoreCase("Alert_Info_Export.do"))	             //告警日志-导出

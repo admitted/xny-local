@@ -1,4 +1,4 @@
-ï»¿<%@ page contentType="text/html; charset=gb2312" %>
+<%@ page contentType="text/html; charset=gb2312" %>
 <%@ page import="java.util.*" %>
 <%@ page import="bean.*" %>
 <%@ page import="util.*" %>
@@ -9,7 +9,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>ä¸­æ–°èƒ½æºLNGå…¬å¸çº§ä¿¡æ¯åŒ–ç®¡ç†å¹³å°</title>
+<title>ÖĞĞÂÄÜÔ´LNG¹«Ë¾¼¶ĞÅÏ¢»¯¹ÜÀíÆ½Ì¨</title>
 <meta http-equiv="x-ua-compatible" content="ie=7"/>
 <link type="text/css" href="../skin/css/style.css" rel="stylesheet"/>
 <script type='text/javascript' src='../skin/js/zDrag.js'   charset='gb2312'></script>
@@ -24,53 +24,60 @@
 
 	String FpId = UserInfo.getFp_Role();
 	String FpList = "";
-	if(null != FpId && FpId.length() > 0 && null != User_FP_Role)
+	if (null != FpId && FpId.length() > 0 && null != User_FP_Role)
 	{
 		Iterator roleiter = User_FP_Role.iterator();
-		while(roleiter.hasNext())
+		while (roleiter.hasNext())
 		{
-			UserRoleBean roleBean = (UserRoleBean)roleiter.next();
-			if(roleBean.getId().equals(FpId) && null != roleBean.getPoint())
+			UserRoleBean roleBean = (UserRoleBean) roleiter.next();
+			if (roleBean.getId().equals(FpId) && null != roleBean.getPoint())
 			{
 				FpList = roleBean.getPoint();
 			}
 		}
 	}
-			
-	ArrayList    Pro_R_Type = (ArrayList)session.getAttribute("Pro_R_Type_" + Sid);
-	CorpInfoBean Corp_Info  = (CorpInfoBean)session.getAttribute("User_Corp_Info_" + Sid);
+
+	ArrayList    Pro_R_Type = (ArrayList) session.getAttribute("Pro_R_Type_" + Sid);
+	CorpInfoBean Corp_Info  = (CorpInfoBean) session.getAttribute("User_Corp_Info_" + Sid);
 	String Oil_Info = "";
-	if(null != Corp_Info)
+	if (null != Corp_Info)
 	{
 		Oil_Info = Corp_Info.getOil_Info();
-		if(null == Oil_Info){Oil_Info = "";}
+		if (null == Oil_Info)
+		{
+			Oil_Info = "";
+		}
 	}
-	
-	ArrayList User_Manage_Role   = (ArrayList)session.getAttribute("User_Manage_Role_" + Sid);
-	ArrayList User_Device_Detail = (ArrayList)session.getAttribute("User_Device_Detail_" + Sid);
+
+	ArrayList User_Manage_Role   = (ArrayList) session.getAttribute("User_Manage_Role_" + Sid);
+	ArrayList User_Device_Detail = (ArrayList) session.getAttribute("User_Device_Detail_" + Sid);
 	String ManageId = UserInfo.getManage_Role();
-	
+
 	String Manage_List = "";
-	if(ManageId.length() > 0 && null != User_Manage_Role)
+	if (ManageId.length() > 0 && null != User_Manage_Role)
 	{
-			Iterator iterator = User_Manage_Role.iterator();
-			while(iterator.hasNext())
+		Iterator iterator = User_Manage_Role.iterator();
+		while (iterator.hasNext())
+		{
+			UserRoleBean statBean = (UserRoleBean) iterator.next();
+			if (statBean.getId().substring(0, 4).equals(ManageId) && statBean.getId().length() == 8)
 			{
-					UserRoleBean statBean = (UserRoleBean)iterator.next();
-					if(statBean.getId().substring(0,4).equals(ManageId) && statBean.getId().length() == 8)
-					{
-							String R_Point = statBean.getPoint();
-							if(null == R_Point){R_Point = "";}
-							Manage_List += R_Point;
-					}
+				String R_Point = statBean.getPoint();
+				if (null == R_Point)
+				{
+					R_Point = "";
+				}
+				Manage_List += R_Point;
 			}
+		}
 	}
 	String Dept_Id = UserInfo.getDept_Id();
-	if(Dept_Id.length()>3){Manage_List = Dept_Id; }
-		ArrayList Acc_Env_Cpm  = (ArrayList)session.getAttribute("Acc_Env_Cpm_" + Sid);
-		ArrayList Acc_Env_Sheb = (ArrayList)session.getAttribute("Acc_Env_Sheb_" + Sid);						
-					
-																	
+	if (Dept_Id.length() > 3)
+	{
+		Manage_List = Dept_Id;
+	}
+	ArrayList Acc_Env_Cpm  = (ArrayList) session.getAttribute("Acc_Env_Cpm_" + Sid);
+	ArrayList Acc_Env_Sheb = (ArrayList) session.getAttribute("Acc_Env_Sheb_" + Sid);
 %>
 <body style="background:#CADFFF">
 <form name="Acc_Env"  action="Acc_Env.do" method="post" target="mFrame">
@@ -78,9 +85,9 @@
 	<table width='100%' style='margin:auto' cellpadding='0' cellspacing='0' border='0' width='100%' bordercolor="#3491D6" borderColorDark="#ffffff">
 			<tr height='25px' class='sjtop'>
 					<td height='25px' width='100%' align='left'>
-							åŠ æ°”ç«™ç‚¹:
+							¼ÓÆøÕ¾µã:
 							<select  name='Func_Cpm_Id' style='width:100px;height:20px' onChange="doSelect()" >		
-								<option value="<%=Manage_List%>" <%=currStatus.getFunc_Cpm_Id().equals(Manage_List)?"selected":""%>>å…¨éƒ¨ç«™ç‚¹</option>				
+								<option value="<%=Manage_List%>" <%=currStatus.getFunc_Cpm_Id().equals(Manage_List)?"selected":""%>>È«²¿Õ¾µã</option>				
 									<%					
 											if(Manage_List.length() > 0 && null != User_Device_Detail)
 											{
@@ -98,10 +105,10 @@
 											}
 											%>
 							</select>
-							æ’åˆ—æ¨¡å¼:
+							ÅÅÁĞÄ£Ê½:
 							<select name="Func_Sub_Id" style="width:100px;height:20px;" onchange="doSelect()">
-								<option value='1' <%=currStatus.getFunc_Sub_Id() == 1?"selected":""%>>å•å…ƒæ¨¡å¼</option>
-								<option value='2' <%=currStatus.getFunc_Sub_Id() == 2?"selected":""%>>è®°å½•æ¨¡å¼</option>
+								<option value='1' <%=currStatus.getFunc_Sub_Id() == 1?"selected":""%>>µ¥ÔªÄ£Ê½</option>
+								<option value='2' <%=currStatus.getFunc_Sub_Id() == 2?"selected":""%>>¼ÇÂ¼Ä£Ê½</option>
 							</select>			
 					</td>
 				<td><img id="img1" src="../skin/images/tupianshangchuan.gif" onClick='doFile()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0504' ctype='1'/>"></td>
@@ -137,7 +144,7 @@
 						                             <div style='width:100%;height:128px;' >
 							                               <img src='../skin/images/CPM_TU/<%=Cpm_Id %>.jpg' style='width:300px;height:128px;' >		
 						                             </div>
-						                             <div style='width:30%;height:22px;'><font color='FFOOFF'><strong>åœºç«™:<%=Cpm_Name%></strong></font></div>	
+						                             <div style='width:30%;height:22px;'><font color='FFOOFF'><strong>³¡Õ¾:<%=Cpm_Name%></strong></font></div>	
 					                           </td>	
 					                        </tr>			
 						          <%
@@ -202,14 +209,14 @@
 				%>
 						<table style='margin:auto' cellpadding='0' cellspacing='0' border='1' width='100%' bordercolor="#3491D6" borderColorDark="#ffffff">
 							<tr height='25'>
-								<td width='5%'  class='table_deep_blue'>åºå·</td>
-								<td width='10%' class='table_deep_blue'>ç«™ç‚¹</td>
-								<td width='10%' class='table_deep_blue'>è®¾å¤‡</td>
-								<td width='10%' class='table_deep_blue'>å‚æ•°</td>
-								<td width='15%' class='table_deep_blue'>æ—¶é—´</td>
-								<td width='10%' class='table_deep_blue'>æ•°å€¼</td>
-								<td width='10%' class='table_deep_blue'>çº§åˆ«</td>
-								<td width='15%' class='table_deep_blue'>æè¿°</td>
+								<td width='5%'  class='table_deep_blue'>ĞòºÅ</td>
+								<td width='10%' class='table_deep_blue'>Õ¾µã</td>
+								<td width='10%' class='table_deep_blue'>Éè±¸</td>
+								<td width='10%' class='table_deep_blue'>²ÎÊı</td>
+								<td width='15%' class='table_deep_blue'>Ê±¼ä</td>
+								<td width='10%' class='table_deep_blue'>ÊıÖµ</td>
+								<td width='10%' class='table_deep_blue'>¼¶±ğ</td>
+								<td width='15%' class='table_deep_blue'>ÃèÊö</td>
 							</tr>
 							<%
 							int i = 0;
@@ -234,8 +241,8 @@
 									if(null == Lev){Lev = "";}
 									if(null == Des){Des = "";}
 									
-									String str_Lev = "æ— ";
-									String str_Des = "æ— ";
+									String str_Lev = "ÎŞ";
+									String str_Des = "ÎŞ";
 									if(Lev.length() > 0)
 									{
 										str_Lev = Lev;
@@ -282,7 +289,7 @@
 							{
 							%>
 								<tr height='30'>
-									<td width='100%' colspan=8 align=center>æ— </td>
+									<td width='100%' colspan=8 align=center>ÎŞ</td>
 								</tr>
 							<%
 							}
@@ -313,17 +320,17 @@ function doSelect()
 }
 
 
-/**å®æ—¶æ•°æ®
+/**ÊµÊ±Êı¾İ
 function doAcc_Env()
 {
 	window.parent.frames.mFrame.location = 'Acc_Env.do?Cmd=0&Level=2&Id='+Acc_Env.Id.value+'&Sid=<%=Sid%>&Func_Sub_Id=1';
 }
-//å†å²æ•°æ®
+//ÀúÊ·Êı¾İ
 function doHis()
 {
 	window.parent.frames.mFrame.location = "Acc_Env.do?Cmd=2&Sid=<%=Sid%>&Level=2&Id="+Acc_Env.Id.value;
 }
-//æ•°æ®å›¾è¡¨
+//Êı¾İÍ¼±í
 function doGra()
 {
 	var TDay = new Date().format("yyyy-MM-dd");
@@ -342,7 +349,7 @@ function doFile()
 	Pdiag.Top = "50%";
 	Pdiag.Width = 500;
 	Pdiag.Height = 140;
-	Pdiag.Title = "å›¾ç‰‡ä¸Šä¼ ";
+	Pdiag.Title = "Í¼Æ¬ÉÏ´«";
 	Pdiag.URL = 'Acc_Env_File.jsp?Sid=<%=Sid%>';
 	Pdiag.show();	
 	

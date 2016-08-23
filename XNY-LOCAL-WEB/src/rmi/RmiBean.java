@@ -34,7 +34,7 @@ public abstract class RmiBean implements Serializable
 	
 	/**************************user-data*******************/
 	public static final int RMI_DATA			        = 30;
-	public static final int RMI_ALARM			        = 31;
+	public static final int RMI_LINKAGE			        = 31;
 	public static final int RMI_ALERT			        = 32;
 	public static final int RMI_ACC_DATA    	        = 33;//累积流量数据
 	public static final int RMI_ACC_SALE    	        = 34;//销售数据

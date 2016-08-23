@@ -23,15 +23,15 @@ import rmi.Rmi;
 import rmi.RmiBean;
 import util.*;
 
-public class AlarmInfoBean extends RmiBean 
+public class LinkageInfoBean extends RmiBean 
 {	
-	public final static long serialVersionUID = RmiBean.RMI_ALARM;
+	public final static long serialVersionUID = RmiBean.RMI_LINKAGE;
 	public long getClassId()
 	{
 		return serialVersionUID;
 	}
 
-	public AlarmInfoBean() 
+	public LinkageInfoBean() 
 	{
 		super.className = "AlarmInfoBean";
 	}
@@ -117,7 +117,7 @@ public class AlarmInfoBean extends RmiBean
 				while(iterator.hasNext())
 				{
 					i++;
-					AlarmInfoBean Bean = (AlarmInfoBean)iterator.next();
+					LinkageInfoBean Bean = (LinkageInfoBean)iterator.next();
 					String A_Cpm_Name = Bean.getCpm_Name();
 					String A_S_Id = Bean.getS_Id();
 					String A_S_CName = Bean.getS_CName();
