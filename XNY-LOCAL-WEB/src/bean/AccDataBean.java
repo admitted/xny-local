@@ -17,6 +17,7 @@ import java.util.List;
 
 
 
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
 
 
 
@@ -128,16 +130,18 @@ public class AccDataBean extends RmiBean
 			currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 			currStatus.getHtmlData(request, pFromZone);
 			SimpleDateFormat SimFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-			// String BT =
-			// currStatus.getVecDate().get(0).toString().substring(5, 10);
-			// String ET =
-			// currStatus.getVecDate().get(1).toString().substring(5, 10);
+			// String ET = currStatus.getVecDate().get(1).toString().substring(5, 10);
 			String SheetName = "站点流量统计表";
 			String UPLOAD_NAME = SimFormat.format(new Date());
 			System.out.println("SheetName [" + SheetName + "]");
 			
+			String BTime = "";
 			msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
-			
+			String StringTime = "日期";
+			if(2 == currStatus.getCmd()){
+				StringTime = "月份";
+				BTime = currStatus.getVecDate().get(0).toString().substring(0, 7);
+			}
 			ArrayList<?> tempList = (ArrayList<?>) msgBean.getMsg();
 			int row_Index = 0;
 			Label cell = null;
@@ -165,7 +169,7 @@ public class AccDataBean extends RmiBean
 
 				sheet.setRowView(row_Index, 450);
 				sheet.setColumnView(row_Index, 25);
-				cell = new Label(0, 0, "日期", font1);
+				cell = new Label(0, 0, StringTime, font1);
 				sheet.addCell(cell);
 				cell = new Label(1, 0, "站点名称", font1);
 				sheet.addCell(cell);
@@ -185,7 +189,8 @@ public class AccDataBean extends RmiBean
 					String Temp_Cpm_Name    = accDataBean.getCpm_Name();
 					String Temp_B_Value     = accDataBean.getB_Value();
 					String Temp_E_Value     = accDataBean.getE_Value();
-					String Temp_CTime       = accDataBean.getCTime();
+					if(2 != currStatus.getCmd())
+					{      BTime            = accDataBean.getCTime();}
 					String Temp_Value       = accDataBean.getValue();		
 					String Temp_Des         = accDataBean.getDes();
 
@@ -193,7 +198,7 @@ public class AccDataBean extends RmiBean
 					sheet.setRowView(row_Index, 400);
 					sheet.setColumnView(row_Index, 25); // row_Index 列宽度
 
-					cell = new Label(0, row_Index, Temp_CTime, font2);
+					cell = new Label(0, row_Index, BTime, font2);
 					sheet.addCell(cell);
 					cell = new Label(1, row_Index, Temp_Cpm_Name, font2);
 					sheet.addCell(cell);
