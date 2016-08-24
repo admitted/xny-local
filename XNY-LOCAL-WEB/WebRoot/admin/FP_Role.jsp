@@ -21,10 +21,10 @@
 </head>
 <%
 	
-	String Sid = CommUtil.StrToGB2312(request.getParameter("Sid"));
-  CurrStatus currStatus = (CurrStatus)session.getAttribute("CurrStatus_" + Sid);
-  ArrayList FP_Role     = (ArrayList)session.getAttribute("FP_Role_" + Sid);
-  ArrayList FP_Info     = (ArrayList)session.getAttribute("FP_Info_" + Sid);
+	String     Sid         = CommUtil.StrToGB2312(request.getParameter("Sid"));
+  CurrStatus currStatus  = (CurrStatus)session.getAttribute("CurrStatus_" + Sid);
+  ArrayList  FP_Role     = (ArrayList)session.getAttribute("FP_Role_" + Sid);
+  ArrayList  FP_Info     = (ArrayList)session.getAttribute("FP_Info_" + Sid);
   
 %>
 <body style="background:#CADFFF">

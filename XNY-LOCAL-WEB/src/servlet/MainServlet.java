@@ -224,14 +224,16 @@ public class MainServlet extends HttpServlet
         	new DataBean().ExportToExcel(request, response, m_Rmi, false);
         else if (strUrl.equalsIgnoreCase("Graph.do"))	                         //数据图表
         	new DataBean().Graph(request, response, m_Rmi, false);
-//        else if (strUrl.equalsIgnoreCase("Env_File.do"))						 //图片上传
-//        	new DataBean().DaoFile(request, response, m_Rmi, false);
         
         /**************************************user-Acc***************************************************/
         else if (strUrl.equalsIgnoreCase("Acc_Data.do"))				         //累积流量数据
             new AccDataBean().ExecCmd(request, response, m_Rmi, false);  
+        else if (strUrl.equalsIgnoreCase("Acc_Data_Export.do"))				     //累积流量导出
+        	new AccDataBean().ExportToExcel(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("Acc_Sale.do"))				         //销售数据
         	new AccSaleBean().ExecCmd(request, response, m_Rmi, false);  
+        else if (strUrl.equalsIgnoreCase("Acc_Sale_Export.do"))				     //销售数据导出
+        	new AccSaleBean().ExportToExcel(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("Device_Detail_Scene.do"))				 //场景图上传
         	new DeviceDetailBean().DetailSenceUp(request, response, m_Rmi, false ,Config);  
         else if (strUrl.equalsIgnoreCase("Device_Detail_Map.do"))				 //设备属性查找

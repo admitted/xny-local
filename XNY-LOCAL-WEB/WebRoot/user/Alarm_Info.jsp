@@ -62,7 +62,7 @@
 									while(iterator.hasNext())
 									{
 										UserRoleBean statBean = (UserRoleBean)iterator.next();
-										if(statBean.getId().substring(0,4).equals(ManageId) && statBean.getId().length() == 8)
+										if(statBean.getId().equals(ManageId))
 										{
 											String R_Point = statBean.getPoint();
 											if(null == R_Point){R_Point = "";}
@@ -117,77 +117,77 @@
 						<td width='8%'  align='center' class="table_deep_blue">结果</td>
 					</tr>
 					<%
-						if(Alarm_Info != null)
-								 {
-									Iterator iterator = Alarm_Info.iterator();
-									while(iterator.hasNext())
-									{
-										LinkageInfoBean Bean = (LinkageInfoBean)iterator.next();
-										String Cpm_Name = Bean.getCpm_Name();
-										String S_Id = Bean.getS_Id();
-										String S_CName = Bean.getS_CName();
-										String Attr_Id = Bean.getS_Attr_Id();
-										String Attr_Name = Bean.getS_Attr_Name();
-										String S_Attr_Value = Bean.getS_Attr_Value();
-										String D_CName = Bean.getD_CName();
-										String D_Act_Name = Bean.getD_Act_Name();
-										String CData = Bean.getCData();
-										String CTime = Bean.getCTime();
-										String Operator = Bean.getOperator();
-										String Status = Bean.getStatus();
-										
-										if(null == S_Id){S_Id = "";}
-										if(null == S_CName){S_CName = "";}
-										if(null == Attr_Id){Attr_Id = "";}
-										if(null == Attr_Name){Attr_Name = "";}
-										if(null == S_Attr_Value){S_Attr_Value = "";}						
-										if(null == D_CName){D_CName = "";}
-										if(null == D_Act_Name){D_Act_Name = "";}
-										if(null == CData){CData = "";}
-										if(null == CTime){CTime = "";}
-										if(null == Operator){Operator = "";}
-										if(null == Status){Status = "";}
-										
-										String str_Status = "";
-										switch(Integer.parseInt(Status))
-										{
-											case 0:
-													str_Status = "成功";
-												break;
-											case 3000:
-													str_Status = "提交成功";
-												break;
-											default:
-													str_Status = "失败";
-												break;
-										}
-										String str_CData = CData;
-										if(str_CData.length() > 25)
-										{
-											str_CData = str_CData.substring(0,25) + "...";
-										}
-										
-										String Reason = "";
-										if(S_Id.trim().length() < 1 && !Operator.equals("TIMING"))
-										{
-											Reason = "人为远程手工控制";
-										}
-										else if(S_Id.trim().length() < 1 && Operator.equals("TIMING"))
-										{
-											Reason = "定时自动执行任务";
-										}	
-										else
-										{
-											if(Attr_Id.equals("0000"))
-											{
-												Reason = "[" + S_CName + "]离线触发";
-											}
-											else
-											{
-												Reason = "[" + S_CName + "]因采集[" + Attr_Name + " " + S_Attr_Value + "]数据异常自动触发";
-											}
-										}	
-										sn ++;
+					 if(Alarm_Info != null)
+					 {
+						Iterator iterator = Alarm_Info.iterator();
+						while(iterator.hasNext())
+						{
+							AlarmInfoBean Bean = (AlarmInfoBean)iterator.next();
+							String Cpm_Name = Bean.getCpm_Name();
+							String S_Id = Bean.getS_Id();
+							String S_CName = Bean.getS_CName();
+							String Attr_Id = Bean.getS_Attr_Id();
+							String Attr_Name = Bean.getS_Attr_Name();
+							String S_Attr_Value = Bean.getS_Attr_Value();
+							String D_CName = Bean.getD_CName();
+							String D_Act_Name = Bean.getD_Act_Name();
+							String CData = Bean.getCData();
+							String CTime = Bean.getCTime();
+							String Operator = Bean.getOperator();
+							String Status = Bean.getStatus();
+							
+							if(null == S_Id){S_Id = "";}
+							if(null == S_CName){S_CName = "";}
+							if(null == Attr_Id){Attr_Id = "";}
+							if(null == Attr_Name){Attr_Name = "";}
+							if(null == S_Attr_Value){S_Attr_Value = "";}						
+							if(null == D_CName){D_CName = "";}
+							if(null == D_Act_Name){D_Act_Name = "";}
+							if(null == CData){CData = "";}
+							if(null == CTime){CTime = "";}
+							if(null == Operator){Operator = "";}
+							if(null == Status){Status = "";}
+							
+							String str_Status = "";
+							switch(Integer.parseInt(Status))
+							{
+								case 0:
+										str_Status = "成功";
+									break;
+								case 3000:
+										str_Status = "提交成功";
+									break;
+								default:
+										str_Status = "失败";
+									break;
+							}
+							String str_CData = CData;
+							if(str_CData.length() > 25)
+							{
+								str_CData = str_CData.substring(0,25) + "...";
+							}
+							
+							String Reason = "";
+							if(S_Id.trim().length() < 1 && !Operator.equals("TIMING"))
+							{
+								Reason = "人为远程手工控制";
+							}
+							else if(S_Id.trim().length() < 1 && Operator.equals("TIMING"))
+							{
+								Reason = "定时自动执行任务";
+							}	
+							else
+							{
+								if(Attr_Id.equals("0000"))
+								{
+									Reason = "[" + S_CName + "]离线触发";
+								}
+								else
+								{
+									Reason = "[" + S_CName + "]因采集[" + Attr_Name + " " + S_Attr_Value + "]数据异常自动触发";
+								}
+							}	
+							sn ++;
 					%>
 				  <tr <%=((sn%2)==0?"class='table_blue'":"class='table_white_l'")%>>
 						<td align=center><%=sn%></td>

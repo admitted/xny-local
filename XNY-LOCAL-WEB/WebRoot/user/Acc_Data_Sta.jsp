@@ -53,7 +53,7 @@
 			while(iterator.hasNext())
 			{
 					UserRoleBean statBean = (UserRoleBean)iterator.next();
-					if(statBean.getId().substring(0,4).equals(ManageId) && statBean.getId().length() == 8)
+					if(statBean.getId().equals(ManageId))
 					{
 							String R_Point = statBean.getPoint();
 							if(null == R_Point){R_Point = "";}

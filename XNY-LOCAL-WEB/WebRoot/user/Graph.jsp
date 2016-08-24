@@ -33,23 +33,23 @@
   if(null != (String)session.getAttribute("Month_" + Sid) && ((String)session.getAttribute("Month_" + Sid)).trim().length() > 0){Month = CommUtil.StrToInt((String)session.getAttribute("Month_" + Sid));}
   
   String Graph = (String)session.getAttribute("Graph_" + Sid);
-  	String Manage_List = "";
-								if(ManageId.length() > 0 && null != User_Manage_Role)
-								{
-									Iterator iterator = User_Manage_Role.iterator();
-									while(iterator.hasNext())
-									{
-										UserRoleBean statBean = (UserRoleBean)iterator.next();
-										if(statBean.getId().substring(0,4).equals(ManageId) && statBean.getId().length() == 8)
-										{
-											String R_Point = statBean.getPoint();
-											if(null == R_Point){R_Point = "";}
-											Manage_List += R_Point;
-										}
-									}
-								}
-								String Dept_Id = UserInfo.getDept_Id();
-								if(Dept_Id.length()>3){Manage_List = Dept_Id; }
+  String Manage_List = "";
+	if(ManageId.length() > 0 && null != User_Manage_Role)
+	{
+			Iterator iterator = User_Manage_Role.iterator();
+			while(iterator.hasNext())
+			{
+					UserRoleBean statBean = (UserRoleBean)iterator.next();
+					if(statBean.getId().equals(ManageId))
+					{
+							String R_Point = statBean.getPoint();
+							if(null == R_Point){R_Point = "";}
+							Manage_List += R_Point;
+					}
+			}
+	}
+	String Dept_Id = UserInfo.getDept_Id();
+	if(Dept_Id.length()>3){Manage_List = Dept_Id; }
 %>
 <body style="background:#CADFFF" onload="doChangeSelect('<%=currStatus.getFunc_Sub_Id()%>')">
 <form name="Graph"  action="Graph.do" method="post" target="mFrame">

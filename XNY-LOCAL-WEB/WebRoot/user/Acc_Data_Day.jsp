@@ -26,47 +26,41 @@
 	String       ManageId           = UserInfo.getManage_Role();
 	String       FpId               = UserInfo.getFp_Role();
 	String       FpList             = "";
-	if (null != FpId && FpId.length() > 0 && null != User_FP_Role)
+	if(null != FpId && FpId.length() > 0 && null != User_FP_Role)
 	{
 		Iterator roleiter = User_FP_Role.iterator();
-		while (roleiter.hasNext())
+		while(roleiter.hasNext())
 		{
-			UserRoleBean roleBean = (UserRoleBean) roleiter.next();
-			if (roleBean.getId().equals(FpId) && null != roleBean.getPoint())
+			UserRoleBean roleBean = (UserRoleBean)roleiter.next();
+			if(roleBean.getId().equals(FpId) && null != roleBean.getPoint())
 			{
 				FpList = roleBean.getPoint();
 			}
 		}
 	}
-
-	CurrStatus currStatus = (CurrStatus) session.getAttribute("CurrStatus_" + Sid);
-	String BDate = currStatus.getVecDate().get(0).toString().substring(0, 10);
-	ArrayList Acc_Data_Day = (ArrayList) session.getAttribute("Acc_Data_Day_" + Sid);
-	int sn = 0;
-	String Manage_List = "";
-
-	if (ManageId.length() > 0 && null != User_Manage_Role)
+	
+  CurrStatus currStatus = (CurrStatus)session.getAttribute("CurrStatus_" + Sid);
+  String     BDate      = currStatus.getVecDate().get(0).toString().substring(0,10);
+  ArrayList  Acc_Data_Day    = (ArrayList)session.getAttribute("Acc_Data_Day_" + Sid);
+  int        sn         = 0; 
+  String     Manage_List = "";
+  
+	if(ManageId.length() > 0 && null != User_Manage_Role)
 	{
-		Iterator iterator = User_Manage_Role.iterator();
-		while (iterator.hasNext())
-		{
-			UserRoleBean statBean = (UserRoleBean) iterator.next();
-			if (statBean.getId().substring(0, 4).equals(ManageId) && statBean.getId().length() == 8)
+			Iterator iterator = User_Manage_Role.iterator();
+			while(iterator.hasNext())
 			{
-				String R_Point = statBean.getPoint();
-				if (null == R_Point)
-				{
-					R_Point = "";
-				}
-				Manage_List += R_Point;
+					UserRoleBean statBean = (UserRoleBean)iterator.next();
+					if(statBean.getId().equals(ManageId))
+					{
+							String R_Point = statBean.getPoint();
+							if(null == R_Point){R_Point = "";}
+							Manage_List += R_Point;
+					}
 			}
-		}
 	}
 	String Dept_Id = UserInfo.getDept_Id();
-	if (Dept_Id.length() > 3)
-	{
-		Manage_List = Dept_Id;
-	}
+	if(Dept_Id.length()>3){Manage_List = Dept_Id; }
 %>
 <body style=" background:#CADFFF">
 <form name="Acc_Data_Day"  action="Acc_Data.do" method="post" target="mFrame">
@@ -77,22 +71,22 @@
 								  场站站点: 全部 &nbsp;&nbsp;
 									<!--
 									<select  name='Func_Cpm_Id' style='width:100px;height:20px' onChange="doSelect()" >					
-									       <%					
-											if( Manage_List.length() > 0 && null != User_Device_Detail)
-											{
-												Iterator iterator = User_Device_Detail.iterator();
-												while(iterator.hasNext())
-												{
-													DeviceDetailBean statBean = (DeviceDetailBean)iterator.next();
-													if(Manage_List.contains(statBean.getId()))
+											    <%					
+													if( Manage_List.length() > 0 && null != User_Device_Detail)
 													{
-											%>
-														<option value='<%=statBean.getId()%>' <%=currStatus.getFunc_Cpm_Id().equals(statBean.getId())?"selected":""%>><%=statBean.getBrief()%></option>
-											<%
+														Iterator iterator = User_Device_Detail.iterator();
+														while(iterator.hasNext())
+														{
+															DeviceDetailBean statBean = (DeviceDetailBean)iterator.next();
+															if(Manage_List.contains(statBean.getId()))
+															{
+													%>
+																<option value='<%=statBean.getId()%>' <%=currStatus.getFunc_Cpm_Id().equals(statBean.getId())?"selected":""%>><%=statBean.getBrief()%></option>
+													<%
+															}
+														}
 													}
-												}
-											}
-											%>
+													%>
 									</select>
 									-->
 								  <input name='BDate' type='text' style='width:90px;height:18px;' value='<%=BDate%>' onClick='WdatePicker({readOnly:true})' class='Wdate' maxlength='10'>
@@ -115,39 +109,30 @@
 															<td width='20%' align='center' class="table_deep_blue">备注</td>
 												</tr>
 												<%
-													if (Acc_Data_Day != null)
-													{
+												 if(Acc_Data_Day != null)
+												 {
 														Iterator iterator = Acc_Data_Day.iterator();
-														while (iterator.hasNext())
+														while(iterator.hasNext())
 														{
-															AccDataBean Bean = (AccDataBean) iterator.next();
-															String CTime = Bean.getCTime();
-															String Cpm_Name = Bean.getCpm_Name();
-															String B_Value = Bean.getB_Value();
-															String E_Value = Bean.getE_Value();
-															String Value = Bean.getValue();
-															String Unit = Bean.getUnit();
-															String Des = Bean.getDes();
-
-															if (null == Value)
-															{
-																Value = "";
-															}
-															if (null == Unit)
-															{
-																Unit = "";
-															}
-															if (null == Des)
-															{
-																Des = "";
-															}
-
-															String str_Des = "无";
-															if (Des.length() > 0)
-															{
-																str_Des = Des;
-															}
-															sn++;
+																AccDataBean Bean = (AccDataBean)iterator.next();
+																String CTime = Bean.getCTime();
+																String Cpm_Name = Bean.getCpm_Name();
+																String B_Value = Bean.getB_Value();
+																String E_Value = Bean.getE_Value();
+																String Value = Bean.getValue();
+																String Unit = Bean.getUnit();
+																String Des = Bean.getDes();
+																
+																if(null == Value){Value = "";}
+																if(null == Unit){Unit = "";}
+																if(null == Des){Des = "";}
+																
+																String str_Des = "无";
+																if(Des.length() > 0)
+																{
+																	str_Des = Des;
+																}
+																sn++;
 												%>
 											  <tr height='30' <%=((sn%2)==0?"class='table_blue'":"class='table_white_l'")%>>
 															<td width='5%'  align=center><%=sn%></td>

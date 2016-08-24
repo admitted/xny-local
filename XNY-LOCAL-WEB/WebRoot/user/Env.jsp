@@ -22,7 +22,7 @@
 	UserInfoBean UserInfo     = (UserInfoBean)session.getAttribute("UserInfo_" + Sid);	
 	ArrayList    User_FP_Role = (ArrayList)session.getAttribute("User_FP_Role_" + Sid);
 
-	String FpId = UserInfo.getFp_Role();
+	String FpId   = UserInfo.getFp_Role();
 	String FpList = "";
 	if(null != FpId && FpId.length() > 0 && null != User_FP_Role)
 	{
@@ -39,7 +39,7 @@
 			
 	ArrayList    Pro_R_Type = (ArrayList)session.getAttribute("Pro_R_Type_" + Sid);
 	CorpInfoBean Corp_Info  = (CorpInfoBean)session.getAttribute("User_Corp_Info_" + Sid);
-	String Oil_Info = "";
+	String Oil_Info         = "";
 	if(null != Corp_Info)
 	{
 		Oil_Info = Corp_Info.getOil_Info();
@@ -49,7 +49,7 @@
 	ArrayList User_Manage_Role   = (ArrayList)session.getAttribute("User_Manage_Role_" + Sid);
 	ArrayList User_Device_Detail = (ArrayList)session.getAttribute("User_Device_Detail_" + Sid);
 	String ManageId = UserInfo.getManage_Role();
-	
+	//System.out.println(ManageId);
 	String Manage_List = "";
 	if(ManageId.length() > 0 && null != User_Manage_Role)
 	{
@@ -57,7 +57,7 @@
 			while(iterator.hasNext())
 			{
 					UserRoleBean statBean = (UserRoleBean)iterator.next();
-					if(statBean.getId().substring(0,4).equals(ManageId) && statBean.getId().length() == 8)
+					if(statBean.getId().equals(ManageId))
 					{
 							String R_Point = statBean.getPoint();
 							if(null == R_Point){R_Point = "";}
@@ -67,8 +67,8 @@
 	}
 	String Dept_Id = UserInfo.getDept_Id();
 	if(Dept_Id.length()>3){Manage_List = Dept_Id; }
-		ArrayList Env_Cpm  = (ArrayList)session.getAttribute("Env_Cpm_" + Sid);
-		ArrayList Env_Sheb = (ArrayList)session.getAttribute("Env_Sheb_" + Sid);						
+	ArrayList Env_Cpm  = (ArrayList)session.getAttribute("Env_Cpm_" + Sid);
+	ArrayList Env_Sheb = (ArrayList)session.getAttribute("Env_Sheb_" + Sid);						
 					
 																	
 %>

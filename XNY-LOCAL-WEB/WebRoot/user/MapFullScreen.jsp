@@ -62,7 +62,7 @@ html,body{width:100%; height:100%; margin:0; padding:0;}
 		while(roleiter.hasNext())
 		{
 			UserRoleBean roleBean = (UserRoleBean)roleiter.next();
-			if(roleBean.getId().substring(0,4).equals(ManageId) && roleBean.getId().length() == 8 && roleBean.getPoint() != null)
+			if(roleBean.getId().equals(ManageId) && roleBean.getPoint() != null)
 			{
 				IdList += roleBean.getPoint();
 			}

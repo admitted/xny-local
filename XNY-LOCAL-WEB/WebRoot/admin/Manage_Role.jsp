@@ -21,10 +21,10 @@
 </head>
 <%
 	
-	String Sid = CommUtil.StrToGB2312(request.getParameter("Sid"));
-  CurrStatus currStatus = (CurrStatus)session.getAttribute("CurrStatus_" + Sid);
-  ArrayList Manage_Role = (ArrayList)session.getAttribute("Manage_Role_" + Sid);
-  ArrayList Device_Detail   = (ArrayList)session.getAttribute("Device_Detail_" + Sid);
+	String     Sid            = CommUtil.StrToGB2312(request.getParameter("Sid"));
+  CurrStatus currStatus     = (CurrStatus)session.getAttribute("CurrStatus_" + Sid);
+  ArrayList  Manage_Role    = (ArrayList)session.getAttribute("Manage_Role_" + Sid);
+  ArrayList  Device_Detail  = (ArrayList)session.getAttribute("Device_Detail_" + Sid);
   
 %>
 <body style="background:#CADFFF">
@@ -248,7 +248,7 @@ function zTreeBeforeDrop(treeId, treeNodes, targetNode, moveType)
   	}
   }
 	
-	if(null == targetNode || 0 == targetNode.level || 1 == targetNode.level || 2 == targetNode.level || 4 == targetNode.level)
+	if(null == targetNode || 0 == targetNode.level || 2 == targetNode.level || 4 == targetNode.level)
 	{
 		return false;
 	}
@@ -332,7 +332,7 @@ function moveTreeNode(srcTree, targetTree)
 			return;
 		}
 		
-		for(var i=0; i<srcNode.length; i++)
+		for(var i=0; i < srcNode.length; i++)
 	  {
   		if(0 == srcNode[i].level)
 			{
@@ -342,7 +342,7 @@ function moveTreeNode(srcTree, targetTree)
 	  
 	  for(var i=0; i<targetNode.length; i++)
 	  {
-  		if(0 == targetNode[i].level || 1 == targetNode[i].level || 2 == targetNode[i].level || 4 == targetNode[i].level)
+  		if(0 == targetNode[i].level || 2 == targetNode[i].level || 4 == targetNode[i].level)
 			{
 				alert("请先选择正确放置站点的防区!");
 				return false;
@@ -476,6 +476,7 @@ var dataMaker2 = function(count)
 	return nodes;
 }
 
+//创建树
 function createTree()
 {
 	var zNodes = dataMaker(500);
@@ -496,20 +497,8 @@ function doSubmit()
 	var tempArray = zTree1.getNodesByParam('level', 1);
 	for(var i in tempArray)
 	{
-		Control_Role += tempArray[i].value + ';' + tempArray[i].name + ';' + ' @';
-	}
-	
-	tempArray = zTree1.getNodesByParam('level', 2);
-	for(var i in tempArray)
-	{
-		Control_Role += tempArray[i].value + ';' + tempArray[i].name + ';' + ' @';
-	}
-	
-	tempArray = zTree1.getNodesByParam('level', 3);
-	for(var i in tempArray)
-	{
 		Control_Role += tempArray[i].value + ';' + tempArray[i].name + ';';
-		var childNodes = zTree1.transformToArray(tempArray[i]);
+		var childNodes = zTree1.transformToArray(tempArray[i])
 		for(var j=0; j<childNodes.length; j++)
     {
     	if(tempArray[i].value == childNodes[j].pId)

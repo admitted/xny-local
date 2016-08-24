@@ -44,7 +44,7 @@
 	String     EDate      = currStatus.getVecDate().get(1).toString().substring(0,10);
   ArrayList  Env_His    = (ArrayList)session.getAttribute("Env_His_" + Sid);
   int        sn         = 0; 
-  String    Manage_List = "";
+  String     Manage_List = "";
   
 	if(ManageId.length() > 0 && null != User_Manage_Role)
 	{
@@ -52,7 +52,7 @@
 			while(iterator.hasNext())
 			{
 					UserRoleBean statBean = (UserRoleBean)iterator.next();
-					if(statBean.getId().substring(0,4).equals(ManageId) && statBean.getId().length() == 8)
+					if(statBean.getId().equals(ManageId))
 					{
 							String R_Point = statBean.getPoint();
 							if(null == R_Point){R_Point = "";}
@@ -71,7 +71,7 @@
 			<td width='70%' align='left'>
 				场站站点:
 				<select  name='Func_Cpm_Id' style='width:100px;height:20px' onChange="doSelect()" >		
-					  <option value='9999'                             >请选择站点</option>			
+					  <option value="<%=Manage_List%>" <%=currStatus.getFunc_Cpm_Id().equals(Manage_List)?"selected":""%>>全部站点</option>		
 						<%					
 								if(Manage_List.length() > 0 && null != User_Device_Detail)
 								{

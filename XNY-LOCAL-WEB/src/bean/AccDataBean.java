@@ -15,6 +15,8 @@ import java.util.List;
 
 
 
+
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +29,17 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 
 
+
+
 import jxl.Workbook;
+import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
+import jxl.format.Colour;
+import jxl.format.VerticalAlignment;
 import jxl.write.Label;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import rmi.Rmi;
@@ -101,119 +112,118 @@ public class AccDataBean extends RmiBean
 	   
 	}
 	
-	/** 明细导出excel
+	/**
+	 * 导出Excel表格
 	 * @param request
 	 * @param response
 	 * @param pRmi
 	 * @param pFromZone
+	 * @param pConfig
 	 */
-	public void ExportToExcel(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) 
-	{/*
-		getHtmlData(request);
-		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
-		currStatus.getHtmlData(request, pFromZone);
-		
+	public void ExportToExcel(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone)
+	{
 		try
 		{
 			getHtmlData(request);
-			currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
+			currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 			currStatus.getHtmlData(request, pFromZone);
-			
-			//清除历史
-			//生成当前
 			SimpleDateFormat SimFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-			String BT = currStatus.getVecDate().get(0).toString().substring(5,10);
-			String ET = currStatus.getVecDate().get(1).toString().substring(5,10);
-			String SheetName = "_" + BT + "," + ET;
-			String UPLOAD_NAME = SimFormat.format(new Date()) + "_" + BT + "," + ET;
+			// String BT =
+			// currStatus.getVecDate().get(0).toString().substring(5, 10);
+			// String ET =
+			// currStatus.getVecDate().get(1).toString().substring(5, 10);
+			String SheetName = "站点流量统计表";
+			String UPLOAD_NAME = SimFormat.format(new Date());
+			System.out.println("SheetName [" + SheetName + "]");
 			
-			msgBean = pRmi.RmiExec(2, this, 0);
-			ArrayList<?> temp = (ArrayList<?>)msgBean.getMsg();
-			if(temp != null)
+			msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
+			
+			ArrayList<?> tempList = (ArrayList<?>) msgBean.getMsg();
+			int row_Index = 0;
+			Label cell = null;
+			if (null != tempList)
 			{
 				WritableWorkbook book = Workbook.createWorkbook(new File(UPLOAD_PATH + UPLOAD_NAME + ".xls"));
-	            WritableSheet sheet = book.createSheet(SheetName, 0);
-	            sheet.setColumnView(0, 20);
-	            Label label1 = new Label(0, 0, "站点");
-	            Label label2 = new Label(1, 0, "设备");
-	            Label label3 = new Label(2, 0, "参数");
-	            Label label4 = new Label(3, 0, "时间");
-	            Label label5 = new Label(4, 0, "数值");            
-	            Label label6 = new Label(5, 0, "级别");
-	            Label label7 = new Label(6, 0, "描述");
-	            sheet.addCell(label1);
-	            sheet.addCell(label2);
-	            sheet.addCell(label3);
-	            sheet.addCell(label4);
-	            sheet.addCell(label5);
-	            sheet.addCell(label6);
-	            sheet.addCell(label7);
-	            
-	            Iterator<?> iterator = (Iterator<?>)temp.iterator();
-				int i = 0;
-				while(iterator.hasNext())
+				// 生成名为"第一页"的工作表，参数0表示这是第一页
+				WritableSheet sheet = book.createSheet(SheetName, 0);
+
+				// 字体格式1
+				WritableFont wf = new WritableFont(WritableFont.createFont("normal"), 14, WritableFont.BOLD, false);
+				WritableCellFormat font1 = new WritableCellFormat(wf);
+				// wf.setColour(Colour.BLACK);//字体颜色
+				font1.setAlignment(Alignment.CENTRE);// 设置居中
+				font1.setVerticalAlignment(VerticalAlignment.CENTRE); // 设置为垂直居中
+				font1.setBorder(Border.ALL, BorderLineStyle.THIN);// 设置边框线
+
+				// 字体格式2
+				WritableFont wf2 = new WritableFont(WritableFont.createFont("normal"), 10, WritableFont.NO_BOLD, false);
+				WritableCellFormat font2 = new WritableCellFormat(wf2);
+				wf2.setColour(Colour.BLACK);// 字体颜色
+				font2.setAlignment(Alignment.CENTRE);// 设置居中
+				font2.setVerticalAlignment(VerticalAlignment.CENTRE); // 设置为垂直居中
+				font2.setBorder(Border.ALL, BorderLineStyle.THIN);// 设置边框线
+
+				sheet.setRowView(row_Index, 450);
+				sheet.setColumnView(row_Index, 25);
+				cell = new Label(0, 0, "日期", font1);
+				sheet.addCell(cell);
+				cell = new Label(1, 0, "站点名称", font1);
+				sheet.addCell(cell);
+				cell = new Label(2, 0, "起始读数", font1);
+				sheet.addCell(cell);
+				cell = new Label(3, 0, "终止读数", font1);
+				sheet.addCell(cell);
+				cell = new Label(4, 0, "用气量", font1);
+				sheet.addCell(cell);
+				cell = new Label(5, 0, "备注", font1);
+				sheet.addCell(cell);
+				
+				Iterator<?> temp_iterator = tempList.iterator();
+				while (temp_iterator.hasNext())
 				{
-					i++;
-					AccDataBean Bean = (AccDataBean)iterator.next();
-					String D_Cpm_Name = Bean.getCpm_Name();
-					String D_CName = Bean.getCName();
-					String D_Attr_Name = Bean.getAttr_Name();
-					String D_CTime = Bean.getCTime();
-					String D_Value = Bean.getValue();
-					String D_Unit = Bean.getUnit();
-					String D_Lev = Bean.getLev();
-					String D_Des = Bean.getDes();
-					
-					if(null == D_Value){D_Value = "";}
-					if(null == D_Unit){D_Unit = "";}
-					if(null == D_Lev){D_Lev = "";}
-					if(null == D_Des){D_Des = "";}
-					
-					String str_Lev = "无";
-					String str_Des = "无";
-					if(D_Lev.length() > 0)
-					{
-						str_Lev = D_Lev;
-					}
-					if(D_Des.length() > 0)
-					{
-						str_Des = D_Des;
-					}
-					
-					sheet.setColumnView(i, 20);
-		            Label label = new Label(0,i,D_Cpm_Name);  //站点
-		            sheet.addCell(label);
-		            label = new Label(1,i,D_CName);           //设备
-		            sheet.addCell(label);
-		            label = new Label(2,i,D_Attr_Name);       //参数
-		            sheet.addCell(label);
-		            label = new Label(3,i,D_CTime);           //时间
-		            sheet.addCell(label);
-		            label = new Label(4,i,D_Value+D_Unit);    //数值
-		            sheet.addCell(label);
-		            label = new Label(5,i,str_Lev);           //级别
-		            sheet.addCell(label);
-		            label = new Label(6,i,str_Des);           //描述
-		            sheet.addCell(label);
+					AccDataBean accDataBean = (AccDataBean) temp_iterator.next();
+					String Temp_Cpm_Name    = accDataBean.getCpm_Name();
+					String Temp_B_Value     = accDataBean.getB_Value();
+					String Temp_E_Value     = accDataBean.getE_Value();
+					String Temp_CTime       = accDataBean.getCTime();
+					String Temp_Value       = accDataBean.getValue();		
+					String Temp_Des         = accDataBean.getDes();
+
+					row_Index++;
+					sheet.setRowView(row_Index, 400);
+					sheet.setColumnView(row_Index, 25); // row_Index 列宽度
+
+					cell = new Label(0, row_Index, Temp_CTime, font2);
+					sheet.addCell(cell);
+					cell = new Label(1, row_Index, Temp_Cpm_Name, font2);
+					sheet.addCell(cell);
+					cell = new Label(2, row_Index, Temp_B_Value, font2);
+					sheet.addCell(cell);
+					cell = new Label(3, row_Index, Temp_E_Value, font2);
+					sheet.addCell(cell);
+					cell = new Label(4, row_Index, Temp_Value, font2);
+					sheet.addCell(cell);
+					cell = new Label(5, row_Index, Temp_Des, font2);
+					sheet.addCell(cell);
 				}
 				book.write();
-	            book.close();
-	            try
-	    		{ 
-	    			PrintWriter out = response.getWriter();
-	    			out.print(UPLOAD_NAME);
-	    		}
-	    		catch(Exception exp)
-	    		{
-	    		   exp.printStackTrace();	
-	    		}	            
-			}	
+				book.close();
+				try
+				{
+					PrintWriter out = response.getWriter();
+					out.print(UPLOAD_NAME);
+				}
+				catch (Exception exp)
+				{
+					exp.printStackTrace();
+				}
+			}
 		}
-		catch(Exception ex)
+		catch (Exception e)
 		{
-			ex.printStackTrace();
+			e.printStackTrace();
 		}
-	*/}
+	}
 	
 	/** 数据图表 Graph
 	 * @param request

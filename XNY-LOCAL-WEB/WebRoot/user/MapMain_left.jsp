@@ -47,17 +47,17 @@
 	String Manage_List = "";
 	if(ManageId.length() > 0 && null != User_Manage_Role)
 	{
-		Iterator iterator = User_Manage_Role.iterator();
-		while(iterator.hasNext())
-		{
-			UserRoleBean statBean = (UserRoleBean)iterator.next();
-			if(statBean.getId().substring(0,4).equals(ManageId) && statBean.getId().length() == 8)
+			Iterator iterator = User_Manage_Role.iterator();
+			while(iterator.hasNext())
 			{
-				String R_Point = statBean.getPoint();
-				if(null == R_Point){R_Point = "";}
-				Manage_List += R_Point;
+					UserRoleBean statBean = (UserRoleBean)iterator.next();
+					if(statBean.getId().equals(ManageId))
+					{
+							String R_Point = statBean.getPoint();
+							if(null == R_Point){R_Point = "";}
+							Manage_List += R_Point;
+					}
 			}
-		}
 	}
 	String Dept_Id = UserInfo.getDept_Id();
 	
@@ -108,9 +108,9 @@
 				<!-- <li id="Display0403"><a href="#" onClick="doGra()"                                                                                                >数据图表</a></li>-->
 			 </ul>
 		
-    <li id="li05" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='05' ctype='1'/>"><a href="#" onClick="doAlarm_Info()"    >告警管理</a></li>
+    <li id="li05" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='05' ctype='1'/>"><a href="#" onClick="doAlert_Info()"    >告警管理</a></li>
 	   <!-- <ul id="UserMenu5" class="collapsed">
-				<li id="Display0501"><a href="#" onClick="doAlarm_Info()"       style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0501' ctype='1'/>" >告警日志</a></li>
+				<li id="Display0501"><a href="#" onClick="dolinkage_Info()"       style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0501' ctype='1'/>" >告警日志</a></li>
 	   		<li id="Display0502"><a href="#" onClick="doAlert_Info()"       style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0502' ctype='1'/>" >联动日志</a></li> 
 	   	</ul>--> 
 	</ul>
@@ -219,7 +219,7 @@ function doEnv()
 //历史数据
 function doHis()
 {
-	window.parent.frames.mFrame.location = 'Env.do?Cmd=2&Level=2&Sid=<%=Sid%>';
+	window.parent.frames.mFrame.location = 'Env.do?Cmd=2&Level=2&Sid=<%=Sid%>&Cpm_Id=<%=Manage_List%>&Id=<%=Manage_List%>&Func_Sub_Id=9&Func_Corp_Id=9999&Func_Sel_Id=9';
 }
 //数据图表
 function doGra()
@@ -230,15 +230,15 @@ function doGra()
 
 /**************************************************告警管理*****************************************************************/
 //告警日志
-function doAlarm_Info()
+function doAlert_Info()
 {
 	window.parent.frames.mFrame.location = "Alert_Info.do?Cmd=0&Sid=<%=Sid%>&Cpm_Id=<%=Manage_List%>&Id=<%=Manage_List%>&Func_Sub_Id=9&Func_Corp_Id=9999&Func_Sel_Id=9";
 	
 }
 //联动日志
-function doAlert_Info()
+function doLinkage_Info()
 {
-	window.parent.frames.mFrame.location = "Alarm_Info.do?Cmd=0&Sid=<%=Sid%>";
+	window.parent.frames.mFrame.location = "linkage_Info.do?Cmd=0&Sid=<%=Sid%>";
 }
 
 </script>
