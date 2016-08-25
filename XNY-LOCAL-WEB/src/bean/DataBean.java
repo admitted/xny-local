@@ -114,10 +114,8 @@ public class DataBean extends RmiBean
 			currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 			currStatus.getHtmlData(request, pFromZone);
 			SimpleDateFormat SimFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-			// String BT =
-			// currStatus.getVecDate().get(0).toString().substring(5, 10);
-			// String ET =
-			// currStatus.getVecDate().get(1).toString().substring(5, 10);
+			// String BT = currStatus.getVecDate().get(0).toString().substring(5, 10);
+			// String ET = currStatus.getVecDate().get(1).toString().substring(5, 10);
 			String SheetName = "站点历史数据表";
 			String UPLOAD_NAME = SimFormat.format(new Date());
 			System.out.println("SheetName [" + SheetName + "]");
@@ -128,24 +126,33 @@ public class DataBean extends RmiBean
 			if (null != tempList)
 			{
 				WritableWorkbook book = Workbook.createWorkbook(new File(UPLOAD_PATH + UPLOAD_NAME + ".xls"));
-				// 生成名为"第一页"的工作表，参数0表示这是第一页
-				WritableSheet sheet = book.createSheet(SheetName, 0);
+				WritableSheet sheet = book.createSheet(SheetName, 0); // 生成名为"第一页"的工作表，参数0表示这是第一页
 
-				// 字体格式1
+				/*******  字体格式1  ********/
 				WritableFont wf = new WritableFont(WritableFont.createFont("normal"), 14, WritableFont.BOLD, false);
 				WritableCellFormat font1 = new WritableCellFormat(wf);
-				// wf.setColour(Colour.BLACK);//字体颜色
-				font1.setAlignment(Alignment.CENTRE);// 设置居中
+				// wf.setColour(Colour.BLACK);                        // 字体颜色
+				font1.setAlignment(Alignment.CENTRE);                 // 设置居中
 				font1.setVerticalAlignment(VerticalAlignment.CENTRE); // 设置为垂直居中
-				font1.setBorder(Border.ALL, BorderLineStyle.THIN);// 设置边框线
-
-				// 字体格式2
+				font1.setBorder(Border.ALL, BorderLineStyle.THIN);    // 设置边框线
+                font1.setBackground(jxl.format.Colour.TURQUOISE);     // 设置单元格的背景颜色
+				
+				/*******  字体格式2  ********/
 				WritableFont wf2 = new WritableFont(WritableFont.createFont("normal"), 10, WritableFont.NO_BOLD, false);
 				WritableCellFormat font2 = new WritableCellFormat(wf2);
-				wf2.setColour(Colour.BLACK);// 字体颜色
-				font2.setAlignment(Alignment.CENTRE);// 设置居中
+				wf2.setColour(Colour.BLACK);                          // 字体颜色
+				font2.setAlignment(Alignment.CENTRE);                 // 设置居中
 				font2.setVerticalAlignment(VerticalAlignment.CENTRE); // 设置为垂直居中
-				font2.setBorder(Border.ALL, BorderLineStyle.THIN);// 设置边框线
+				font2.setBorder(Border.ALL, BorderLineStyle.THIN);    // 设置边框线
+				
+				/*******  字体格式3  ********/
+				WritableFont wf3 = new WritableFont(WritableFont.createFont("normal"), 10, WritableFont.BOLD, false);
+				WritableCellFormat font3 = new WritableCellFormat(wf3);
+				wf3.setColour(Colour.RED);                            // 字体颜色
+				font3.setAlignment(Alignment.CENTRE);                 // 设置居中
+				font3.setVerticalAlignment(VerticalAlignment.CENTRE); // 设置为垂直居中
+				font3.setBorder(Border.ALL, BorderLineStyle.THIN);    // 设置边框线
+				font3.setBackground(jxl.format.Colour.YELLOW);        // 设置单元格的背景颜色
 
 				sheet.setRowView(row_Index, 450);
 				sheet.setColumnView(row_Index, 25);
