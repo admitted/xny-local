@@ -1,23 +1,14 @@
 package bean;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.jspsmart.upload.SmartUpload;
 
@@ -131,14 +122,13 @@ public class DeviceDetailBean extends RmiBean
 		{
 			SmartUpload mySmartUpload = new SmartUpload();
 //			mySmartUpload.initialize(pConfig, request, response);
-			mySmartUpload.setAllowedFilesList("jpg,bmp,JPG,BMP,");
+			mySmartUpload.setAllowedFilesList("jpg,bmp,JPG,BMP,gif,GIF");
 			mySmartUpload.upload();
 
 			Sid = mySmartUpload.getRequest().getParameter("Sid");
 			currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 			Id = mySmartUpload.getRequest().getParameter("Id");
 			
-
 			if (mySmartUpload.getFiles().getCount() > 0 && mySmartUpload.getFiles().getFile(0).getFilePathName().trim().length() > 0)
 			{
 				if (mySmartUpload.getFiles().getFile(0).getSize() / 1024 <= 3072)// ×î´ó3M
