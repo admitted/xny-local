@@ -23,11 +23,11 @@ import util.*;
 
 public class TcpSvrAppGateWay extends TcpSvrBase
 {
-	private int m_iPort    = 0;
-	private int m_iTimeOut = 0;
-	private int m_iStatus  = 0;
-	DBUtil m_DbUtil = null;
-	TcpClient m_TcpClient = null;
+	private int m_iPort     = 0;
+	private int m_iTimeOut  = 0;
+	private int m_iStatus   = 0;
+	DBUtil      m_DbUtil    = null;
+	TcpClient   m_TcpClient = null;
 	
 	//登陆客户端列表
 	private static Hashtable<String, ClientSocket> objClientTable = null;
@@ -56,7 +56,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 	{
 		if(!init(m_iPort, m_iTimeOut))
 			return false;
-		objClientTable = new Hashtable<String, ClientSocket>();
+		objClientTable  = new Hashtable<String, ClientSocket>();
 		MsgCtrl msgCtrl = new MsgCtrl();
 		msgCtrl.start();
 		return true;
@@ -276,6 +276,11 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		}
 	}
 	
+	/**
+	 * @author CuiJing
+	 * 接收数据控制处理类 
+	 *
+	 */
 	private class MsgCtrl extends Thread
 	{
 		public void run()
@@ -301,20 +306,20 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 					msgHead.setUnMsgSeq(CommUtil.converseInt(DinStream.readInt())); //序列号
 					msgHead.setUnReserve(CommUtil.converseInt(DinStream.readInt()));//保留字段
 					DinStream.close();
-					// Data    (290字节) = [0100000001          ][包头                             ] + dealData 
-					// dealData(250字节) = [                  95000010010431080001瑞烨流量计                    0026集合数据            2016-07-26 15:01:03 41EE64D2437B45B6409800000000400044220205420CEAC7                                                                                          ]
+				   // Data    (290字节) = [0100000001          ][包头                             ] + dealData 
+				   // dealData(250字节) = [                  95000010010431080001瑞烨流量计                    0026集合数据            2016-07-26 15:01:03 41EE64D2437B45B6409800000000400044220205420CEAC7                                                                                          ]
 					dealData = new String(data, 40, data.length - 40);
 					
 					String dealReserve = dealData.substring(0, 20);        //保留字
-					String dealCmd = dealData.substring(24, 28);           //处理指令(1001)
-					switch(msgHead.getUnMsgCode())
+					String dealCmd     = dealData.substring(24, 28);       //处理指令(1001)
+					switch(msgHead.getUnMsgCode()) //根据业务类型处理
 					{
-						case Cmd_Sta.COMM_SUBMMIT: //客户端提交
+						case Cmd_Sta.COMM_SUBMMIT: //客户端   数据上行
 						{
 							CommUtil.LOG("PlatForm Submit [" + strClientKey + "] " + "[" + dealData + "]");
 							BaseCmdBean cmdBean = BaseCmdBean.getBean(Integer.parseInt(dealCmd), m_DbUtil);	
 							if(null != cmdBean)
-							{                    //  Cpm_Id       数据包        
+							{                      //Cpm_Id       数据包        
 								cmdBean.parseReqest(strClientKey, dealData, data);
 								cmdBean.execRequest();
 								
@@ -326,7 +331,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 							}
 							break;
 						}
-						case Cmd_Sta.COMM_DELIVER://回应
+						case Cmd_Sta.COMM_DELIVER://服务器派发  下行
 						{
 							CommUtil.LOG("PlatForm Deliver [" + strClientKey + "] " + "[" + dealData + "]");
 							BaseCmdBean cmdBean = ActionContainer.GetAction(dealReserve);

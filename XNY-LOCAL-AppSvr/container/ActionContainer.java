@@ -10,21 +10,21 @@ import bean.*;
 
 public class ActionContainer
 {
-	public static Hashtable<String, BaseCmdBean> objActionTable = null;//登陆客户端列表
-	private static Byte markActionTable = new Byte((byte)1);	       //锁 
+	public  static Hashtable<String, BaseCmdBean> objActionTable = null; //登陆客户端列表
+	private static Byte markActionTable = new Byte((byte)1);	         //锁 
 	
 	private static TimeCheckThrd checkThrd = null;
 
-	InetAddress addr = InetAddress.getLocalHost();
-	public String m_LocalIp = addr.getHostAddress().toString();        //获得本机IP
+	InetAddress    addr      = InetAddress.getLocalHost();               //返回本地主机
+	public String  m_LocalIp = addr.getHostAddress().toString();         //获得本机IP
 	
-	public ActionContainer()throws Exception
+	public ActionContainer() throws Exception
 	{	  
 		
 	}
 	
 	/**
-	 * 初始化 objActionTable 、checkThrd
+	 * 初始化 客户端列表objActionTable 、时间校验线程checkThrd
 	 * 并启动线程 checkThrd
 	 * @return
 	 */
@@ -34,10 +34,11 @@ public class ActionContainer
 		boolean ret = false;
 		try
 		{
-			objActionTable = new Hashtable<String, BaseCmdBean>(); //初始化 Hashtable 客户端列表 (此时为空)
-			checkThrd = new TimeCheckThrd(30);
+			objActionTable  = new Hashtable<String, BaseCmdBean>(); //初始化 Hashtable 客户端列表 (此时为空)
+			checkThrd       = new TimeCheckThrd(30);
 			checkThrd.start();
-			ret = true;  //如果出现异常 ,执行不到这一步
+			
+			ret             = true;  //如果出现异常 ,执行不到这一步
 		}
 		catch(Exception e)
 		{

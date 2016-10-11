@@ -6,21 +6,26 @@ import net.appsvr.AppDeviceDataReqBean;
 import net.appsvr.AppDeviceStatusReqBean;
 import util.*;
 
+/**
+ * 
+ * @author cui
+ *
+ */
 public abstract class BaseCmdBean
 {
-	public static long m_SessionId = (new java.util.Date().getTime()/1000);  //  此刻时长
-	private String actionSource = "";   //动作源   Cpm_Id
-	private String Reserve = "";        //预留
-	private String Status = "0000";     //状态
-	private int Action = 0;	            //命令值   Cmd    
-	private int TestTime = (int)(new java.util.Date().getTime()/1000);       //  测试时间
-	private String Seq = "";            //从线程启动时长值 ++ ???
-	public DBUtil m_DbUtil = null;
+	public static long     m_SessionId  = (new java.util.Date().getTime()/1000);  //此刻时间
+	private       String   actionSource = "";      //动作源   Cpm_Id
+	private       String   Reserve      = "";      //预留
+	private       String   Status       = "0000";  //状态
+	private       int      Action       = 0;	   //命令值   Cmd    
+	private       int      TestTime     = (int)(new java.util.Date().getTime()/1000); // 测试时间
+	private       String   Seq          = "";      //从线程启动时长值 ++ ???
+	public        DBUtil   m_DbUtil     = null;
 	
 	public BaseCmdBean(int action, String seq, DBUtil dbUtil)
 	{
-		Action = action;
-		Seq = seq;
+		Action   = action;
+		Seq      = seq;
 		m_DbUtil = dbUtil;
 	}
 	

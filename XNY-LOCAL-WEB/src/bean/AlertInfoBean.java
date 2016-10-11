@@ -302,8 +302,8 @@ public class AlertInfoBean extends RmiBean
 						  	  " where instr('"+ Id +"', t.cpm_id) > 0 " +
 						  	  "   and t.level like '"+ Func_Sub_Id +"%'" +
 						  	  "   and t.status like '"+ Func_Sel_Id +"%'" +
-						  	  "   and t.ctime >= date_format('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m-%d %H-%i-%S')" +
-						  	  "   and t.ctime <= date_format('"+currStatus.getVecDate().get(1).toString()+"', '%Y-%m-%d %H-%i-%S')" +
+						  	  "   and t.ctime >= date_format('" + currStatus.getVecDate().get(0).toString() + "', '%Y-%m-%d %H-%i-%S')" +
+						  	  "   and t.ctime <= date_format('" + currStatus.getVecDate().get(1).toString() + "', '%Y-%m-%d %H-%i-%S')" +
 						  	  "   order by t.ctime desc ";
 						break;
 				}
