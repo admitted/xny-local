@@ -9,42 +9,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
-
 import net.appsvr.CnoocStationBean;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-
 /**
- * 数据库初始化(根据status 决定启用mysql或者SqlSvr) 
+ * 数据库初始化(根据status 决定启用mysql或者SqlSvr)
+ * 
  * @author cui
  */
 public class DBUtil
 {
-	private ConnPool objConnPool = null;
-	private ConnPool svrConnPool = null;
-	
-	private String m_Url  = "";
-	private String m_Name = "";
-	private String m_Pwd  = "";
-	private String m_Flag = "";
-	
-	private String s_Url  = "";
-	private String s_Name = "";
-	private String s_Pwd  = "";
-	private String s_Flag = "";
-	
-	public String _Status = "0";
-	
+	private ConnPool	objConnPool	= null;
+	private ConnPool	svrConnPool	= null;
+
+	private String		m_Url		= "";
+	private String		m_Name		= "";
+	private String		m_Pwd		= "";
+	private String		m_Flag		= "";
+
+	private String		s_Url		= "";
+	private String		s_Name		= "";
+	private String		s_Pwd		= "";
+	private String		s_Flag		= "";
+
+	public String		_Status		= "0";
+
 	public DBUtil() throws RemoteException
 	{
-		
+
 	}
 
 	/**
 	 * 数据库初始化
+	 * 
 	 * @return
 	 */
 	public boolean init()
@@ -54,35 +54,38 @@ public class DBUtil
 		{
 			SAXReader reader = new SAXReader();
 			Document document = reader.read(new FileInputStream("Config.xml"));
-			Element root = document.getRootElement();//取得根节点
-			
-			m_Url  = root.element("db").element("url").getText();
+			Element root = document.getRootElement();// 取得根节点
+
+			m_Url = root.element("db").element("url").getText();
 			m_Name = root.element("db").element("id").getText();
-			m_Pwd  = root.element("db").element("pwd").getText();
+			m_Pwd = root.element("db").element("pwd").getText();
 			m_Flag = root.element("db").element("flag").getText();
-			
-			s_Url  = root.element("sqlser").element("url").getText();
+
+			s_Url = root.element("sqlser").element("url").getText();
 			s_Name = root.element("sqlser").element("id").getText();
-			s_Pwd  = root.element("sqlser").element("pwd").getText();
+			s_Pwd = root.element("sqlser").element("pwd").getText();
 			s_Flag = root.element("sqlser").element("flag").getText();
-			_Status= root.element("sqlser").element("status").getText();
-			
-			//MySql
+			_Status = root.element("sqlser").element("status").getText();
+
+			// MySql
 			objConnPool = new ConnPool(m_Url, m_Name, m_Pwd, m_Flag);
-			
-			//SqlSvr
-			if(_Status.equals("1"))
-				svrConnPool = new ConnPool(s_Url, s_Name, s_Pwd, s_Flag);
-			
+
+			// SqlSvr
+			if (_Status.equals("1")) svrConnPool = new ConnPool(s_Url, s_Name, s_Pwd, s_Flag);
+
 			ret = true;
-		}	
+		}
 		catch (Exception sqlExp)
 		{
 			sqlExp.printStackTrace();
 		}
 		return ret;
 	}
-	
+
+	/**
+	 * @param strReauest
+	 * @return
+	 */
 	public String APC(String strReauest)
 	{
 		String rslt = null;
@@ -91,64 +94,69 @@ public class DBUtil
 		try
 		{
 			conn = objConnPool.getConnection();
-			if(null != conn)
+			if (null != conn)
 			{
-				
+
 				conn.setAutoCommit(false);
 				cstat = conn.prepareCall("{? = call APC(?)}");
 				cstat.setString(2, strReauest);
 				cstat.registerOutParameter(1, java.sql.Types.VARCHAR);
 				cstat.execute();
 				rslt = cstat.getString(1);
-				conn.commit();	
+				conn.commit();
 			}
 		}
-		catch(SQLException ex)
+		catch (SQLException ex)
 		{
 			ex.printStackTrace();
-			return  CommUtil.IntToStringLeftFillSpace(Cmd_Sta.STA_UNKHOWN_ERROR, 4);
+			return CommUtil.IntToStringLeftFillSpace(Cmd_Sta.STA_UNKHOWN_ERROR, 4);
 		}
 		finally
 		{
 			try
 			{
-				if(null != cstat)
+				if (null != cstat)
 				{
 					cstat.close();
-					cstat = null;					
+					cstat = null;
 				}
-				if(null != conn)
+				if (null != conn)
 				{
 					conn.close();
-					conn = null;	
+					conn = null;
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				ex.printStackTrace();
 			}
 		}
-		CommUtil.PRINT("DB_IN["+strReauest+"] DB_OUT[" + rslt + "]");	
+		CommUtil.PRINT("DB_IN[" + strReauest + "] DB_OUT[" + rslt + "]");
 		return rslt;
 	}
-	
-	public  boolean doUpdate(String pSql)
+
+	/**
+	 *  增\删\改
+	 * @param pSql
+	 * @return
+	 */
+	public boolean doUpdate(String pSql)
 	{
 		boolean IsOK = false;
 		Connection conn = null;
 		PreparedStatement pStmt = null;
-		try 
+		try
 		{
 			conn = objConnPool.getConnection();
 			conn.setAutoCommit(false);
 			pStmt = conn.prepareStatement(pSql);
-			if (pStmt.executeUpdate() > 0) 
+			if (pStmt.executeUpdate() > 0)
 			{
 				IsOK = true;
 				conn.commit();
-			} 
-		} 
-		catch (SQLException sqlExp) 
+			}
+		}
+		catch (SQLException sqlExp)
 		{
 			sqlExp.printStackTrace();
 		}
@@ -156,142 +164,156 @@ public class DBUtil
 		{
 			try
 			{
-				if(pStmt != null)
-				{				
+				if (pStmt != null)
+				{
 					pStmt.close();
 					pStmt = null;
 				}
-				if(conn != null)
+				if (conn != null)
 				{
-					conn.close();	
+					conn.close();
 					conn = null;
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				ex.printStackTrace();
 			}
 		}
 		return IsOK;
 	}
-	
-	
 
-	 public LinkedList<Object> getStationInfo(String sql)
-	  {
-	    LinkedList<Object> sendMsgList = new LinkedList<Object>();
-	    Connection conn = null;
-	    PreparedStatement pStmt = null;
-	    ResultSet rs = null;
-	    try
-	    {
-	      conn = this.objConnPool.getConnection();
-	      conn.setAutoCommit(false);
-	      pStmt = conn.prepareStatement(sql);
-	      rs = pStmt.executeQuery();
-	      while (rs.next())
-	      {
-	        CnoocStationBean StationBean = new CnoocStationBean();
-	        StationBean.getData(rs);
-	        sendMsgList.addLast(StationBean);
-	      }
-	    }
-	    catch (SQLException sqlExp)
-	    {
-	      sqlExp.printStackTrace();
-	      try
-	      {
-	        if (rs != null)
-	          rs.close();
-	        if (pStmt != null)
-	          pStmt.close();
-	        if (conn != null)
-	          conn.close();
-	      }
-	      catch (Exception ex)
-	      {
-	        ex.printStackTrace();
-	      }
-	    }
-	    finally
-	    {
-	      try
-	      {
-	        if (rs != null)
-	          rs.close();
-	        if (pStmt != null)
-	          pStmt.close();
-	        if (conn != null)
-	          conn.close();
-	      }
-	      catch (Exception ex)
-	      {
-	        ex.printStackTrace();
-	      }
-	    }
-	    return sendMsgList;
-	  }
-	public String getM_Url() {
+	/**
+	 * 获取 站点 信息
+	 * @param sql
+	 * @return
+	 */
+	public LinkedList<Object> getStationInfo(String sql)
+	{
+		LinkedList<Object> sendMsgList = new LinkedList<Object>();
+		Connection conn = null;
+		PreparedStatement pStmt = null;
+		ResultSet rs = null;
+		try
+		{
+			conn = this.objConnPool.getConnection();
+			conn.setAutoCommit(false);
+			pStmt = conn.prepareStatement(sql);
+			rs = pStmt.executeQuery();
+			while (rs.next())
+			{
+				CnoocStationBean StationBean = new CnoocStationBean();
+				StationBean.getData(rs);
+				sendMsgList.addLast(StationBean);
+			}
+		}
+		catch (SQLException sqlExp)
+		{
+			sqlExp.printStackTrace();
+			try
+			{
+				if (rs != null) rs.close();
+				if (pStmt != null) pStmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+		}
+		finally
+		{
+			try
+			{
+				if (rs != null) rs.close();
+				if (pStmt != null) pStmt.close();
+				if (conn != null) conn.close();
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+		}
+		return sendMsgList;
+	}
+
+	public String getM_Url()
+	{
 		return m_Url;
 	}
 
-	public void setM_Url(String mUrl) {
+	public void setM_Url(String mUrl)
+	{
 		m_Url = mUrl;
 	}
 
-	public String getM_Name() {
+	public String getM_Name()
+	{
 		return m_Name;
 	}
 
-	public void setM_Name(String mName) {
+	public void setM_Name(String mName)
+	{
 		m_Name = mName;
 	}
 
-	public String getM_Pwd() {
+	public String getM_Pwd()
+	{
 		return m_Pwd;
 	}
 
-	public void setM_Pwd(String mPwd) {
+	public void setM_Pwd(String mPwd)
+	{
 		m_Pwd = mPwd;
 	}
 
-	public String getM_Flag() {
+	public String getM_Flag()
+	{
 		return m_Flag;
 	}
 
-	public void setM_Flag(String mFlag) {
+	public void setM_Flag(String mFlag)
+	{
 		m_Flag = mFlag;
 	}
 
-	public String getS_Url() {
+	public String getS_Url()
+	{
 		return s_Url;
 	}
 
-	public void setS_Url(String sUrl) {
+	public void setS_Url(String sUrl)
+	{
 		s_Url = sUrl;
 	}
 
-	public String getS_Name() {
+	public String getS_Name()
+	{
 		return s_Name;
 	}
 
-	public void setS_Name(String sName) {
+	public void setS_Name(String sName)
+	{
 		s_Name = sName;
 	}
 
-	public String getS_Pwd() {
+	public String getS_Pwd()
+	{
 		return s_Pwd;
 	}
 
-	public void setS_Pwd(String sPwd) {
+	public void setS_Pwd(String sPwd)
+	{
 		s_Pwd = sPwd;
 	}
 
-	public String getS_Flag() {
+	public String getS_Flag()
+	{
 		return s_Flag;
 	}
 
-	public void setS_Flag(String sFlag) {
+	public void setS_Flag(String sFlag)
+	{
 		s_Flag = sFlag;
 	}
 }

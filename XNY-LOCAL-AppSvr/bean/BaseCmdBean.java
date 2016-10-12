@@ -13,13 +13,13 @@ import util.*;
  */
 public abstract class BaseCmdBean
 {
-	public static long     m_SessionId  = (new java.util.Date().getTime()/1000);  //此刻时间
+	public static long     m_SessionId  = (new java.util.Date().getTime()/1000);  //毫秒/1000 = 秒  启动时刻ID 
 	private       String   actionSource = "";      //动作源   Cpm_Id
 	private       String   Reserve      = "";      //预留
 	private       String   Status       = "0000";  //状态
 	private       int      Action       = 0;	   //命令值   Cmd    
 	private       int      TestTime     = (int)(new java.util.Date().getTime()/1000); // 测试时间
-	private       String   Seq          = "";      //从线程启动时长值 ++ ???
+	private       String   Seq          = "";      //从线程  启动到当前时长值 (long 转 String) 
 	public        DBUtil   m_DbUtil     = null;
 	
 	public BaseCmdBean(int action, String seq, DBUtil dbUtil)
@@ -68,7 +68,7 @@ public abstract class BaseCmdBean
 	}
 	
 	public abstract void parseReqest(String key, String strRequest, byte[] strData);
-	public abstract int execRequest();
+	public abstract int  execRequest();
 
 	public abstract void parseReponse(String strResponse);
 	public abstract void execResponse();

@@ -121,25 +121,25 @@ public class ActionContainer
 	}
 	
 	/**
-	 * 获取 登陆客户端  列表 超时的  BaseCmdBean对象
+	 * 获取 登陆客户端  列表 的 时间大于60秒的 
 	 * @param mTimeOut
 	 * @return LinkedList<String>
 	 */
-	public static LinkedList<String> GetTimeOutList(int mTimeOut)
+	public static LinkedList<String> GetTimeOutList(int mTimeOut) // m_TimeOut = 30
 	{
-		LinkedList<String> checkList = new LinkedList<String>();		 //接收数据列表,用于客户端数据交换
+		LinkedList<String> checkList = new LinkedList<String>();  // 接收数据列表,用于客户端数据交换
 		try
 		{
 			synchronized(markActionTable)
 			{
-				Enumeration<BaseCmdBean> en = objActionTable.elements();  
+				Enumeration<BaseCmdBean> en = objActionTable.elements(); // 返回此 objActionTable哈希表中的值的枚举
 				while(en.hasMoreElements())
 				{    
 					BaseCmdBean client = en.nextElement();
-					int TestTime = (int)(new java.util.Date().getTime()/1000);
-					if(TestTime > client.getTestTime() + mTimeOut)      //比较时间是什么意思??? 超时的:
+					int TestTime = (int)(new java.util.Date().getTime()/1000); // 当前时间值 
+					if( TestTime > client.getTestTime() + mTimeOut)            // 如果时间 超过 60 秒
 					{
-						checkList.addLast(CommUtil.StrBRightFillSpace(client.getSeq(), 20));
+						checkList.addLast(CommUtil.StrBRightFillSpace(client.getSeq(), 20));  
 					}
 				}
 			}

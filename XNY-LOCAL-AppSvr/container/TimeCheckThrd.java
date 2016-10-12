@@ -13,14 +13,14 @@ import bean.BaseCmdBean;
  */
 public class TimeCheckThrd extends Thread
 {
-	private int m_TimeOut = 60;
+	private int m_TimeOut = 60; //
 	public TimeCheckThrd(int timeout)throws Exception
 	{
 		m_TimeOut = timeout;
 	}
 	
 	/* 
-	 * TimeCheckThrd run 函数执行后 打印 [data 是否超时]
+	 * TimeCheckThrd run函数执行后 打印 [data 是否超时]
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
 	 */
@@ -31,7 +31,7 @@ public class TimeCheckThrd extends Thread
 		{
 			try
 			{
-				checkList = ActionContainer.GetTimeOutList(m_TimeOut);
+				checkList = ActionContainer.GetTimeOutList(m_TimeOut); // m_TimeOut = 30
 				while(!checkList.isEmpty())
 				{
 					System.out.println(checkList);

@@ -10,6 +10,7 @@ public class AppDeviceStatusReqBean extends BaseCmdBean {
 	private String Dev_Id = "";
 	private String Dev_Name = "";
 	private String Dev_Status = "";
+	
 	public AppDeviceStatusReqBean(int action, String seq, DBUtil dbUtil) {
 		super(action, seq, dbUtil);
 	}
