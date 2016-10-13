@@ -48,7 +48,7 @@ public class ActionContainer
 	}
 	
 	/**
-	 * 从HashTable中 根据传入的 pKey值 返回特定的 BaseCmdBean
+	 * 从HashTable中 根据传入的 String (实际上的objActionTable key值) 返回特定的 BaseCmdBean
 	 * @param pKey
 	 * @return BaseCmdBean
 	 */
@@ -121,25 +121,25 @@ public class ActionContainer
 	}
 	
 	/**
-	 * 获取 登陆客户端  列表 的 时间大于60秒的 
+	 * 获取 登陆客户端  回应超时列表 (回应时间大于30秒的)
 	 * @param mTimeOut
 	 * @return LinkedList<String>
 	 */
 	public static LinkedList<String> GetTimeOutList(int mTimeOut) // m_TimeOut = 30
 	{
-		LinkedList<String> checkList = new LinkedList<String>();  // 接收数据列表,用于客户端数据交换
+		LinkedList<String> checkList = new LinkedList<String>();  // 接收数据列表,用于客户端数据交换 
 		try
 		{
 			synchronized(markActionTable)
 			{
-				Enumeration<BaseCmdBean> en = objActionTable.elements(); // 返回此 objActionTable哈希表中的值的枚举
+				Enumeration<BaseCmdBean> en = objActionTable.elements(); // 返回此 objActionTable 哈希表中的值的枚举
 				while(en.hasMoreElements())
 				{    
 					BaseCmdBean client = en.nextElement();
 					int TestTime = (int)(new java.util.Date().getTime()/1000); // 当前时间值 
-					if( TestTime > client.getTestTime() + mTimeOut)            // 如果时间 超过 60 秒
-					{
-						checkList.addLast(CommUtil.StrBRightFillSpace(client.getSeq(), 20));  
+					if( TestTime > client.getTestTime() + mTimeOut )           // 如果时间 超过 30 秒
+					{  
+						checkList.addLast(CommUtil.StrBRightFillSpace(client.getSeq(), 20));   // SessionID
 					}
 				}
 			}
@@ -150,7 +150,7 @@ public class ActionContainer
 				{
 					break;
 				}						
-				BaseCmdBean bean = GetAction(data);
+				BaseCmdBean bean = GetAction(data); 
 				if(null != bean)
 					bean.noticeTimeOut();
 				CommUtil.LOG(data + " 回应超时 111");

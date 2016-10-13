@@ -13,13 +13,13 @@ import util.*;
  */
 public abstract class BaseCmdBean
 {
-	public static long     m_SessionId  = (new java.util.Date().getTime()/1000);  //毫秒/1000 = 秒  启动时刻ID 
-	private       String   actionSource = "";      //动作源   Cpm_Id
-	private       String   Reserve      = "";      //预留
-	private       String   Status       = "0000";  //状态
-	private       int      Action       = 0;	   //命令值   Cmd    
+	public static long     m_SessionId  = (new java.util.Date().getTime()/1000);  // static 共用一个   毫秒/1000 = 秒  启动时刻ID 
+	private       String   actionSource = "";      // 动作源   Cpm_Id
+	private       String   Reserve      = "";      // 预留
+	private       String   Status       = "0000";  // 状态
+	private       int      Action       = 0;	   // 命令值   Cmd    
 	private       int      TestTime     = (int)(new java.util.Date().getTime()/1000); // 测试时间
-	private       String   Seq          = "";      //从线程  启动到当前时长值 (long 转 String) 
+	private       String   Seq          = "";      // String(m_SessionId++) 
 	public        DBUtil   m_DbUtil     = null;
 	
 	public BaseCmdBean(int action, String seq, DBUtil dbUtil)
@@ -56,6 +56,10 @@ public abstract class BaseCmdBean
 		return retBean;
 	}
 	
+	/**
+	 * 会话ID  每new 一个 业务逻辑bean  m_SessionId++
+	 * @return
+	 */
 	public static synchronized String SessionId()
 	{
 		long ret = m_SessionId++;

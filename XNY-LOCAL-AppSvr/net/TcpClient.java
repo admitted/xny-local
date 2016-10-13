@@ -20,11 +20,16 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import util.*;
 
+/**
+ * 根据Config.xml 创建 TcpClient 客户端 bean
+ * @author cui
+ *
+ */
 public class TcpClient extends Thread
 {
-	private String				m_IP		= null;     //IP地址
-	private int					m_Port		= 0;        //端口号
-	private int					m_TimeOut	= 0;        //超时时间
+	private String				m_IP		= null;     // IP地址
+	private int					m_Port		= 0;        // 端口号
+	private int					m_TimeOut	= 0;        // 超时时间
 	private int					m_TestSta	= 0;        
 	private String				m_ID		= "";       
 	private String				m_PWD		= "";

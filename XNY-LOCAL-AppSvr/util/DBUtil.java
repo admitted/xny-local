@@ -96,7 +96,6 @@ public class DBUtil
 			conn = objConnPool.getConnection();
 			if (null != conn)
 			{
-
 				conn.setAutoCommit(false);
 				cstat = conn.prepareCall("{? = call APC(?)}");
 				cstat.setString(2, strReauest);

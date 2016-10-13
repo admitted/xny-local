@@ -10,17 +10,22 @@ public class ConnPool
 	public static final int DATABASE_MYSQL			= 3001;
 	public static final int DATABASE_DB2			= 4001;
 	
-	private String m_Url = null;
-	private String m_Name = null;
-	private String m_Pwd = null;
+	private String m_Url    = null;
+	private String m_Name   = null;
+	private String m_Pwd    = null;
 	private String m_dbFlag = null;
 	public ConnPool(String Url, String Name, String Pwd, String dbFlag)
 	{	
-		m_Url = Url;
-		m_Name = Name;
-		m_Pwd = Pwd;
+		m_Url    = Url;
+		m_Name   = Name;
+		m_Pwd    = Pwd;
 		m_dbFlag = dbFlag;
 	}
+	
+	/**
+	 * 获取数据库连接
+	 * @return
+	 */
 	public Connection getConnection()
 	{	
 		Connection conn = null;

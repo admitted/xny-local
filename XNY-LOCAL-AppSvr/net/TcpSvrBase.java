@@ -17,7 +17,7 @@ public abstract class TcpSvrBase extends Thread
 	public static final int  STATUS_CLIENT_OFFLINE = 1;
 	public static final String TYPE_OPERATOR	   = "0";
 
-	//TCP服务器
+	/** TCP服务器  */
 	private ServerSocket objTcpSvrSock = null;
 	
 	//接收数据列表,用于客户端数据交换
@@ -28,7 +28,11 @@ public abstract class TcpSvrBase extends Thread
 	private int m_iPort = 0;
 	private int m_iTimeOut = 0;
 	
-	//读取配置文件内容
+	
+	/**
+	 * 读取配置文件内容 继承者实现
+	 * @throws Exception
+	 */
 	public TcpSvrBase()throws Exception
 	{
 	}
@@ -43,14 +47,14 @@ public abstract class TcpSvrBase extends Thread
 	{
 		try
 		{
-			m_iPort =  iPort;
-			m_iTimeOut =  iTimeOut;
-			objTcpSvrSock = new ServerSocket(m_iPort);
+			m_iPort       = iPort;
+			m_iTimeOut    = iTimeOut;
+			objTcpSvrSock = new ServerSocket(m_iPort);  // 监听此端口 : 60110   获取客户端的Socket
 			if(null == objTcpSvrSock) 
 			{
 				return false;
 			}	
-			recvMsgList = new LinkedList<Object>();		
+			recvMsgList = new LinkedList<Object>();		// 获取到的 Socket 包
 			this.start();                  
 			return true;
 		}
@@ -62,8 +66,8 @@ public abstract class TcpSvrBase extends Thread
 	}	
 	
 	/*
-	 * 监听Socket连接 TcpSvrBase本身是一个线程 (non-Javadoc)
-	 * 
+	 * 监听 Socket 连接 TcpSvrBase本身是一个线程 (non-Javadoc)
+	 * (循环调用accept()等待客户端连接) 与多客户端通信
 	 * @see java.lang.Thread#run()
 	 */
 	public void run()
@@ -73,17 +77,26 @@ public abstract class TcpSvrBase extends Thread
 			try
 			{
 				Socket objClient = objTcpSvrSock.accept(); // 接收一个 相对客户端 socket 进行对接
-				objClient.setSoTimeout(m_iTimeOut*1000);   // 通过指定超时值启用/禁用
-				                                           // SO_TIMEOUT，以毫秒为单位。
-				
+				objClient.setSoTimeout(m_iTimeOut*1000);   // 通过指定超时值 启用/禁用 SO_TIMEOUT，以毫秒为单位。
+														   // 超过时间  就断开 客户端
 				DataInputStream RecvChannel = new DataInputStream(objClient.getInputStream());
 				byte[] Buffer = new byte[1024];            // 创建缓冲区数组Buffer
 				
 				int RecvLen = RecvChannel.read(Buffer);    // 返回读取到的缓冲区Buffer 字节长度
 				
-				CommUtil.PRINT("Send Original:");          // 打印 Send Original 标记
-				CommUtil.printMsg(Buffer, RecvLen);        // 打印 24 23 2a 72 65 67 2c  注册包
+				CommUtil.PRINT("Send Original:");          
+				CommUtil.printMsg(Buffer, RecvLen);        
+				/**
+				进入线程......
+				Start..........................................
+				Send Original:
 				
+				5a 00 00 00   01 00 00 00   00 00 00 00   01 00 00 00   00 00 00 00
+				30 30 30 30   30 31 30 30   30 30 30 30   30 31 20 20   20 20 20 20
+				20 20 20 20   32 30 31 36   2d 31 30 2d   31 33 20 31   30 3a 35 45
+				39 38 44 36   31 41 43 39   44 37 42 31   46 30 45 37   39 35 43 43
+				37 32 34 44   44 35 46 41   30 35 
+				 */
 				if(20 > RecvLen)
 				{
 					objClient.close();

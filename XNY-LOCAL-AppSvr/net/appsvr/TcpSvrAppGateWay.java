@@ -33,7 +33,11 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 	private static Hashtable<String, ClientSocket> objClientTable = null;
 	private static Byte markClientTable = new Byte((byte)1);      //同步锁
 	
-	//读取配置文件内容
+	/**
+	 * 读取配置文件内容
+	 * @param dbUtil
+	 * @throws Exception
+	 */
 	public TcpSvrAppGateWay(DBUtil dbUtil)throws Exception
 	{
 		SAXReader reader  = new SAXReader();
@@ -70,24 +74,24 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 			DataInputStream DinStream = new DataInputStream(new ByteArrayInputStream(Buffer));
 			DinStream.readInt();
 			int Cmd = CommUtil.converseInt(DinStream.readInt());
-			if(Cmd_Sta.COMM_LOGON != Cmd)
+			if(Cmd_Sta.COMM_LOGON != Cmd) // 请求登陆  = 0x00000001;	
 			{
 				return null;
 			}
 			
 			//登入验证
-			String Status = new String(Buffer, 20, 4);
+			String Status = new String(Buffer, 20, 4); 
 			String PId = new String(Buffer, 24, 20);
 			String TimeStamp = new String(Buffer, 44, 14);
 			String strMd5 = new String(Buffer, 58, 32);
 //			String checkResult = checkClient(Status, PId, TimeStamp, strMd5);
 //			if(!checkResult.substring(0, 4).equalsIgnoreCase("0000"))
-			{
-				//return null;
-			}
+//			{
+//				return null;
+//			}
 			ret = PId;
-//			
-//			//验证是否已存在
+			
+			//验证是否已存在
 			if(objClientTable.containsKey(PId))
 			{
 				CommUtil.PRINT("Id Already Exist!" + PId);
@@ -117,9 +121,17 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		return ret;
 	}
 	
+	/**
+	 * 
+	 * @param strStatus
+	 * @param strId
+	 * @param strTimestamp
+	 * @param strOriginalMd5
+	 * @return
+	 */
 	public String checkClient(String strStatus, String strId, String strTimestamp, String strOriginalMd5)
 	{
-		String ret = "3006";
+		String ret = "3006";    // 系统状态  失败
 		String password = m_DbUtil.APC(CommUtil.StrRightFillSpace(strId, 40)+ strStatus + "0001");
 		String strData = strId + strTimestamp + password;
 		String Temp = CommUtil.BytesToHexString(new Md5().encrypt(strData.getBytes()), 16);

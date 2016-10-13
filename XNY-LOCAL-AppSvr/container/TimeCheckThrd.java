@@ -13,7 +13,7 @@ import bean.BaseCmdBean;
  */
 public class TimeCheckThrd extends Thread
 {
-	private int m_TimeOut = 60; //
+	private int m_TimeOut = 60; //m_TimeOut时间默认值 60 秒
 	public TimeCheckThrd(int timeout)throws Exception
 	{
 		m_TimeOut = timeout;
@@ -43,7 +43,7 @@ public class TimeCheckThrd extends Thread
 					}						
 					BaseCmdBean bean = ActionContainer.GetAction(data);
 					if(null != bean)
-						bean.noticeTimeOut();
+						bean.noticeTimeOut(); // 此函数为空 什么也不做
 					CommUtil.LOG(data + " 回应超时 222");
 				}
 				sleep(1000*10);  //睡眠10 s
