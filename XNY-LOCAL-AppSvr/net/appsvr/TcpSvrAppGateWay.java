@@ -30,7 +30,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 	TcpClient   m_TcpClient = null;
 	
 	//登陆客户端列表
-	private static Hashtable<String, ClientSocket> objClientTable = null;
+	private static Hashtable<String, ClientSocket> objClientTable = null;  // [ "0100000001" , ClientSocket ]
 	private static Byte markClientTable = new Byte((byte)1);      //同步锁
 	
 	/**
@@ -78,12 +78,21 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 			{
 				return null;
 			}
+			/**
+			Send Original:
+			
+			5a 00 00 00   01 00 00 00   00 00 00 00   01 00 00 00   00 00 00 00
+			30 30 30 30   30 31 30 30   30 30 30 30   30 31 20 20   20 20 20 20
+			20 20 20 20   32 30 31 36   2d 31 30 2d   31 33 20 31   30 3a 35 45
+			39 38 44 36   31 41 43 39   44 37 42 31   46 30 45 37   39 35 43 43
+			37 32 34 44   44 35 46 41   30 35 
+			 */
 			
 			//登入验证
-			String Status = new String(Buffer, 20, 4); 
-			String PId = new String(Buffer, 24, 20);
+			String Status    = new String(Buffer, 20, 4); 
+			String PId       = new String(Buffer, 24, 20);   //ASSII码16进制   [0100000001          ] 
 			String TimeStamp = new String(Buffer, 44, 14);
-			String strMd5 = new String(Buffer, 58, 32);
+			String strMd5    = new String(Buffer, 58, 32);
 //			String checkResult = checkClient(Status, PId, TimeStamp, strMd5);
 //			if(!checkResult.substring(0, 4).equalsIgnoreCase("0000"))
 //			{
@@ -106,13 +115,13 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 			}
 			synchronized(markClientTable)
 			{
-				objClientTable.put(PId , objChannel);
+				objClientTable.put(PId , objChannel); // objChannel 是什么 
 			}
 			
 			//更新通道IP
 			CommUtil.LOG("CPM_IP:" + objClient.getInetAddress().toString());
 			String pSql = "update device_detail t set t.link_url = '"+ objClient.getInetAddress().toString().substring(1) +"' where t.id = '"+ PId.trim() +"'";
-			//m_DbUtil.doUpdate(pSql);
+			m_DbUtil.doUpdate(pSql);
 		}
 		catch(Exception ex)
 		{
@@ -121,14 +130,6 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		return ret;
 	}
 	
-	/**
-	 * 
-	 * @param strStatus
-	 * @param strId
-	 * @param strTimestamp
-	 * @param strOriginalMd5
-	 * @return
-	 */
 	public String checkClient(String strStatus, String strId, String strTimestamp, String strOriginalMd5)
 	{
 		String ret = "3006";    // 系统状态  失败

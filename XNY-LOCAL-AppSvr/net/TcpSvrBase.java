@@ -54,7 +54,7 @@ public abstract class TcpSvrBase extends Thread
 			{
 				return false;
 			}	
-			recvMsgList = new LinkedList<Object>();		// 获取到的 Socket 包
+			recvMsgList = new LinkedList<Object>();		
 			this.start();                  
 			return true;
 		}
@@ -87,8 +87,6 @@ public abstract class TcpSvrBase extends Thread
 				CommUtil.PRINT("Send Original:");          
 				CommUtil.printMsg(Buffer, RecvLen);        
 				/**
-				进入线程......
-				Start..........................................
 				Send Original:
 				
 				5a 00 00 00   01 00 00 00   00 00 00 00   01 00 00 00   00 00 00 00
@@ -198,16 +196,10 @@ public abstract class TcpSvrBase extends Thread
 		private SendThrd objSendThrd = null;
 		
 		private LinkedList<Object> sendMsgList = null;
-		private byte[] markSend = new byte[1]; //同步锁
-		public  String m_ClientKey = "";       //客户端 ID 数
-		private int m_TestSta = 0;
+		private byte[]             markSend    = new byte[1]; //同步锁
+		public  String             m_ClientKey = "";          //客户端 ID 数
+		private int                m_TestSta   = 0;           //测试包测试次数
 		
-		/**
-		 * 初始化SOCKET 
-		 * @param objClient
-		 * @param pClientKey
-		 * @return boolean 
-		 */
 		public boolean init(Socket objClient, String pClientKey)
 		{		
 			try
@@ -237,23 +229,23 @@ public abstract class TcpSvrBase extends Thread
 		public void run()
 		{
 			int testTime = (int) (new java.util.Date().getTime() / 1000);    // 测试时间
-			int nowTime = testTime;                                          // 当前时间
-			int dTime = 0;
+			int nowTime  = testTime;                                         // 当前时间
+			int dTime    = 0;
 			
 			//Active Test
 			while(true)
 			{
 				try
 				{
-					sleep(2000);
+					sleep(2000); // 2秒
 					if(null == objSocket || objSocket.isClosed())
 					{
 						CommUtil.LOG("socket is closed " + m_ClientKey);
 						ClientClose(m_ClientKey);
 						break;
 					}
-					nowTime = (int)(new java.util.Date().getTime()/1000);  // 此刻时间
-					dTime = nowTime - testTime;
+					nowTime = (int)(new java.util.Date().getTime()/1000);   // 此刻时间
+					dTime   = nowTime - testTime;
 					if(dTime > m_iTimeOut)
 					{
 						m_TestSta++;
