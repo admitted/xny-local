@@ -313,11 +313,11 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 					DataInputStream DinStream = new DataInputStream(new ByteArrayInputStream(data));
 					DinStream.skip(20);   
 					MsgHeadBean msgHead = new MsgHeadBean();         //包头
-					msgHead.setUnMsgLen(CommUtil.converseInt(DinStream.readInt())); //通信包长度
-					msgHead.setUnMsgCode(CommUtil.converseInt(DinStream.readInt()));//业务类型
-					msgHead.setUnStatus(CommUtil.converseInt(DinStream.readInt())); //状态
-					msgHead.setUnMsgSeq(CommUtil.converseInt(DinStream.readInt())); //序列号
-					msgHead.setUnReserve(CommUtil.converseInt(DinStream.readInt()));//保留字段
+					msgHead.setUnMsgLen(CommUtil.converseInt(DinStream.readInt())); // 通信包长度
+					msgHead.setUnMsgCode(CommUtil.converseInt(DinStream.readInt()));// 业务类型
+					msgHead.setUnStatus(CommUtil.converseInt(DinStream.readInt())); // 状态
+					msgHead.setUnMsgSeq(CommUtil.converseInt(DinStream.readInt())); // 序列号
+					msgHead.setUnReserve(CommUtil.converseInt(DinStream.readInt()));// 保留字段
 					DinStream.close();
 				   // Data    (290字节) = [0100000001          ][包头                             ] + dealData 
 				   // dealData(250字节) = [                  95000010010431080001瑞烨流量计                    0026集合数据            2016-07-26 15:01:03 41EE64D2437B45B6409800000000400044220205420CEAC7                                                                                          ]

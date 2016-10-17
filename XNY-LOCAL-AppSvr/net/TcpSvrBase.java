@@ -20,14 +20,15 @@ public abstract class TcpSvrBase extends Thread
 	/** TCP服务器  */
 	private ServerSocket objTcpSvrSock = null;
 	
-	//接收数据列表,用于客户端数据交换
+	/** 接收数据列表,用于客户端数据交换 */
 	public LinkedList<Object> recvMsgList = null;
-	public Byte markRecv = new Byte((byte)1);      //线程同步锁
 	
-	private int m_Seq = 0;
-	private int m_iPort = 0;
+	/** 线程同步锁 */
+	public Byte markRecv = new Byte((byte)1);      
+	
+	private int m_Seq      = 0;
+	private int m_iPort    = 0;
 	private int m_iTimeOut = 0;
-	
 	
 	/**
 	 * 读取配置文件内容 继承者实现
@@ -38,7 +39,8 @@ public abstract class TcpSvrBase extends Thread
 	}
 	
 	/**
-	 * 初始化Socket
+	 * 初始化ServerSocket  TCP服务器
+	 * 监听 端口 60110 获得传上来的 Socket
 	 * @param iPort
 	 * @param iTimeOut
 	 * @return boolean
@@ -49,7 +51,7 @@ public abstract class TcpSvrBase extends Thread
 		{
 			m_iPort       = iPort;
 			m_iTimeOut    = iTimeOut;
-			objTcpSvrSock = new ServerSocket(m_iPort);  // 监听此端口 : 60110   获取客户端的Socket
+			objTcpSvrSock = new ServerSocket(m_iPort);  
 			if(null == objTcpSvrSock) 
 			{
 				return false;
@@ -66,8 +68,8 @@ public abstract class TcpSvrBase extends Thread
 	}	
 	
 	/*
-	 * 监听 Socket 连接 TcpSvrBase本身是一个线程 (non-Javadoc)
-	 * (循环调用accept()等待客户端连接) 与多客户端通信
+	 * 监听 Socket 连接 [TcpSvrBase本身是一个线程]
+	 * (循环调用accept()等待客户端连接) 多客户端通信
 	 * @see java.lang.Thread#run()
 	 */
 	public void run()
@@ -149,7 +151,7 @@ public abstract class TcpSvrBase extends Thread
 	}
 	
 	/**
-	 * 设置接收线程列表
+	 * add接收线程
 	 * @param object
 	 */
 	public void SetRecvMsgList(Object object)
@@ -172,7 +174,7 @@ public abstract class TcpSvrBase extends Thread
 	}
 	
 	/**
-	 * 返回接收列表大小
+	 * 返回接收列表size大小
 	 * @return long recvMsgList.size()
 	 */
 	public long GetRecvMsgListLength()
@@ -196,15 +198,19 @@ public abstract class TcpSvrBase extends Thread
 		private SendThrd objSendThrd = null;
 		
 		private LinkedList<Object> sendMsgList = null;
-		private byte[]             markSend    = new byte[1]; //同步锁
-		public  String             m_ClientKey = "";          //客户端 ID 数
-		private int                m_TestSta   = 0;           //测试包测试次数
+		
+		/** 同步锁        */
+		private byte[]             markSend    = new byte[1]; 
+		/** 客户端 ID 数  */
+		public  String             m_ClientKey = "";          
+		/** 测试包测试次数 */
+		private int                m_TestSta   = 0;           
 		
 		public boolean init(Socket objClient, String pClientKey)
 		{		
 			try
 			{
-				m_ClientKey = pClientKey; // 客户端 ID 数
+				m_ClientKey = pClientKey; 
 				objSocket   = objClient;
 				objSocket.setSoTimeout(0);
 							
@@ -311,20 +317,21 @@ public abstract class TcpSvrBase extends Thread
 		 */
 		private class RecvThrd extends Thread
 		{
+			/**  接收频道 */
 			private DataInputStream RecvChannel = null;
-			public RecvThrd(Socket pSocket)throws Exception
+			public  RecvThrd(Socket pSocket) throws Exception
 			{
 				RecvChannel = new DataInputStream(pSocket.getInputStream());
 			}
 			public void run()
 			{
 				Vector<Object> data = new Vector<Object>();
-				int nRecvLen = 0;
-				int nRcvPos = 0;
-				int nCursor = 0;
-				byte ctRslt = 0;
+				int     nRecvLen   = 0;  // 读取长度
+				int     nRcvPos    = 0;  // 上一次读取位置
+				int     nCursor    = 0;  
+				byte    ctRslt     = 0;
 				boolean bContParse = true;
-				byte[] cBuff = new byte[Cmd_Sta.CONST_MAX_BUFF_SIZE];
+				byte[]  cBuff      = new byte[Cmd_Sta.CONST_MAX_BUFF_SIZE];
 				
 				while (true)
 				{
@@ -342,11 +349,11 @@ public abstract class TcpSvrBase extends Thread
 							CommUtil.LOG("closed the socket in TcpSvr Recvs" + m_ClientKey);
 							break;
 						}
-						m_TestSta = 0;
-						nRcvPos += nRecvLen;
-						nRecvLen = 0;
-						nCursor = 0;
-						int nLen = 0;	
+						m_TestSta  = 0;
+						nRcvPos   += nRecvLen;
+						nRecvLen   = 0;
+						nCursor    = 0;
+						int nLen   = 0;	
 						bContParse = true;					
 				
 						while (bContParse)
@@ -413,23 +420,23 @@ public abstract class TcpSvrBase extends Thread
 			
 			private byte DeCode(byte[] pMsg, Vector<Object> vectData)
 			{
-				byte RetVal = CmdUtil.CODEC_ERR;
-				int nUsed = ((Integer)vectData.get(0)).intValue();  //现有的数据长度
-				int nCursor = ((Integer)vectData.get(1)).intValue();//从什么地方开始
+				byte RetVal  = CmdUtil.CODEC_ERR; // 4
+				int  nUsed   = ((Integer)vectData.get(0)).intValue();   // 现有的数据长度
+				int  nCursor = ((Integer)vectData.get(1)).intValue();   // 从什么地方开始
 				try
 				{
-					DataInputStream DinStream= new DataInputStream(new ByteArrayInputStream(pMsg));
-					if(nUsed < (int)CmdUtil.MSGHDRLEN )
+					DataInputStream DinStream = new DataInputStream(new ByteArrayInputStream(pMsg));
+					if(nUsed < (int)CmdUtil.MSGHDRLEN ) // 包头 20
 					{
-						return CmdUtil.CODEC_NEED_DATA;
+						return CmdUtil.CODEC_NEED_DATA; // 3
 					}
-					DinStream.skip(nCursor); 
+					DinStream.skip(nCursor);  // 返回实际跳过的字节数
 
-					int unMsgLen  = CommUtil.converseInt(DinStream.readInt());
-					int unMsgCode = CommUtil.converseInt(DinStream.readInt());
-					int unStatus  = CommUtil.converseInt(DinStream.readInt());
-					int unMsgSeq  = CommUtil.converseInt(DinStream.readInt());
-					int unReserve = CommUtil.converseInt(DinStream.readInt());
+					int unMsgLen  = CommUtil.converseInt(DinStream.readInt());  // 通信包长度
+					int unMsgCode = CommUtil.converseInt(DinStream.readInt());  // 业务类型
+					int unStatus  = CommUtil.converseInt(DinStream.readInt());  // 状态
+					int unMsgSeq  = CommUtil.converseInt(DinStream.readInt());  // 序列号
+					int unReserve = CommUtil.converseInt(DinStream.readInt());  // 保留字段
 					//System.out.println("DeCode:" + new String(pMsg));
 					if(unMsgLen < CmdUtil.MSGHDRLEN || unMsgLen > CmdUtil.RECV_BUFFER_SIZE)
 					{				
@@ -443,7 +450,7 @@ public abstract class TcpSvrBase extends Thread
 					}
 	
 					vectData.insertElementAt(new Integer(unMsgLen), 0);//nUsed = unMsgLen;			
-					if((unMsgCode & CmdUtil.COMM_RESP) != 0)//是应答包
+					if((unMsgCode & CmdUtil.COMM_RESP) != 0) // 是应答包
 					{
 						return CmdUtil.CODEC_RESP;
 					}

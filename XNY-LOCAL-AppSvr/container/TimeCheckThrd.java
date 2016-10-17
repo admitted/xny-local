@@ -6,8 +6,8 @@ import util.CommUtil;
 import bean.BaseCmdBean;
 
 /**
- * 时间校验 
- * 发送线程
+ * 时间校验
+ * 将 时间超时的客户端 LOG打印出来 打印格式 [data=CPM_ID]   
  * @author cui
  *
  */

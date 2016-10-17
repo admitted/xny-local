@@ -25,11 +25,13 @@ public class Main extends Thread
 		{   
 			//加载properties文件
 			PropertyConfigurator.configure("log4j.properties");
+			
 			//指令回复容器
 			if(!ActionContainer.Initialize())
 			{
 				System.exit(-1); //System.exit(-1)  非0值表示异常退出     是指所有程序（方法，类等）停止，系统停止运行。
-			}			
+			}
+			
 			//数据库组件
 			m_DBUtil = new DBUtil();
 			if(!m_DBUtil.init())

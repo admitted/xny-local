@@ -48,7 +48,7 @@ public class ActionContainer
 	}
 	
 	/**
-	 * 从HashTable中 根据传入的 String (实际上的objActionTable key值) 返回特定的 BaseCmdBean
+	 * 根据(实际上的objActionTable key值) 返回特定的 BaseCmdBean 并删除此键值对
 	 * @param pKey
 	 * @return BaseCmdBean
 	 */
