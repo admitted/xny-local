@@ -345,8 +345,8 @@ public class CommUtil
 		return s.substring(Integer.toHexString(a).length())
 				+ Integer.toHexString(a).toUpperCase();
 	}
+	
 	//数据反向
-
 	public static int converseInt(int i) {
 		int j = 0;
 		j |= (i << 24) & 0xFF000000;

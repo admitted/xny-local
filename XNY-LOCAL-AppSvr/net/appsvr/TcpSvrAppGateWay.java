@@ -115,7 +115,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 			}
 			synchronized(markClientTable)
 			{
-				objClientTable.put(PId , objChannel); // objChannel 是什么 
+				objClientTable.put(PId , objChannel); // objChannel 是什么  [ "0100000001" , ClientSocket ]
 			}
 			
 			//更新通道IP
@@ -169,6 +169,13 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		return byteData;
 	}
 	
+	
+	/**
+	 * 状态通知 
+	 * [STATUS_CLIENT_ONLINE,STATUS_CLIENT_OFFLINE]
+	 * 
+	 * @see net.TcpSvrBase#ClientStatusNotify(java.lang.String, int)
+	 */
 	public void ClientStatusNotify(String strClientKey, int iStatus)
 	{
 		switch(iStatus)
@@ -187,6 +194,10 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 					   + "7"
 					   + CommUtil.StrBRightFillSpace((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()), 20)
 					   + CommUtil.StrBRightFillSpace("网关恢复在线", 128);
+	/*
+	[2016-10-18 11:22:49] PlatForm Submit [0100000002          ] 
+	[                    00001004                                                                72016-10-18 11:22:49 网关恢复在线                                                                                                                    ]
+	*/
 				SetRecvMsgList((strClientKey + new String(EnCode(Cmd_Sta.COMM_SUBMMIT, OffStr))).getBytes());
 				break;
 			}
@@ -262,6 +273,10 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		return ret;
 	}
 	
+	/** 
+	 * 如果收到关闭指令，就关闭SOCKET和释放资源
+	 * @see net.TcpSvrBase#ClientClose(java.lang.String)
+	 */
 	public synchronized void ClientClose(String pClientKey)
 	{
 		try
@@ -292,7 +307,6 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 	/**
 	 * @author CuiJing
 	 * 接收数据控制处理类 
-	 *
 	 */
 	private class MsgCtrl extends Thread
 	{
@@ -306,7 +320,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 					byte[] data = (byte[])GetRecvMsgList();                    //取得接收线程数据列表
 					if(null ==  data || data.length < Cmd_Sta.CONST_MSGHDRLEN) //Cmd_Sta.CONST_MSGHDRLEN: 包头长度
 					{
-						sleep(10); //ms
+						sleep(10); // ms
 						continue;
 					}
 					String strClientKey = new String(data, 0, 20);   // 客户端key Cpm_Id [0100000001          ]

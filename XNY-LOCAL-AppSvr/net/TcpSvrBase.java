@@ -34,12 +34,12 @@ public abstract class TcpSvrBase extends Thread
 	 * 读取配置文件内容 继承者实现
 	 * @throws Exception
 	 */
-	public TcpSvrBase()throws Exception
+	public TcpSvrBase() throws Exception
 	{
 	}
 	
 	/**
-	 * 初始化ServerSocket  TCP服务器
+	 * 初始化ServerSocket : TCP服务器
 	 * 监听 端口 60110 获得传上来的 Socket
 	 * @param iPort
 	 * @param iTimeOut
@@ -67,7 +67,7 @@ public abstract class TcpSvrBase extends Thread
 		}		
 	}	
 	
-	/*
+	/**
 	 * 监听 Socket 连接 [TcpSvrBase本身是一个线程]
 	 * (循环调用accept()等待客户端连接) 多客户端通信
 	 * @see java.lang.Thread#run()
@@ -96,7 +96,7 @@ public abstract class TcpSvrBase extends Thread
 				20 20 20 20   32 30 31 36   2d 31 30 2d   31 33 20 31   30 3a 35 45
 				39 38 44 36   31 41 43 39   44 37 42 31   46 30 45 37   39 35 43 43
 				37 32 34 44   44 35 46 41   30 35 
-				 */
+				*/
 				if(20 > RecvLen)
 				{
 					objClient.close();
@@ -114,7 +114,7 @@ public abstract class TcpSvrBase extends Thread
 				SendChannel.write(new String(Buffer, 0, 44).getBytes());
 				SendChannel.flush();
 				objClient.setSoTimeout(0);
-				ClientStatusNotify(Pid, STATUS_CLIENT_ONLINE);
+				ClientStatusNotify(Pid, STATUS_CLIENT_ONLINE); // 通知在线
 		 		continue;
 			}
 			catch(Exception ex)
@@ -125,13 +125,14 @@ public abstract class TcpSvrBase extends Thread
 		}//while
 	}
 	
-	//登入验证
+	/** 登入验证  */
 	protected abstract String CheckClient(byte[] buf, Socket objClient);
 	
-	//如果收到关闭指令，就关闭SOCKET和释放资源
+	/** 状态通知  */
 	protected abstract void ClientStatusNotify(String strClientKey, int Status);
-	protected abstract void ClientClose(String pClientKey);
 	
+	/** 如果收到关闭指令，就关闭SOCKET和释放资源 */
+	protected abstract void ClientClose(String pClientKey);
 	
 	/**
 	 * 取得接收线程数据列表
@@ -151,7 +152,8 @@ public abstract class TcpSvrBase extends Thread
 	}
 	
 	/**
-	 * add接收线程
+	 * 将 接收线程 添加到 数据列表 
+	 * [线程安全的]
 	 * @param object
 	 */
 	public void SetRecvMsgList(Object object)
@@ -197,14 +199,15 @@ public abstract class TcpSvrBase extends Thread
 		private RecvThrd objRecvThrd = null;
 		private SendThrd objSendThrd = null;
 		
+		/** 发送信息列表        */
 		private LinkedList<Object> sendMsgList = null;
 		
 		/** 同步锁        */
-		private byte[]             markSend    = new byte[1]; 
+		private byte[]         markSend    = new byte[1]; 
 		/** 客户端 ID 数  */
-		public  String             m_ClientKey = "";          
+		public  String         m_ClientKey = "";          
 		/** 测试包测试次数 */
-		private int                m_TestSta   = 0;           
+		private int            m_TestSta   = 0;           
 		
 		public boolean init(Socket objClient, String pClientKey)
 		{		
@@ -327,11 +330,11 @@ public abstract class TcpSvrBase extends Thread
 			{
 				Vector<Object> data = new Vector<Object>();
 				int     nRecvLen   = 0;  // 读取长度
-				int     nRcvPos    = 0;  // 上一次读取位置
+				int     nRcvPos    = 0;  // 读取位置
 				int     nCursor    = 0;  
 				byte    ctRslt     = 0;
 				boolean bContParse = true;
-				byte[]  cBuff      = new byte[Cmd_Sta.CONST_MAX_BUFF_SIZE];
+				byte[]  cBuff      = new byte[Cmd_Sta.CONST_MAX_BUFF_SIZE]; // 2048 字节
 				
 				while (true)
 				{

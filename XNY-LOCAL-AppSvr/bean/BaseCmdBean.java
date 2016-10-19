@@ -13,7 +13,7 @@ import util.*;
  */
 public abstract class BaseCmdBean
 {
-	public static long     m_SessionId  = (new java.util.Date().getTime()/1000);  // static 共用一个   毫秒/1000 = 秒  启动时刻ID 
+	public static long     m_SessionId  = (new java.util.Date().getTime()/1000);  // static 毫秒/1000 = 秒  启动时刻ID 
 	private       String   actionSource = "";      // 动作源   Cpm_Id
 	private       String   Reserve      = "";      // 预留
 	private       String   Status       = "0000";  // 状态
