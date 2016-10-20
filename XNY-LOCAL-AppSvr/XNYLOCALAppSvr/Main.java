@@ -65,8 +65,8 @@ public class Main extends Thread
 		System.out.println("Start..........................................");
 		String inputCmd = null;
 		boolean test = true;
-		while (!interrupted()) //interrupted()如果当前线程已经中断，则返回 true；否则返回 false  ：当线程没有中断时执行循环
-		{                      //第一次执行 interrupted()，线程没有中断，返回true，接着将状态置为false 于是第二次执行会返回false
+		while (!interrupted()) // 当主线程为中断状态时进入循环 , 并将 main 主线程 的中断状态清除 
+		{                      
 			try 
 			{
 				sleep(1000);	

@@ -39,7 +39,7 @@ public abstract class TcpSvrBase extends Thread
 	}
 	
 	/**
-	 * 初始化ServerSocket : TCP服务器
+	 * 初始化TCP服务器
 	 * 监听 端口 60110 获得传上来的 Socket
 	 * @param iPort
 	 * @param iTimeOut
@@ -125,7 +125,7 @@ public abstract class TcpSvrBase extends Thread
 		}//while
 	}
 	
-	/** 登入验证  */
+	/** 登入验证 子类实现此抽象方法   */
 	protected abstract String CheckClient(byte[] buf, Socket objClient);
 	
 	/** 状态通知  */

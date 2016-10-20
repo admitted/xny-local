@@ -89,10 +89,10 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 			 */
 			
 			//登入验证
-			String Status    = new String(Buffer, 20, 4); 
-			String PId       = new String(Buffer, 24, 20);   //ASSII码16进制   [0100000001          ] 
-			String TimeStamp = new String(Buffer, 44, 14);
-			String strMd5    = new String(Buffer, 58, 32);
+			String Status    = new String(Buffer, 20, 4);    // [0000]
+			String PId       = new String(Buffer, 24, 20);   // ASSII码16进制   [0100000001          ] 
+			String TimeStamp = new String(Buffer, 44, 14);   // [2016-10-13 10:]
+			String strMd5    = new String(Buffer, 58, 32);   // 
 //			String checkResult = checkClient(Status, PId, TimeStamp, strMd5);
 //			if(!checkResult.substring(0, 4).equalsIgnoreCase("0000"))
 //			{
@@ -171,7 +171,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 	
 	
 	/**
-	 * 状态通知 
+	 * 状态通知  且  SetRecvMsgList
 	 * [STATUS_CLIENT_ONLINE,STATUS_CLIENT_OFFLINE]
 	 * 
 	 * @see net.TcpSvrBase#ClientStatusNotify(java.lang.String, int)
@@ -195,7 +195,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 					   + CommUtil.StrBRightFillSpace((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date()), 20)
 					   + CommUtil.StrBRightFillSpace("网关恢复在线", 128);
 	/*
-	[2016-10-18 11:22:49] PlatForm Submit [0100000002          ] 
+	[0100000002          ] 
 	[                    00001004                                                                72016-10-18 11:22:49 网关恢复在线                                                                                                                    ]
 	*/
 				SetRecvMsgList((strClientKey + new String(EnCode(Cmd_Sta.COMM_SUBMMIT, OffStr))).getBytes());
@@ -305,8 +305,9 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 	}
 	
 	/**
+	 * 数据处理类
 	 * @author CuiJing
-	 * 接收数据控制处理类 
+	 *  
 	 */
 	private class MsgCtrl extends Thread
 	{
@@ -333,8 +334,8 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 					msgHead.setUnMsgSeq(CommUtil.converseInt(DinStream.readInt())); // 序列号
 					msgHead.setUnReserve(CommUtil.converseInt(DinStream.readInt()));// 保留字段
 					DinStream.close();
-				   // Data    (290字节) = [0100000001          ][包头                             ] + dealData 
-				   // dealData(250字节) = [                  95000010010431080001瑞烨流量计                    0026集合数据            2016-07-26 15:01:03 41EE64D2437B45B6409800000000400044220205420CEAC7                                                                                          ]
+// Data    (290字节) = [0100000001          ][包头                             ] + dealData 
+// dealData(250字节) = [                  95000010010431080001瑞烨流量计                    0026集合数据            2016-07-26 15:01:03 41EE64D2437B45B6409800000000400044220205420CEAC7                                                                                          ]
 					dealData = new String(data, 40, data.length - 40);
 					
 					String dealReserve = dealData.substring(0, 20);        //保留字
