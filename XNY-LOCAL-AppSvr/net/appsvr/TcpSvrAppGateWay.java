@@ -29,9 +29,9 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 	DBUtil      m_DbUtil    = null;
 	TcpClient   m_TcpClient = null;
 	
-	//登陆客户端列表
+	/** 客户端列表 */
 	private static Hashtable<String, ClientSocket> objClientTable = null;  // [ "0100000001" , ClientSocket ]
-	private static Byte markClientTable = new Byte((byte)1);      //同步锁
+	private static Byte markClientTable = new Byte((byte)1); // 同步锁
 	
 	/**
 	 * 读取配置文件内容
@@ -100,7 +100,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 //			}
 			ret = PId;
 			
-			//验证是否已存在
+			//验证是否已存在  ,若存在就关闭
 			if(objClientTable.containsKey(PId))
 			{
 				CommUtil.PRINT("Id Already Exist!" + PId);
@@ -113,6 +113,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 			{
 				CommUtil.LOG("ClientId [" + PId + "] ClientSocket init failed!");
 			}
+			
 			synchronized(markClientTable)
 			{
 				objClientTable.put(PId , objChannel); // objChannel 是什么  [ "0100000001" , ClientSocket ]
