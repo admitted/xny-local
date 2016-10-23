@@ -10,13 +10,16 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Hashtable;
+
 import net.Md5;
 import net.MsgHeadBean;
 import net.TcpClient;
 import net.TcpSvrBase;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import container.ActionContainer;
 import bean.BaseCmdBean;
 import util.*;
@@ -73,25 +76,26 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		{
 			DataInputStream DinStream = new DataInputStream(new ByteArrayInputStream(Buffer));
 			DinStream.readInt();
-			int Cmd = CommUtil.converseInt(DinStream.readInt());
+			int Cmd = CommUtil.converseInt(DinStream.readInt()); // 1
+//			int Cmd2 = CommUtil.converseInt(DinStream.readInt()); // 0
 			if(Cmd_Sta.COMM_LOGON != Cmd) // 请求登陆  = 0x00000001;	
 			{
 				return null;
 			}
-			/**
+			/*
 			Send Original:
 			
-			5a 00 00 00   01 00 00 00   00 00 00 00   01 00 00 00   00 00 00 00
-			30 30 30 30   30 31 30 30   30 30 30 30   30 31 20 20   20 20 20 20
+			5a 00 00 00   01 00 00 00   00 00 00 00   01 00 00 00   00 00 00 00  > 包头
+			30 30 30 30   30 31 30 30   30 30 30 30   30 31 20 20   20 20 20 20  > 登入包
 			20 20 20 20   32 30 31 36   2d 31 30 2d   31 33 20 31   30 3a 35 45
 			39 38 44 36   31 41 43 39   44 37 42 31   46 30 45 37   39 35 43 43
 			37 32 34 44   44 35 46 41   30 35 
 			 */
 			
 			//登入验证
-			String Status    = new String(Buffer, 20, 4);    // [0000]
-			String PId       = new String(Buffer, 24, 20);   // ASSII码16进制   [0100000001          ] 
-			String TimeStamp = new String(Buffer, 44, 14);   // [2016-10-13 10:]
+			String Status    = new String(Buffer, 20, 4);    // 业务执行状态 成功为 [0000]
+			String PId       = new String(Buffer, 24, 20);   // CPM_ID = [0100000001          ] 
+			String TimeStamp = new String(Buffer, 44, 14);   // [2016-10-13 10:]  ?????? 小错误
 			String strMd5    = new String(Buffer, 58, 32);   // 
 //			String checkResult = checkClient(Status, PId, TimeStamp, strMd5);
 //			if(!checkResult.substring(0, 4).equalsIgnoreCase("0000"))
@@ -146,6 +150,11 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		return ret;
 	}
 
+	/**
+	 * 
+	 *  (non-Javadoc)
+	 * @see net.TcpSvrBase#GetActiveTestBuf()
+	 */
 	public byte[] GetActiveTestBuf()
 	{
 		byte[] byteData = null;
@@ -153,11 +162,11 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		{
 			ByteArrayOutputStream boutStream = new ByteArrayOutputStream();
 			DataOutputStream doutStream = new DataOutputStream(boutStream);
-			doutStream.writeInt(CommUtil.converseInt(CmdUtil.MSGHDRLEN));
-			doutStream.writeInt(CommUtil.converseInt(CmdUtil.COMM_ACTIVE_TEST));
-			doutStream.writeInt(0);
-			doutStream.writeInt(CommUtil.converseInt(GetSeq()));
-			doutStream.writeInt(0);
+			doutStream.writeInt(CommUtil.converseInt(CmdUtil.MSGHDRLEN)); // 包头长度
+			doutStream.writeInt(CommUtil.converseInt(CmdUtil.COMM_ACTIVE_TEST)); // 链接测试
+			doutStream.writeInt(0); // 成功状态 0 
+			doutStream.writeInt(CommUtil.converseInt(GetSeq())); // 序列号
+			doutStream.writeInt(0); // 保留字段
 			byteData = boutStream.toByteArray();
 			doutStream.close();
 			boutStream.close();
@@ -306,7 +315,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 	}
 	
 	/**
-	 * 数据处理类
+	 * 接收线程列表 数据处理 类
 	 * @author CuiJing
 	 *  
 	 */
@@ -322,7 +331,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 					byte[] data = (byte[])GetRecvMsgList();                    //取得接收线程数据列表
 					if(null ==  data || data.length < Cmd_Sta.CONST_MSGHDRLEN) //Cmd_Sta.CONST_MSGHDRLEN: 包头长度
 					{
-						sleep(10); // ms
+						sleep(10); 
 						continue;
 					}
 					String strClientKey = new String(data, 0, 20);   // 客户端key Cpm_Id [0100000001          ]
@@ -352,7 +361,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 								cmdBean.parseReqest(strClientKey, dealData, data);
 								cmdBean.execRequest();
 								
-								if(1 == m_iStatus)  //客户端上传?
+								if(1 == m_iStatus)  //客户端上传???
 								{
 									//上传
 									m_TcpClient.SetSendMsg(strClientKey + dealData, 1);
@@ -360,7 +369,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 							}
 							break;
 						}
-						case Cmd_Sta.COMM_DELIVER://服务器派发  下行
+						case Cmd_Sta.COMM_DELIVER: //服务器派发  下行
 						{
 							CommUtil.LOG("PlatForm Deliver [" + strClientKey + "] " + "[" + dealData + "]");
 							BaseCmdBean cmdBean = ActionContainer.GetAction(dealReserve);

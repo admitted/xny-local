@@ -88,11 +88,11 @@ public abstract class TcpSvrBase extends Thread
 				
 				CommUtil.PRINT("Send Original:");          
 				CommUtil.printMsg(Buffer, RecvLen);        
-				/**
+				/*
 				Send Original:
 				
-				5a 00 00 00   01 00 00 00   00 00 00 00   01 00 00 00   00 00 00 00
-				30 30 30 30   30 31 30 30   30 30 30 30   30 31 20 20   20 20 20 20
+				5a 00 00 00   01 00 00 00   00 00 00 00   01 00 00 00   00 00 00 00  > 包头
+				30 30 30 30   30 31 30 30   30 30 30 30   30 31 20 20   20 20 20 20  > 登入包 
 				20 20 20 20   32 30 31 36   2d 31 30 2d   31 33 20 31   30 3a 35 45
 				39 38 44 36   31 41 43 39   44 37 42 31   46 30 45 37   39 35 43 43
 				37 32 34 44   44 35 46 41   30 35 
@@ -188,7 +188,7 @@ public abstract class TcpSvrBase extends Thread
 	protected abstract byte[] EnCode(int msgCode, String pData);
 		
 	/**
-	 * 作为 每个CPM 相对应的服务端 , (但自己本身又是一个客户端)
+	 * 作为 每个CPM 相对应的服务端 , (但自己本身又相当于一个客户端)
 	 * @author cui
 	 */
 	public class ClientSocket extends Thread
@@ -197,12 +197,12 @@ public abstract class TcpSvrBase extends Thread
 		private RecvThrd objRecvThrd = null;
 		private SendThrd objSendThrd = null;
 		
-		/** 发送信息列表        */
+		/** 发送信息列表 */
 		private LinkedList<Object> sendMsgList = null;
 		
-		/** 同步锁        */
+		/** 同步锁  */
 		private byte[]         markSend    = new byte[1]; 
-		/** 客户端 ID  */
+		/** 客户端 ID */
 		public  String         m_ClientKey = "";          
 		/** 测试包测试次数 */
 		private int            m_TestSta   = 0;           
@@ -217,16 +217,16 @@ public abstract class TcpSvrBase extends Thread
 			try
 			{
 				m_ClientKey = pClientKey; // pClientKey = Pid = [0100000001          ]
-				objSocket   = objClient;  // TCP服务器  objTcpSvrSock.accept();
+				objSocket   = objClient;  // objTcpSvrSock.accept();
 				objSocket.setSoTimeout(0);
 							
 				sendMsgList = new LinkedList<Object>();	
 				
 				objRecvThrd = new RecvThrd(objSocket);
-				objRecvThrd.start();
+				objRecvThrd.start(); // Decode; RecvMsg入库 
 				
 				objSendThrd = new SendThrd(objClient);
-				objSendThrd.start();
+				objSendThrd.start(); // SendMsg 入库
 						
 				this.start();			
 			}
@@ -361,7 +361,7 @@ public abstract class TcpSvrBase extends Thread
 						nRcvPos   += nRecvLen;
 						nRecvLen   = 0;
 						nCursor    = 0;
-						int nLen   = 0;	
+						int nLen   = 0;
 						bContParse = true;					
 				
 						while (bContParse)
@@ -372,23 +372,22 @@ public abstract class TcpSvrBase extends Thread
 								break;
 							}
 							data.clear(); // 清空 Vector
-							data.insertElementAt(new Integer(nLen),0);    // 290
-							data.insertElementAt(new Integer(nCursor),1); // 0
+							data.insertElementAt(new Integer(nLen),0);    // 数据长度 290
+							data.insertElementAt(new Integer(nCursor),1); // 当前起始位置
 							ctRslt = DeCode(cBuff, data);
-							nLen = ((Integer)data.get(0)).intValue();
+							nLen = ((Integer)data.get(0)).intValue();     // vectData[0] = unMsgLen
 							switch(ctRslt)
 							{
 								case CmdUtil.CODEC_CMD:
-									byte [] Resp = ((byte[])data.get(1));					
+									byte [] Resp = ((byte[])data.get(1)); // 应答包					
 									if(null != Resp && Resp.length > 0)
 									{
-										SetSendMsgList(Resp);
+										SetSendMsgList(Resp);       // 将应答包 放入 SendMsgList
 									}		
-							
-									byte[] transData = (byte[])data.get(2);
+									byte[] transData = (byte[])data.get(2); // 
 									if(null != transData && transData.length >= Cmd_Sta.CONST_MSGHDRLEN)
 									{
-										SetRecvMsgList(transData);
+										SetRecvMsgList(transData);  // 接收列表 
 									}
 									nCursor += nLen;
 									break;
@@ -452,7 +451,7 @@ public abstract class TcpSvrBase extends Thread
 					int unReserve = CommUtil.converseInt(DinStream.readInt());  // 保留字段
 					//System.out.println("DeCode:" + new String(pMsg));
 					if(unMsgLen < CmdUtil.MSGHDRLEN || unMsgLen > CmdUtil.RECV_BUFFER_SIZE)
-					{	// 解析后的通信包长度	< 包头20   或  > 2048 	
+					{	// 解析后的通信包长度	< 包头20 或 > 2048 	
 						CommUtil.LOG("unMsgLen < CmdUtil.MSGHDRLEN " + unMsgLen);
 						return CmdUtil.CODEC_ERR;
 					}
@@ -462,25 +461,24 @@ public abstract class TcpSvrBase extends Thread
 						return CmdUtil.CODEC_NEED_DATA;
 					}
 					
-					// 当 nUsed >= unMsgLen 时走到此  
-					vectData.insertElementAt(new Integer(unMsgLen), 0); 		
+					// 当 nUsed >= unMsgLen 且 20 < unMsgLen < 2048 时  
+					vectData.insertElementAt(new Integer(unMsgLen), 0); // vectData[0] = unMsgLen 		
 					if((unMsgCode & CmdUtil.COMM_RESP) != 0)           
-					{	//当 unMsgCode = COMM_RESP 或者 CODEC_TRANS 时
+					{	// 当 unMsgCode = COMM_RESP (各自回应0x80000000|CMD)
 						return CmdUtil.CODEC_RESP;
 					}
-			
+					
 					DinStream.close();
-
 					//CommUtil.printMsg(pMsg, unMsgLen);		
 					ByteArrayOutputStream boutStream = new ByteArrayOutputStream();
-					DataOutputStream doutStream = new DataOutputStream(boutStream);
+					DataOutputStream      doutStream = new DataOutputStream(boutStream);
 					//置应答包
 					doutStream.writeInt(CommUtil.converseInt(CmdUtil.MSGHDRLEN));
 					doutStream.writeInt(CommUtil.converseInt(unMsgCode|CmdUtil.COMM_RESP));
-					doutStream.writeInt(CommUtil.converseInt(unStatus));//Sta
-					doutStream.writeInt(CommUtil.converseInt(unMsgSeq));//seq
-					doutStream.writeInt(CommUtil.converseInt(unReserve));//
-					vectData.insertElementAt(boutStream.toByteArray(), 1);
+					doutStream.writeInt(CommUtil.converseInt(unStatus));
+					doutStream.writeInt(CommUtil.converseInt(unMsgSeq));
+					doutStream.writeInt(CommUtil.converseInt(unReserve));
+					vectData.insertElementAt(boutStream.toByteArray(), 1);  // 应答包
 					boutStream.close();
 					doutStream.close();	 
     	
@@ -495,7 +493,15 @@ public abstract class TcpSvrBase extends Thread
 						case CmdUtil.COMM_DELIVER: // 服务器派发  下行
 						{
 							ByteArrayOutputStream bout = new ByteArrayOutputStream();
-							DataOutputStream dout = new DataOutputStream(bout);
+							DataOutputStream      dout = new DataOutputStream(bout);
+							/*
+							PlatForm Submit 
+							[0100000002          ] 20字节
+							[                7186000010010431090001天信流量计                    0003标况流量
+							            2016-10-23 10:44:07 724.56                                         
+							                                                                               
+							 t         ]250字节
+							*/
 							dout.write(CommUtil.StrRightFillSpace(m_ClientKey, 20).getBytes());
 							dout.write(pMsg, nCursor, unMsgLen);
 							vectData.insertElementAt(bout.toByteArray(), 2);

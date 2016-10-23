@@ -554,10 +554,9 @@ public class TcpClient extends Thread
 					return Cmd_Sta.CODEC_NEED_DATA;
 				}
 
-				data.insertElementAt(new Integer(unMsgLen), 0); // nUsed =
-																// unMsgLen;
+				data.insertElementAt(new Integer(unMsgLen), 0); // nUsed = unMsgLen;
 
-				if ((unMsgCode & Cmd_Sta.COMM_RESP) != 0)// 是应答包
+				if ((unMsgCode & Cmd_Sta.COMM_RESP) != 0)       // 是应答包
 				{
 					RetVal = Cmd_Sta.CODEC_RESP;
 					return RetVal;
@@ -568,9 +567,9 @@ public class TcpClient extends Thread
 				// 置应答包
 				doutStream.writeInt(CommUtil.converseInt(Cmd_Sta.CONST_MSGHDRLEN));
 				doutStream.writeInt(CommUtil.converseInt(unMsgCode | Cmd_Sta.COMM_RESP));
-				doutStream.writeInt(CommUtil.converseInt(unStatus));// Sta
-				doutStream.writeInt(CommUtil.converseInt(unMsgSeq));// seq
-				doutStream.writeInt(CommUtil.converseInt(unReserve));// seq
+				doutStream.writeInt(CommUtil.converseInt(unStatus)); // Sta
+				doutStream.writeInt(CommUtil.converseInt(unMsgSeq)); // seq
+				doutStream.writeInt(CommUtil.converseInt(unReserve));
 				byte hdrMsg[] = boutStream.toByteArray();
 				data.insertElementAt(hdrMsg, 1);
 				DinStream.close();
