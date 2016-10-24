@@ -500,7 +500,7 @@ public abstract class TcpSvrBase extends Thread
 							[                7186000010010431090001天信流量计                    0003标况流量
 							            2016-10-23 10:44:07 724.56                                         
 							                                                                               
-							 t         ]250字节
+							t         ]250字节
 							*/
 							dout.write(CommUtil.StrRightFillSpace(m_ClientKey, 20).getBytes());
 							dout.write(pMsg, nCursor, unMsgLen);
