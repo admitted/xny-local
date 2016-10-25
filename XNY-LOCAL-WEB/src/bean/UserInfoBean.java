@@ -1,7 +1,11 @@
 package bean;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -14,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import rmi.Rmi;
 import rmi.RmiBean;
+import util.AddressUtils;
 import util.CommUtil;
 import util.CurrStatus;
 import util.MsgBean;
@@ -56,7 +61,7 @@ public class UserInfoBean extends RmiBean
 				{
 					//IP & Time
 					Last_Time = df.format(new Date()).toString();
-					Last_IP   = request.getRemoteHost();
+					Last_IP   = getAddressByIP(request.getRemoteHost());
 					msgBean = pRmi.RmiExec(14, this, 0);
 					
 					//登入信息
@@ -82,7 +87,7 @@ public class UserInfoBean extends RmiBean
 				{
 					//IP & Time
 					Last_Time = df.format(new Date()).toString();
-					Last_IP   = request.getRemoteHost();
+					Last_IP   = AddressUtils.getAddresses("ip="+request.getRemoteHost(), "utf-8")  ;
 					msgBean = pRmi.RmiExec(14, this, 0);
 					
 					//登入信息  某个人的登录信息 UserInfo_
@@ -264,6 +269,34 @@ public class UserInfoBean extends RmiBean
     	
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 	   	response.sendRedirect(currStatus.getJsp());
+	}
+	
+	//解析 IP地址
+	public String getAddressByIP(String strIP)
+	{
+		try
+		{
+			URL url = new URL("http://ip.taobao.com/service/getIpInfo.php?ip=" + strIP);
+			URLConnection conn = url.openConnection();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "GBK"));
+			String line = null;
+			StringBuffer result = new StringBuffer();
+			while ((line = reader.readLine()) != null)
+			{
+				result.append(line);
+			}
+			reader.close();
+			strIP = result.substring(result.indexOf("该IP所在地为："));
+			strIP = strIP.substring(strIP.indexOf("：") + 1);
+			String province = strIP.substring(6, strIP.indexOf("省"));
+			String city = strIP.substring(strIP.indexOf("省") + 1, strIP.indexOf("市"));
+			return province + city;
+		}
+		catch (IOException e)
+		{
+			return "读取失败";
+		}
 	}
 	
 	//帐号检测
