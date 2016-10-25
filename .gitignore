@@ -31,6 +31,7 @@ build
 #------------------------------------Java & JavaWeb-----------------------------------------
 # 产生.class 的 bin 文件夹
 bin/
+classes/
 *.class
 
 # Package Files #

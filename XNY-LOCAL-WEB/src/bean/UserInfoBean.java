@@ -61,7 +61,7 @@ public class UserInfoBean extends RmiBean
 				{
 					//IP & Time
 					Last_Time = df.format(new Date()).toString();
-					Last_IP   = getAddressByIP(request.getRemoteHost());
+					Last_IP   = AddressUtils.getAddresses("ip=" + request.getRemoteHost(), "utf-8");
 					msgBean = pRmi.RmiExec(14, this, 0);
 					
 					//登入信息
@@ -87,7 +87,7 @@ public class UserInfoBean extends RmiBean
 				{
 					//IP & Time
 					Last_Time = df.format(new Date()).toString();
-					Last_IP   = AddressUtils.getAddresses("ip="+request.getRemoteHost(), "utf-8")  ;
+					Last_IP   = AddressUtils.getAddresses("ip=" + request.getRemoteHost(), "utf-8");
 					msgBean = pRmi.RmiExec(14, this, 0);
 					
 					//登入信息  某个人的登录信息 UserInfo_

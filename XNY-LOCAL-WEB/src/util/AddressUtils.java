@@ -32,21 +32,30 @@ public class AddressUtils
 	 */
 	public static String getAddresses(String content, String encodingString) throws UnsupportedEncodingException
 	{
-		String urlStr = "http://ip.taobao.com/service/getIpInfo.php?ip=";
+		String urlStr    = "http://ip.taobao.com/service/getIpInfo.php?ip=";
 		String returnStr = getResult(urlStr, content, encodingString);
+//		String country   = "";
+		String region    = "";
+		String city      = "";
+		String isp       = "";
 		if (returnStr != null)
 		{
-			// System.out.println("(1) unicode转换成中文前的returnStr : " + returnStr);
+//			System.out.println("(1) unicode转换成中文前的returnStr : " + returnStr);
 			returnStr = decodeUnicode(returnStr);
-			// System.out.println("(2) unicode转换成中文后的returnStr : " + returnStr);
+//			System.out.println("(2) unicode转换成中文后的returnStr : " + returnStr);
 			String[] temp = returnStr.split(",");
 			if (temp.length < 3)
 			{
 				return "0";// 无效IP，局域网测试
 			}
 			
+			JSONObject jobj = (JSONObject) JSON.parse(returnStr);
+//			country = jobj.getJSONObject("data").getString("country");
+			region  = jobj.getJSONObject("data").getString("region");
+			city    = jobj.getJSONObject("data").getString("city");
+			isp     = jobj.getJSONObject("data").getString("isp");
 			
-			return returnStr;
+			return  region + city +"-"+ isp;
 		}
 		return null;
 	}
@@ -192,40 +201,14 @@ public class AddressUtils
 	}
 	
 
-	// 测试
+	/* 测试
 	public static void main(String[] args)
 	{
-
 		String ip = "60.217.199.122";
 		String address = "";
 		try
 		{
-			address = AddressUtils.getAddresses("ip=" + ip, "utf-8");
-			/*
-			 * 
-			{
-			    "code": 0, 
-			    "data": {
-			        "country": "中国", 
-			        "country_id": "CN", 
-			        "area": "华东", 
-			        "area_id": "300000", 
-			        "region": "山东省", 
-			        "region_id": "370000", 
-			        "city": "济南市", 
-			        "city_id": "370100", 
-			        "county": "", 
-			        "county_id": "-1", 
-			        "isp": "联通", 
-			        "isp_id": "100026", 
-			        "ip": "60.217.199.122"
-			    }
-			}
-			 * */
-			
-			JSONObject jobj = (JSONObject) JSON.parse("address");
-			System.out.println(jobj);
-			
+			address = AddressUtils.getAddresses("ip=" + ip, "utf-8");	
 		}
 		catch (UnsupportedEncodingException e)
 		{
@@ -236,4 +219,5 @@ public class AddressUtils
 		System.out.println(address);
 		// 输出结果为：广东省,广州市,越秀区
 	}
+	*/
 }
