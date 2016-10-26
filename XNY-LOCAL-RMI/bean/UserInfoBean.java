@@ -1,15 +1,24 @@
 package bean;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import rmi.Rmi;
 import rmi.RmiBean;
+import util.AddressUtils;
 import util.CommUtil;
 import util.CurrStatus;
 import util.MsgBean;
@@ -39,15 +48,22 @@ public class UserInfoBean extends RmiBean
 			currStatus.getHtmlData(request, false);
 			
 			String Url = "index.jsp";
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //设置日期格式
 			msgBean = pRmi.RmiExec(21, this, 0);
 			if(msgBean.getStatus() == MsgBean.STA_SUCCESS)
 			{
+				
 				if(StrMd5.substring(0,20).trim().equalsIgnoreCase("system"))
 				{
 					
 				}
 				else if(StrMd5.substring(0,20).trim().equalsIgnoreCase("admin"))
 				{
+					//IP & Time
+					Last_Time = df.format(new Date()).toString();
+					Last_IP   = AddressUtils.getAddresses("ip=" + request.getRemoteHost(), "utf-8");
+					msgBean = pRmi.RmiExec(14, this, 0);
+					
 					//登入信息
 					msgBean = pRmi.RmiExec(0, this, 0);
 					request.getSession().setAttribute("Admin_" + Sid, (UserInfoBean)((ArrayList<?>)msgBean.getMsg()).get(0));
@@ -69,6 +85,11 @@ public class UserInfoBean extends RmiBean
 				}
 				else
 				{
+					//IP & Time
+					Last_Time = df.format(new Date()).toString();
+					Last_IP   = AddressUtils.getAddresses("ip=" + request.getRemoteHost(), "utf-8");
+					msgBean = pRmi.RmiExec(14, this, 0);
+					
 					//登入信息  某个人的登录信息 UserInfo_
 					msgBean = pRmi.RmiExec(0, this, 0);
 					request.getSession().setAttribute("UserInfo_" + Sid, (UserInfoBean)((ArrayList<?>)msgBean.getMsg()).get(0));
@@ -250,6 +271,34 @@ public class UserInfoBean extends RmiBean
 	   	response.sendRedirect(currStatus.getJsp());
 	}
 	
+	//解析 IP地址
+	public String getAddressByIP(String strIP)
+	{
+		try
+		{
+			URL url = new URL("http://ip.taobao.com/service/getIpInfo.php?ip=" + strIP);
+			URLConnection conn = url.openConnection();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "GBK"));
+			String line = null;
+			StringBuffer result = new StringBuffer();
+			while ((line = reader.readLine()) != null)
+			{
+				result.append(line);
+			}
+			reader.close();
+			strIP = result.substring(result.indexOf("该IP所在地为："));
+			strIP = strIP.substring(strIP.indexOf("：") + 1);
+			String province = strIP.substring(6, strIP.indexOf("省"));
+			String city = strIP.substring(strIP.indexOf("省") + 1, strIP.indexOf("市"));
+			return province + city;
+		}
+		catch (IOException e)
+		{
+			return "读取失败";
+		}
+	}
+	
 	//帐号检测
 	public void IdCheck(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone)
 	{
@@ -288,19 +337,19 @@ public class UserInfoBean extends RmiBean
 		switch (pCmd)
 		{
 			case 0://登陆信息
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
 					  " from user_info " +
 					  " where upper(Id) = '"+ StrMd5.substring(0,20).trim() +"' ";
 				break;
 			case 1://公司人员
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
 					  " from user_info " +
 					  " where Dept_Id like '"+ Func_Corp_Id +"%' " +
 					  "   and length(Dept_Id) = 2 " +
 					  "   and Id <> 'system' and Id <> 'admin' order by Sys_Id asc";
 				break;
 			case 3://站级人员
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
 					  " from user_info " +
 					  " where Dept_Id like '"+ Func_Corp_Id +"%' " +
 					  " and length(Dept_Id) = 10 " +
@@ -308,24 +357,24 @@ public class UserInfoBean extends RmiBean
 					  " and Id <> 'system' and Id <> 'admin' order by Sys_Id asc";
 				break;
 			case 4://全部人员
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
 				  	  " from user_info " +
 				  	  " where Id <> 'system' and Id <> 'admin' order by Sys_Id asc";
 				break;
 			case 5://根据部门查询人员
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
 					  " from user_info t" +
 					  " where instr('"+ Func_Cpm_Id +"', t.Sys_Id) > 0 " +
 					  " and Dept_Id = '"+ Func_Type_Id +"' " ;
 				break;
 			case 6:
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
 					  " from user_info t" +
 					  " where instr('"+ Func_Cpm_Id +"', t.Sys_Id) > 0 " +
 					  " and Dept_Id like '"+ Func_Type_Id +"%' " ;
 				break;
 			case 2://帐号检测
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
 					  " from user_info " +
 					  " where upper(Id) = upper('"+ Id +"') ";
 				break;
@@ -344,6 +393,10 @@ public class UserInfoBean extends RmiBean
 				break;
 			case 13:
 				Sql = "delete from user_info where id = '"+ Id +"'";
+				break;
+			case 14://最后 登陆时间 和 最后登陆IP 
+				Sql = " update user_info set last_time = '"+ Last_Time +"', last_ip = '"+ Last_IP +"' " +
+					  " where id = '" + Id + "' ";
 				break;
 			case 21://登录验证
 				Sql = "{? = call RMI_LOGIN('"+StrMd5+"', '"+currStatus.getCheckCode()+"')}";
@@ -378,6 +431,8 @@ public class UserInfoBean extends RmiBean
 			setHP_LoginPwd(pRs.getString(16));
 			setHP_LoginIp(pRs.getString(17));
 			setHP_LoginPort(pRs.getString(18));
+			setLast_Time(pRs.getString(19));
+			setLast_IP(pRs.getString(20));
 		} 
 		catch (SQLException sqlExp) 
 		{
@@ -408,6 +463,8 @@ public class UserInfoBean extends RmiBean
 			setHP_LoginPwd(CommUtil.StrToGB2312(request.getParameter("HP_LoginPwd")));
 			setHP_LoginIp(CommUtil.StrToGB2312(request.getParameter("HP_LoginIp")));
 			setHP_LoginPort(CommUtil.StrToGB2312(request.getParameter("HP_LoginPort")));
+			setLast_Time(CommUtil.StrToGB2312(request.getParameter("Last_Time")));
+			setLast_IP(CommUtil.StrToGB2312(request.getParameter("Last_IP")));
 			
 			setFunc_Type_Id(CommUtil.StrToGB2312(request.getParameter("Func_Type_Id")));
 			setStrMd5(CommUtil.StrToGB2312(request.getParameter("StrMd5")));
@@ -439,6 +496,8 @@ public class UserInfoBean extends RmiBean
 	private String HP_LoginPwd;
 	private String HP_LoginIp;
 	private String HP_LoginPort;
+	private String Last_Time;
+	private String Last_IP;
 	
 	private String StrMd5;
 	private String NewPwd;
@@ -447,6 +506,26 @@ public class UserInfoBean extends RmiBean
 	private String Func_Cpm_Id;
 	private String Sid;
 	
+	public String getLast_Time()
+	{
+		return Last_Time;
+	}
+
+	public void setLast_Time(String last_Time)
+	{
+		Last_Time = last_Time;
+	}
+
+	public String getLast_IP()
+	{
+		return Last_IP;
+	}
+
+	public void setLast_IP(String last_IP)
+	{
+		Last_IP = last_IP;
+	}
+
 	public String getFunc_Cpm_Id() {
 		return Func_Cpm_Id;
 	}
