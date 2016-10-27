@@ -11,8 +11,6 @@ import java.net.URL;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-
-
 /**
  * 根据IP地址获取详细的地域信息 淘宝API :
  * http://ip.taobao.com/service/getIpInfo.php?ip=218.192.3.42
@@ -23,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 public class AddressUtils
 {
 	/**
+	 * 若解析的字符串是null , 则return IP字段
 	 * @param content
 	 *            请求的参数 格式为：name=xxx&pwd=xxx
 	 * @param encoding
@@ -57,7 +56,7 @@ public class AddressUtils
 			
 			return  region + city +"-"+ isp;
 		}
-		return null;
+		return content;
 	}
 
 	/**
