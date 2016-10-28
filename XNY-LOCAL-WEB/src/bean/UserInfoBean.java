@@ -337,19 +337,19 @@ public class UserInfoBean extends RmiBean
 		switch (pCmd)
 		{
 			case 0://登陆信息
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, Last_Time, Last_IP " +
 					  " from user_info " +
 					  " where upper(Id) = '"+ StrMd5.substring(0,20).trim() +"' ";
 				break;
 			case 1://公司人员
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, Last_Time, Last_IP " +
 					  " from user_info " +
 					  " where Dept_Id like '"+ Func_Corp_Id +"%' " +
 					  "   and length(Dept_Id) = 2 " +
 					  "   and Id <> 'system' and Id <> 'admin' order by Sys_Id asc";
 				break;
 			case 3://站级人员
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, Last_Time, Last_IP " +
 					  " from user_info " +
 					  " where Dept_Id like '"+ Func_Corp_Id +"%' " +
 					  " and length(Dept_Id) = 10 " +
@@ -357,34 +357,34 @@ public class UserInfoBean extends RmiBean
 					  " and Id <> 'system' and Id <> 'admin' order by Sys_Id asc";
 				break;
 			case 4://全部人员
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, Last_Time, Last_IP " +
 				  	  " from user_info " +
 				  	  " where Id <> 'system' and Id <> 'admin' order by Sys_Id asc";
 				break;
 			case 5://根据部门查询人员
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, Last_Time, Last_IP " +
 					  " from user_info t" +
 					  " where instr('"+ Func_Cpm_Id +"', t.Sys_Id) > 0 " +
 					  " and Dept_Id = '"+ Func_Type_Id +"' " ;
 				break;
 			case 6:
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, Last_Time, Last_IP " +
 					  " from user_info t" +
 					  " where instr('"+ Func_Cpm_Id +"', t.Sys_Id) > 0 " +
 					  " and Dept_Id like '"+ Func_Type_Id +"%' " ;
 				break;
 			case 2://帐号检测
-				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort, Last_Time, Last_IP " +
+				Sql = " select Id, CName, Sex, Birthday, Addr, Tel, Status, Pwd, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, Sys_Id, Last_Time, Last_IP " +
 					  " from user_info " +
 					  " where upper(Id) = upper('"+ Id +"') ";
 				break;
 			case 10://员工添加
-				Sql = " insert into user_info(Id, CName, Sex, Birthday, Addr, Tel, Status, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role, HP_LoginId, HP_LoginPwd, HP_LoginIp, HP_LoginPort)" +
-					  " values('"+Id+"', '"+CName+"', '"+Sex+"', '"+Birthday+"', '"+Addr+"', '"+Tel+"', '"+Status+"', '"+Dept_Id+"', '"+Manage_Role+"', '"+Job_Id+"', '"+Job_Position+"', '"+Fp_Role+"', '"+HP_LoginId+"', '"+HP_LoginPwd+"', '"+HP_LoginIp+"', '"+HP_LoginPort+"')";
+				Sql = " insert into user_info(Id, CName, Sex, Birthday, Addr, Tel, Status, Dept_Id, Manage_Role, Job_Id, Job_Position, Fp_Role)" +
+					  " values('"+Id+"', '"+CName+"', '"+Sex+"', '"+Birthday+"', '"+Addr+"', '"+Tel+"', '"+Status+"', '"+Dept_Id+"', '"+Manage_Role+"', '"+Job_Id+"', '"+Job_Position+"', '"+Fp_Role+"')";
 				break;
 			case 11://员工修改
 				Sql = " update user_info set cname = '"+CName+"', sex = '"+Sex+"', birthday = '"+Birthday+"', addr = '"+Addr+"', tel = '"+Tel+"', status = '"+Status+"', " +
-					  " dept_id = '"+Dept_Id+"', manage_role = '"+Manage_Role+"', job_id = '"+Job_Id+"', job_position = '"+Job_Position+"', fp_role = '"+Fp_Role+"', HP_LoginId = '"+HP_LoginId+"', HP_LoginPwd = '"+HP_LoginPwd+"', HP_LoginIp = '"+HP_LoginIp+"', HP_LoginPort = '"+HP_LoginPort+"' " +
+					  " dept_id = '"+Dept_Id+"', manage_role = '"+Manage_Role+"', job_id = '"+Job_Id+"', job_position = '"+Job_Position+"', fp_role = '"+Fp_Role+"' " +
 					  " where id = '"+Id+"' ";
 				break;
 			case 12://个人修改
@@ -427,12 +427,8 @@ public class UserInfoBean extends RmiBean
 			setJob_Position(pRs.getString(12));
 			setFp_Role(pRs.getString(13));
 			setSys_Id(pRs.getString(14));			
-			setHP_LoginId(pRs.getString(15));
-			setHP_LoginPwd(pRs.getString(16));
-			setHP_LoginIp(pRs.getString(17));
-			setHP_LoginPort(pRs.getString(18));
-			setLast_Time(pRs.getString(19));
-			setLast_IP(pRs.getString(20));
+			setLast_Time(pRs.getString(15));
+			setLast_IP(pRs.getString(16));
 		} 
 		catch (SQLException sqlExp) 
 		{
@@ -459,10 +455,6 @@ public class UserInfoBean extends RmiBean
 			setJob_Position(CommUtil.StrToGB2312(request.getParameter("Job_Position")));
 			setFp_Role(CommUtil.StrToGB2312(request.getParameter("Fp_Role")));
 			setSys_Id(CommUtil.StrToGB2312(request.getParameter("Sys_Id")));
-			setHP_LoginId(CommUtil.StrToGB2312(request.getParameter("HP_LoginId")));
-			setHP_LoginPwd(CommUtil.StrToGB2312(request.getParameter("HP_LoginPwd")));
-			setHP_LoginIp(CommUtil.StrToGB2312(request.getParameter("HP_LoginIp")));
-			setHP_LoginPort(CommUtil.StrToGB2312(request.getParameter("HP_LoginPort")));
 			setLast_Time(CommUtil.StrToGB2312(request.getParameter("Last_Time")));
 			setLast_IP(CommUtil.StrToGB2312(request.getParameter("Last_IP")));
 			
@@ -492,10 +484,6 @@ public class UserInfoBean extends RmiBean
 	private String Job_Position;
 	private String Fp_Role;
 	private String Sys_Id;
-	private String HP_LoginId;
-	private String HP_LoginPwd;
-	private String HP_LoginIp;
-	private String HP_LoginPort;
 	private String Last_Time;
 	private String Last_IP;
 	
@@ -652,38 +640,6 @@ public class UserInfoBean extends RmiBean
 
 	public void setSys_Id(String sysId) {
 		Sys_Id = sysId;
-	}
-
-	public String getHP_LoginId() {
-		return HP_LoginId;
-	}
-
-	public void setHP_LoginId(String hPLoginId) {
-		HP_LoginId = hPLoginId;
-	}
-
-	public String getHP_LoginPwd() {
-		return HP_LoginPwd;
-	}
-
-	public void setHP_LoginPwd(String hPLoginPwd) {
-		HP_LoginPwd = hPLoginPwd;
-	}
-
-	public String getHP_LoginIp() {
-		return HP_LoginIp;
-	}
-
-	public void setHP_LoginIp(String hPLoginIp) {
-		HP_LoginIp = hPLoginIp;
-	}
-
-	public String getHP_LoginPort() {
-		return HP_LoginPort;
-	}
-
-	public void setHP_LoginPort(String hPLoginPort) {
-		HP_LoginPort = hPLoginPort;
 	}
 
 	public String getStrMd5() {
