@@ -1,10 +1,11 @@
 package net.appsvr;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import bean.BaseCmdBean;
 import util.CmdUtil;
 import util.Cmd_Sta;
-import util.CommUtil;
 import util.DBUtil;
 
 public class AppDeviceDataReqBean extends BaseCmdBean
@@ -30,13 +31,44 @@ public class AppDeviceDataReqBean extends BaseCmdBean
 		this.setActionSource(srcKey);
 		this.setReserve(strRequest.substring(0, 20));
 		this.setAction(Integer.parseInt(strRequest.substring(24, 28)));
-		Dev_Id        = CommUtil.BSubstring(strRequest, 28, 10).trim();
-		Dev_Name      = CommUtil.BSubstring(strRequest, 38, 30).trim();
-		Dev_Attr_Id   = CommUtil.BSubstring(strRequest, 68, 4).trim();
-		Dev_Attr_Name = CommUtil.BSubstring(strRequest, 72, 20).trim();
-		Dev_CTime     = CommUtil.BSubstring(strRequest, 92, 20).trim();
-        Dev_CData     = CommUtil.BSubstring(strRequest, 112, 128).trim();
-		Dev_Unit      = CommUtil.BSubstring(strRequest, 240, 10).trim();
+//		CommUtil.printMsg(strData, 280);
+//		Dev_Id        = CommUtil.BSubstring(strRequest, 28, 10).trim();
+//		Dev_Name      = CommUtil.BSubstring(strRequest, 38, 30).trim();
+//		Dev_Attr_Id   = CommUtil.BSubstring(strRequest, 68, 4).trim();
+//		Dev_Attr_Name = CommUtil.BSubstring(strRequest, 72, 20).trim();
+//		Dev_CTime     = CommUtil.BSubstring(strRequest, 92, 20).trim();
+//      Dev_CData     = CommUtil.BSubstring(strRequest, 112, 128).trim();
+//		Dev_Unit      = CommUtil.BSubstring(strRequest, 240, 10).trim();
+		
+//		System.out.println("strRequest[" + strRequest + "]");
+//		Dev_Id        = strRequest.substring(28, 38).trim();
+//		Dev_Name      = strRequest.substring(38, 60).trim();
+//		Dev_Attr_Id   = strRequest.substring(68, 72).trim();
+//		Dev_Attr_Name = strRequest.substring(72, 92).trim();
+//		Dev_CTime     = strRequest.substring(92, 112).trim();
+//      Dev_CData     = strRequest.substring(112, 240).trim();
+//		Dev_Unit      = strRequest.substring(240).trim();
+		
+		try
+		{
+			Dev_Id        = new String(strData, 68, 10).trim();		
+			Dev_Name      = new String(strData, 78, 30, "GB2312").trim();
+			Dev_Attr_Id   = new String(strData, 108, 4).trim();
+			Dev_Attr_Name = new String(strData, 112, 20, "GB2312").trim();
+			Dev_CTime     = new String(strData, 132, 20).trim();
+	        Dev_CData     = new String(strData, 152, 128).trim();
+			Dev_Unit      = new String(strData, 280, 10, "GB2312").trim();
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -44,6 +76,7 @@ public class AppDeviceDataReqBean extends BaseCmdBean
 	{
 		// TODO Auto-generated method stub
 		int ret = Cmd_Sta.STA_ERROR;
+		String Sql = "";
 		try
 		{
 			/************************** 瑞烨法兰    斯密特流量计 **************************/
@@ -62,13 +95,10 @@ public class AppDeviceDataReqBean extends BaseCmdBean
 //				System.out.println("Standard_Flow:" + Standard_Flow);
 				System.out.println("Cumulative:" + Cumulative);
 
-				String Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Cumulative + "', " + "'" + Dev_Unit + "')";
-//				System.out.println("BSql-1[" + Sql + "]");
-				
-				if (m_DbUtil.doUpdate(Sql))
-				{
-					ret = Cmd_Sta.STA_SUCCESS;
-				}
+				Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Cumulative + "', " + "'" + Dev_Unit + "')";
+
+				//System.out.println("BSql-1[" + Sql + "]");
+			
 
 			}
 			/************************** 伊莱特    天信流量计 **************************/
@@ -89,25 +119,23 @@ public class AppDeviceDataReqBean extends BaseCmdBean
 //				System.out.println("Temperature:" + Temperature);
 //				System.out.println("Stress:" + Stress);
 
-				String Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Cumulative + "', " + "'" + Dev_Unit + "')";
+				Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Cumulative + "', " + "'" + Dev_Unit + "')";
 //				System.out.println("BSql-2[" + Sql + "]");
 				
-				if (m_DbUtil.doUpdate(Sql))
-				{
-					ret = Cmd_Sta.STA_SUCCESS;
-				}
+				
 
 			}
 			/************************** 普通环境数据上传 **************************/
 			else if (!Dev_CData.equalsIgnoreCase("NULL") && Dev_CData.length() > 0)
 			{
-				String Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Dev_CData.toString() + "', " + "'" + Dev_Unit + "')";
+				Sql = "insert into data(cpm_id, id, cname, attr_id, attr_name, ctime, value, unit)" + "values('" + this.getActionSource().trim() + "', " + "'" + Dev_Id + "', " + "'" + Dev_Name + "', " + "'" + Dev_Attr_Id + "', " + "'" + Dev_Attr_Name + "', " + "date_format('" + Dev_CTime + "', '%Y-%m-%d %H-%i-%S'), " + "'" + Dev_CData.toString() + "', " + "'" + Dev_Unit + "')";
 //				System.out.println("BSql-3[" + Sql + "]");
-				if (m_DbUtil.doUpdate(Sql))
-				{
-					ret = Cmd_Sta.STA_SUCCESS;
-				}
-
+			}
+			
+			System.out.println("AppDevData Sql[" + Sql +"]");
+			if (m_DbUtil.doUpdate(Sql))
+			{
+				ret = Cmd_Sta.STA_SUCCESS;
 			}
 		}
 		catch (Exception ex)

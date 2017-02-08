@@ -346,7 +346,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 					DinStream.close();
 // Data    (290字节) = [0100000001          ][包头                             ] + dealData 
 // dealData(250字节) = [                  95000010010431080001瑞烨流量计                    0026集合数据            2016-07-26 15:01:03 41EE64D2437B45B6409800000000400044220205420CEAC7                                                                                          ]
-					dealData = new String(data, 40, data.length - 40);
+					dealData = new String(data, 40, data.length - 40, "GB2312");
 					
 					String dealReserve = dealData.substring(0, 20);        //保留字
 					String dealCmd     = dealData.substring(24, 28);       //处理指令(1001)
