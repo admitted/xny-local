@@ -410,7 +410,22 @@ public class CommUtil
 		return ret;
 	} 
 
-
+	public static int getDaysOfMonth(String date) 
+	{ 
+		int days = 0;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try
+		{
+			Calendar cal = Calendar.getInstance(); 
+			cal.setTime(format.parse(date));  
+			days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		return days;
+	} 
 //*******************整型转换成其它类型********************************
 	/*
 	 * 整数转换成Hex字符串， 其中length为转换后的Hex宽度
