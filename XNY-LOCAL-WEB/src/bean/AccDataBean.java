@@ -10,7 +10,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -100,6 +102,77 @@ public class AccDataBean extends RmiBean
 		    	break;
 		}
 		
+		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
+	   	response.sendRedirect(currStatus.getJsp());
+	   
+	}
+	
+	//月报表
+	public void doTables(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
+	{
+		getHtmlData(request);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus.getHtmlData(request, pFromZone);
+
+		// 各站用气量月-每天显示
+		// 查出此月有数据的站点
+		msgBean = pRmi.RmiExec(6, this, 0);
+		ArrayList<?> Acc_Data_Cpm = (ArrayList<?>) msgBean.getMsg();
+
+		// 查出此月有数据的站点的月详细数据
+		msgBean = pRmi.RmiExec(9, this, 0);
+		ArrayList<?> Acc_Data_Cpm_Month = (ArrayList<?>) msgBean.getMsg();
+
+		Map<String, Map> CpmMap = new HashMap<String, Map>();
+		Map<Integer, String> daysMap = new HashMap<Integer, String>();
+
+		// 将获取到的CPM_Data 按照 CPM站点分解
+		if (null != Acc_Data_Cpm)
+		{
+			Iterator<?> cpmIterator = Acc_Data_Cpm.iterator();
+			while (cpmIterator.hasNext())
+			{
+				AccDataBean CpmBean = (AccDataBean) cpmIterator.next();
+				daysMap = new HashMap<Integer, String>();
+				if (null != Acc_Data_Cpm_Month)
+				{
+					Iterator<?> cpmDataIterator = Acc_Data_Cpm_Month.iterator();
+					while (cpmDataIterator.hasNext())
+					{
+						AccDataBean CpmDataBean = (AccDataBean) cpmDataIterator.next();
+						if (CpmBean.getCpm_Id().equals(CpmDataBean.getCpm_Id()))
+						{
+							daysMap.put(Integer.parseInt(CpmDataBean.getCTime().substring(8, 10)), CpmDataBean.getValue());
+						}
+					}
+				}
+				CpmMap.put(CpmBean.getCpm_Id(), daysMap);
+			}
+		}
+
+		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
+		request.getSession().setAttribute("CpmMap_" + Sid, CpmMap);
+		currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
+		response.sendRedirect(currStatus.getJsp());
+	}
+	
+	//折线图
+	public void doGraphs(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
+	{
+		getHtmlData(request);
+		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus.getHtmlData(request, pFromZone);
+		
+		//各站用气量月-每天显示
+		//查出此月有数据的站点
+    	msgBean = pRmi.RmiExec(6, this, 0);
+    	request.getSession().setAttribute("Acc_Data_Cpm_" + Sid, ((Object)msgBean.getMsg()));
+    	
+    	//查出此月有数据的站点的月详细数据
+    	msgBean = pRmi.RmiExec(9, this, 0);
+    	request.getSession().setAttribute("Acc_Data_Cpm_Month_" + Sid, ((Object)msgBean.getMsg()));
+    	currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
+		 
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 	   	response.sendRedirect(currStatus.getJsp());
 	   

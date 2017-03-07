@@ -76,19 +76,27 @@ public class AccDataBean extends RmiBean
 		    	request.getSession().setAttribute("Acc_Data_Sta_" + Sid, ((Object)msgBean.getMsg()));
 		    	currStatus.setJsp("Acc_Data_Sta.jsp?Sid=" + Sid);	
 		    	break;
-		    	
 		    case 1://日用量总表
 		    	msgBean = pRmi.RmiExec(currStatus.getCmd(), this, currStatus.getCurrPage());
 		    	currStatus.setTotalRecord(msgBean.getCount());
 		    	request.getSession().setAttribute("Acc_Data_Day_" + Sid, ((Object)msgBean.getMsg()));
 		    	currStatus.setJsp("Acc_Data_Day.jsp?Sid=" + Sid);
 		    	break;
-		    	
 		    case 2://月用量总表
 		    	msgBean = pRmi.RmiExec(currStatus.getCmd(), this, currStatus.getCurrPage());
 		    	currStatus.setTotalRecord(msgBean.getCount());
 		    	request.getSession().setAttribute("Acc_Data_Month_" + Sid, ((Object)msgBean.getMsg()));
 		    	currStatus.setJsp("Acc_Data_Month.jsp?Sid=" + Sid);
+		    	break;
+		    case 9://各站用气量月-每天显示
+		    	//查出此月有数据的站点
+		    	msgBean = pRmi.RmiExec(6, this, 0);
+		    	request.getSession().setAttribute("Acc_Data_Cpm_" + Sid, ((Object)msgBean.getMsg()));
+		    	
+		    	//查出此月有数据的站点的月详细数据
+		    	msgBean = pRmi.RmiExec(9, this, 0);
+		    	request.getSession().setAttribute("Acc_Data_Cpm_Month_" + Sid, ((Object)msgBean.getMsg()));
+		    	currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
 		    	break;
 		}
 		
@@ -316,14 +324,24 @@ public class AccDataBean extends RmiBean
 					 " from (SELECT * FROM view_acc_data_day WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))  ORDER BY ctime DESC) t " + 
 					 " GROUP BY CPM_ID ";
 			   break;
-			
+			case 6://某月有数据的站点有哪些个
+			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, (t.e_value - sum(t.value)) as b_value , t.e_value, sum(t.value) value , t.unit,  t.des " +
+					 " FROM view_acc_data_day t  " + 
+					 " WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
+			         " group by cpm_id order by t.cpm_id";
+				   break;
+			case 9://某月详细数据
+			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, t.b_value , t.e_value, t.e_value - t.b_value as value , t.unit,  t.des " +
+					 " FROM view_acc_data_day t  " + 
+					 " WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
+			         " order by t.cpm_id ,t.ctime";
+				   break;
 			case 20://数据图表
 			   Sql = " {? = call rmi_graph('"+ Id +"', '"+ currStatus.getFunc_Sub_Id() +"', '"+ currStatus.getVecDate().get(0).toString().substring(0,10) +"')}";
 			   break;
 		}
 		return Sql;
 	}
-	
 
 	public boolean getData(ResultSet pRs) 
 	{

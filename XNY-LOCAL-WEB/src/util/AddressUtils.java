@@ -49,6 +49,7 @@ public class AddressUtils
 			}
 			
 			JSONObject jobj = (JSONObject) JSON.parse(returnStr);
+			System.out.println("jobj["+jobj+"]");
 //			country = jobj.getJSONObject("data").getString("country");
 			region  = jobj.getJSONObject("data").getString("region");
 			city    = jobj.getJSONObject("data").getString("city");
