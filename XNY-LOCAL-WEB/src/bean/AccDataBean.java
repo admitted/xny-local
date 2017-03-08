@@ -37,11 +37,11 @@ import util.CurrStatus;
 import com.github.abel533.echarts.Option;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
+import com.github.abel533.echarts.code.Magic;
+import com.github.abel533.echarts.code.Tool;
 import com.github.abel533.echarts.code.Trigger;
-import com.github.abel533.echarts.data.PieData;
-import com.github.abel533.echarts.series.Bar;
+import com.github.abel533.echarts.feature.MagicType;
 import com.github.abel533.echarts.series.Line;
-import com.github.abel533.echarts.series.Pie;
 
 
 /** 
@@ -134,6 +134,7 @@ public class AccDataBean extends RmiBean
 		ArrayList<?> Acc_Data_Cpm_Month = (ArrayList<?>) msgBean.getMsg();
 
 		Map<String, Map> CpmMap = new HashMap<String, Map>();
+		Map<String, Option> GraphMaps = new HashMap<String, Option>();
 		Map<Integer, String> daysMap = new HashMap<Integer, String>();
 
 		// 将获取到的CPM_Data 按照 CPM站点分解
@@ -144,6 +145,12 @@ public class AccDataBean extends RmiBean
 			{
 				AccDataBean CpmBean = (AccDataBean) cpmIterator.next();
 				daysMap = new HashMap<Integer, String>();
+				// 创建option
+				Option option = new Option();  
+				// 设置标题等
+				option.title(CpmBean.getCpm_Name()).tooltip(Trigger.axis).legend("用量（t）");  
+				// y轴为值轴
+				option.yAxis(new ValueAxis().boundaryGap(0d, 0.01));  
 				if (null != Acc_Data_Cpm_Month)
 				{
 					Iterator<?> cpmDataIterator = Acc_Data_Cpm_Month.iterator();
@@ -157,27 +164,58 @@ public class AccDataBean extends RmiBean
 					}
 				}
 				CpmMap.put(CpmBean.getCpm_Id(), daysMap);
+				GraphMaps.put(CpmBean.getCpm_Id(), option);
 			}
 		}
 		
 		//创建Option  
 	    Option option = new Option();  
-	    option.title("瑞烨法兰").tooltip(Trigger.axis).legend("用气量（t）");  
+	    option.title("场站用气量").tooltip(Trigger.axis).legend("用量（t）");  
 	    //横轴为值轴  
 	    option.xAxis(new ValueAxis().boundaryGap(0d, 0.01));  
 	    //创建类目轴  
 	    CategoryAxis category = new CategoryAxis();  
-	    //柱状数据  
-	    Line bar = new Line("用气量（t）");  
+	    //折线图数据 
+	    Line line = new Line("用量（t）");  
 	    
 	    //设置类目轴  
 	    option.yAxis(category);  
 	    //设置数据  
-	    option.series(bar);  
-	    //由于药品名字过长，图表距离左侧距离设置180，关于grid可以看ECharts的官方文档  
-	    option.grid().x(180);  
+	    option.series(line);  
 	    //返回Option    
-		
+	    
+	    /**
+	     *  GraphMaps <String, Option>  :< 站点 ， option对象> 
+	     *  
+	     *  查到的数据进行 data 数据 无此日期的 以0填充
+	     *  
+ 	     *  返回 GraphMaps
+	     * *******/
+	    //
+	    Option option2 = new Option();  
+	    option2.legend("用量（t）");
+
+	    option2.toolbox().show(true).feature(Tool.mark, Tool.dataView, new MagicType(Magic.line, Magic.bar), Tool.restore, Tool.saveAsImage);
+
+	    option2.calculable(true);
+	    option2.tooltip().trigger(Trigger.axis).formatter("Temperature : <br/>{b}km : {c}°C");
+
+	    ValueAxis valueAxis = new ValueAxis();
+	    valueAxis.axisLabel().formatter("{value} °C");
+	    option2.xAxis(valueAxis);
+
+	    CategoryAxis categoryAxis = new CategoryAxis();
+	    categoryAxis.axisLine().onZero(false);
+	    categoryAxis.axisLabel().formatter("{value} km");
+	    categoryAxis.boundaryGap(false);
+	    categoryAxis.data(0, 10, 20, 30, 40, 50, 60, 70, 80);
+	    option2.yAxis(categoryAxis);
+
+	    Line line2 = new Line();
+	    line.smooth(true).name("高度(km)与气温(°C)变化关系").data(15, -50, -56.5, -46.5, -22.1, -2.5, -27.7, -55.7, -76.5).itemStyle().normal().lineStyle().shadowColor("rgba(0,0,0,0.4)");
+	    option2.series(line);
+//	    option2.view();
+	    
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 		request.getSession().setAttribute("CpmMap_" + Sid, CpmMap);
 		currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
