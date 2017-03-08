@@ -18,9 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Border;
@@ -34,7 +31,17 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import rmi.Rmi;
 import rmi.RmiBean;
-import util.*;
+import util.CommUtil;
+import util.CurrStatus;
+
+import com.github.abel533.echarts.Option;
+import com.github.abel533.echarts.axis.CategoryAxis;
+import com.github.abel533.echarts.axis.ValueAxis;
+import com.github.abel533.echarts.code.Trigger;
+import com.github.abel533.echarts.data.PieData;
+import com.github.abel533.echarts.series.Bar;
+import com.github.abel533.echarts.series.Line;
+import com.github.abel533.echarts.series.Pie;
 
 
 /** 
@@ -152,6 +159,24 @@ public class AccDataBean extends RmiBean
 				CpmMap.put(CpmBean.getCpm_Id(), daysMap);
 			}
 		}
+		
+		//创建Option  
+	    Option option = new Option();  
+	    option.title("瑞烨法兰").tooltip(Trigger.axis).legend("用气量（t）");  
+	    //横轴为值轴  
+	    option.xAxis(new ValueAxis().boundaryGap(0d, 0.01));  
+	    //创建类目轴  
+	    CategoryAxis category = new CategoryAxis();  
+	    //柱状数据  
+	    Line bar = new Line("用气量（t）");  
+	    
+	    //设置类目轴  
+	    option.yAxis(category);  
+	    //设置数据  
+	    option.series(bar);  
+	    //由于药品名字过长，图表距离左侧距离设置180，关于grid可以看ECharts的官方文档  
+	    option.grid().x(180);  
+	    //返回Option    
 		
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 		request.getSession().setAttribute("CpmMap_" + Sid, CpmMap);
