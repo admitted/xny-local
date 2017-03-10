@@ -81,13 +81,14 @@ public class AccDataBean extends RmiBean
 		getHtmlData(request);
 		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
-		
+		System.out.println("1");
 		switch(currStatus.getCmd())
 		{
 		    case 0://各站点：累积流量
 		    	msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
 		    	request.getSession().setAttribute("Acc_Data_Sta_" + Sid, ((Object)msgBean.getMsg()));
 		    	currStatus.setJsp("Acc_Data_Sta.jsp?Sid=" + Sid);	
+		    	System.out.println("2");
 		    	break;
 		    case 1://日用量总表
 		    	msgBean = pRmi.RmiExec(currStatus.getCmd(), this, currStatus.getCurrPage());
@@ -101,18 +102,8 @@ public class AccDataBean extends RmiBean
 		    	request.getSession().setAttribute("Acc_Data_Month_" + Sid, ((Object)msgBean.getMsg()));
 		    	currStatus.setJsp("Acc_Data_Month.jsp?Sid=" + Sid);
 		    	break;
-		    case 9://各站用气量月-每天显示
-		    	//查出此月有数据的站点
-		    	msgBean = pRmi.RmiExec(6, this, 0);
-		    	request.getSession().setAttribute("Acc_Data_Cpm_" + Sid, ((Object)msgBean.getMsg()));
-		    	
-		    	//查出此月有数据的站点的月详细数据
-		    	msgBean = pRmi.RmiExec(9, this, 0);
-		    	request.getSession().setAttribute("Acc_Data_Cpm_Month_" + Sid, ((Object)msgBean.getMsg()));
-		    	currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
-		    	break;
 		}
-		
+		System.out.println("3");
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 	   	response.sendRedirect(currStatus.getJsp());
 	   
@@ -195,7 +186,7 @@ public class AccDataBean extends RmiBean
 		    
 		    CategoryAxis categoryAxis = new CategoryAxis();
 		    categoryAxis.axisLine().onZero(false);
-		    categoryAxis.axisLabel().formatter("{value} 号");
+//		    categoryAxis.axisLabel().formatter("{value} 号");
 		    categoryAxis.boundaryGap(false);
 		    
 		    option.xAxis(categoryAxis);

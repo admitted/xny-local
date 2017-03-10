@@ -226,6 +226,8 @@ public class MainServlet extends HttpServlet
         	new DataBean().Graph(request, response, m_Rmi, false);
         
         /**************************************user-Acc***************************************************/
+        else if (strUrl.equalsIgnoreCase("Acc_Data.do"))				         //流量统计
+            new AccDataBean().ExecCmd(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("doTables.do"))				         //流量月报表
             new AccDataBean().doTables(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("doGraphs.do"))				         //流量月折线图
