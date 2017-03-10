@@ -120,15 +120,12 @@ public class AccDataBean extends RmiBean
 		// 查出此月有数据的站点
 		msgBean = pRmi.RmiExec(6, this, 0);
 		ArrayList<?> Acc_Data_Cpm = (ArrayList<?>) msgBean.getMsg();
-
 		// 查出此月有数据的站点的月详细数据
 		msgBean = pRmi.RmiExec(9, this, 0);
 		ArrayList<?> Acc_Data_Cpm_Month = (ArrayList<?>) msgBean.getMsg();
 
-		Map<String, Map> CpmMap = new HashMap<String, Map>();
-		
-
 		// 将获取到的CPM_Data 按照 CPM站点分解
+		Map<String, Map> CpmMap = new HashMap<String, Map>();
 		if (null != Acc_Data_Cpm)
 		{
 			Iterator<?> cpmIterator = Acc_Data_Cpm.iterator();
@@ -143,7 +140,7 @@ public class AccDataBean extends RmiBean
 					{
 						AccDataBean CpmDataBean = (AccDataBean) cpmDataIterator.next();
 						if (CpmBean.getCpm_Id().equals(CpmDataBean.getCpm_Id()))
-						{   System.out.println(CpmDataBean.getValue());
+						{   
 							daysDataMap.put(Integer.parseInt(CpmDataBean.getCTime().substring(8, 10)), CpmDataBean.getValue());
 						}
 					}
@@ -175,7 +172,7 @@ public class AccDataBean extends RmiBean
 			Map<Integer, String> dataMap = CpmMap.get(CPM);
 			Option option = new Option(); 
 			// 标题 和 legend 说明
-			option.title(Cpm_Name).legend("用量（t）");  
+			option.title(Cpm_Name); 
 		    option.toolbox().show(true).feature(Tool.mark, Tool.dataView, new MagicType(Magic.line, Magic.bar), Tool.restore, Tool.saveAsImage);
 		    option.calculable(true);
 		    option.tooltip().trigger(Trigger.axis).formatter("站点用气 : <br/>{b}号 : {c}t");
@@ -186,7 +183,7 @@ public class AccDataBean extends RmiBean
 		    
 		    CategoryAxis categoryAxis = new CategoryAxis();
 		    categoryAxis.axisLine().onZero(false);
-//		    categoryAxis.axisLabel().formatter("{value} 号");
+		    categoryAxis.axisLabel().formatter("{value} 号");
 		    categoryAxis.boundaryGap(false);
 		    
 		    option.xAxis(categoryAxis);
@@ -202,6 +199,7 @@ public class AccDataBean extends RmiBean
 		    		line.data(dataMap.get(i));
 		    }
 		    option.series(line);
+		    option.grid().x(80); 
 		    GraphMaps.put(CPM, (JSON) JSON.toJSON(option));
 		}
 //		System.out.println(GraphMaps);
