@@ -34,6 +34,7 @@ import rmi.RmiBean;
 import util.CommUtil;
 import util.CurrStatus;
 
+import com.alibaba.fastjson.JSON;
 import com.github.abel533.echarts.Option;
 import com.github.abel533.echarts.axis.CategoryAxis;
 import com.github.abel533.echarts.axis.ValueAxis;
@@ -117,7 +118,7 @@ public class AccDataBean extends RmiBean
 	   
 	}
 	
-	//月报表
+	//月报表详细
 	public void doTables(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
 	{
 		getHtmlData(request);
@@ -134,8 +135,7 @@ public class AccDataBean extends RmiBean
 		ArrayList<?> Acc_Data_Cpm_Month = (ArrayList<?>) msgBean.getMsg();
 
 		Map<String, Map> CpmMap = new HashMap<String, Map>();
-		Map<String, Option> GraphMaps = new HashMap<String, Option>();
-		Map<Integer, String> daysMap = new HashMap<Integer, String>();
+		
 
 		// 将获取到的CPM_Data 按照 CPM站点分解
 		if (null != Acc_Data_Cpm)
@@ -143,14 +143,8 @@ public class AccDataBean extends RmiBean
 			Iterator<?> cpmIterator = Acc_Data_Cpm.iterator();
 			while (cpmIterator.hasNext())
 			{
+				Map<Integer, String> daysDataMap = new HashMap<Integer, String>();
 				AccDataBean CpmBean = (AccDataBean) cpmIterator.next();
-				daysMap = new HashMap<Integer, String>();
-				// 创建option
-				Option option = new Option();  
-				// 设置标题等
-				option.title(CpmBean.getCpm_Name()).tooltip(Trigger.axis).legend("用量（t）");  
-				// y轴为值轴
-				option.yAxis(new ValueAxis().boundaryGap(0d, 0.01));  
 				if (null != Acc_Data_Cpm_Month)
 				{
 					Iterator<?> cpmDataIterator = Acc_Data_Cpm_Month.iterator();
@@ -158,66 +152,74 @@ public class AccDataBean extends RmiBean
 					{
 						AccDataBean CpmDataBean = (AccDataBean) cpmDataIterator.next();
 						if (CpmBean.getCpm_Id().equals(CpmDataBean.getCpm_Id()))
-						{
-							daysMap.put(Integer.parseInt(CpmDataBean.getCTime().substring(8, 10)), CpmDataBean.getValue());
+						{   System.out.println(CpmDataBean.getValue());
+							daysDataMap.put(Integer.parseInt(CpmDataBean.getCTime().substring(8, 10)), CpmDataBean.getValue());
 						}
 					}
 				}
-				CpmMap.put(CpmBean.getCpm_Id(), daysMap);
-				GraphMaps.put(CpmBean.getCpm_Id(), option);
+				CpmMap.put(CpmBean.getCpm_Id(), daysDataMap);
 			}
 		}
 		
-		//创建Option  
-	    Option option = new Option();  
-	    option.title("场站用气量").tooltip(Trigger.axis).legend("用量（t）");  
-	    //横轴为值轴  
-	    option.xAxis(new ValueAxis().boundaryGap(0d, 0.01));  
-	    //创建类目轴  
-	    CategoryAxis category = new CategoryAxis();  
-	    //折线图数据 
-	    Line line = new Line("用量（t）");  
-	    
-	    //设置类目轴  
-	    option.yAxis(category);  
-	    //设置数据  
-	    option.series(line);  
-	    //返回Option    
-	    
-	    /**
+		/**
 	     *  GraphMaps <String, Option>  :< 站点 ， option对象> 
-	     *  
 	     *  查到的数据进行 data 数据 无此日期的 以0填充
-	     *  
  	     *  返回 GraphMaps
-	     * *******/
-	    //
-	    Option option2 = new Option();  
-	    option2.legend("用量（t）");
-
-	    option2.toolbox().show(true).feature(Tool.mark, Tool.dataView, new MagicType(Magic.line, Magic.bar), Tool.restore, Tool.saveAsImage);
-
-	    option2.calculable(true);
-	    option2.tooltip().trigger(Trigger.axis).formatter("Temperature : <br/>{b}km : {c}°C");
-
-	    ValueAxis valueAxis = new ValueAxis();
-	    valueAxis.axisLabel().formatter("{value} °C");
-	    option2.xAxis(valueAxis);
-
-	    CategoryAxis categoryAxis = new CategoryAxis();
-	    categoryAxis.axisLine().onZero(false);
-	    categoryAxis.axisLabel().formatter("{value} km");
-	    categoryAxis.boundaryGap(false);
-	    categoryAxis.data(0, 10, 20, 30, 40, 50, 60, 70, 80);
-	    option2.yAxis(categoryAxis);
-
-	    Line line2 = new Line();
-	    line.smooth(true).name("高度(km)与气温(°C)变化关系").data(15, -50, -56.5, -46.5, -22.1, -2.5, -27.7, -55.7, -76.5).itemStyle().normal().lineStyle().shadowColor("rgba(0,0,0,0.4)");
-	    option2.series(line);
-//	    option2.view();
-	    
+	     * */
+		int thatMonthDays = CommUtil.getDaysOfMonth(currStatus.getVecDate().get(0).toString().substring(0,10));
+		Map<String, JSON> GraphMaps = new HashMap<String, JSON>();
+		
+		for(String CPM : CpmMap.keySet()){
+			String Cpm_Name = "";
+			if (null != Acc_Data_Cpm)
+			{
+				Iterator<?> cpmIterator = Acc_Data_Cpm.iterator();
+				while (cpmIterator.hasNext())
+				{
+					AccDataBean CpmBean = (AccDataBean) cpmIterator.next();
+					if(CPM.equals(CpmBean.getCpm_Id()))
+						Cpm_Name = CpmBean.getCpm_Name();
+				}
+			}
+			Map<Integer, String> dataMap = CpmMap.get(CPM);
+			Option option = new Option(); 
+			// 标题 和 legend 说明
+			option.title(Cpm_Name).legend("用量（t）");  
+		    option.toolbox().show(true).feature(Tool.mark, Tool.dataView, new MagicType(Magic.line, Magic.bar), Tool.restore, Tool.saveAsImage);
+		    option.calculable(true);
+		    option.tooltip().trigger(Trigger.axis).formatter("站点用气 : <br/>{b}号 : {c}t");
+		    
+		    ValueAxis valueAxis = new ValueAxis();
+		    valueAxis.axisLabel().formatter("{value} t");
+		    option.yAxis(valueAxis);
+		    
+		    CategoryAxis categoryAxis = new CategoryAxis();
+		    categoryAxis.axisLine().onZero(false);
+		    categoryAxis.axisLabel().formatter("{value} 号");
+		    categoryAxis.boundaryGap(false);
+		    
+		    option.xAxis(categoryAxis);
+		    Line line = new Line();
+		    line.smooth(true).name("用量(t)与日期变化").itemStyle().normal().lineStyle().shadowColor("rgba(0,0,0,0.4)");
+		    for(int i = 1; i <= thatMonthDays ; i++ ){
+		    	// X轴添加当月日期数据
+		    	categoryAxis.data(i); 
+		    	// 数据轴添加数据
+		    	if(null == dataMap.get(i))
+		    		line.data("0");
+		    	else
+		    		line.data(dataMap.get(i));
+		    }
+		    option.series(line);
+		    GraphMaps.put(CPM, (JSON) JSON.toJSON(option));
+		}
+//		System.out.println(GraphMaps);
+//		for(String s :GraphMaps.keySet()){
+//			System.out.println(GraphMaps.get(s));
+//		}
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 		request.getSession().setAttribute("CpmMap_" + Sid, CpmMap);
+		request.getSession().setAttribute("GraphMaps_" + Sid, GraphMaps);
 		currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
 		response.sendRedirect(currStatus.getJsp());
 	}
