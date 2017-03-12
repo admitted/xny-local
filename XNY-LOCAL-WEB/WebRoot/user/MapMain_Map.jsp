@@ -35,17 +35,17 @@ html,body{width:100%; height:100%; margin:0; padding:0;}
 </head>
 <%
 	
-	String Sid = CommUtil.StrToGB2312(request.getParameter("Sid"));
+	String Sid                   = CommUtil.StrToGB2312(request.getParameter("Sid"));
   UserInfoBean UserInfo        = (UserInfoBean)session.getAttribute("UserInfo_" + Sid);
   ArrayList User_FP_Role       = (ArrayList)session.getAttribute("User_FP_Role_" + Sid);
 	ArrayList User_Manage_Role   = (ArrayList)session.getAttribute("User_Manage_Role_" + Sid);
 	ArrayList User_Device_Detail = (ArrayList)session.getAttribute("User_Device_Detail_" + Sid);
 	
 	//权限设置
-	String FpId = UserInfo.getFp_Role();
+	String FpId     = UserInfo.getFp_Role();
 	String ManageId = UserInfo.getManage_Role();
-	String FpList = "";
-	String IdList = "";
+	String FpList   = "";
+	String IdList   = "";
 	
 	if(null != FpId && FpId.length() > 0 && null != User_FP_Role)
 	{
@@ -79,16 +79,16 @@ html,body{width:100%; height:100%; margin:0; padding:0;}
 
 	ArrayList User_User_Info  = (ArrayList)session.getAttribute("User_User_Info_" + Sid);
  	String SYS_List = "";
-								if( null != User_User_Info )
-								{
-									Iterator iterator = User_User_Info.iterator();
-									while(iterator.hasNext())
-									{
-										UserInfoBean usertBean = (UserInfoBean)iterator.next();		
-										String sys = 	usertBean.getSys_Id();							
-										SYS_List  = SYS_List+sys;
-									}
-								}
+	if( null != User_User_Info )
+	{
+		Iterator iterator = User_User_Info.iterator();
+		while(iterator.hasNext())
+		{
+			UserInfoBean usertBean = (UserInfoBean)iterator.next();		
+			String sys = 	usertBean.getSys_Id();							
+			SYS_List  = SYS_List+sys;
+		}
+	}
 %>
 <body style='background:#bbbdbb'>
 <form name='Map' action='Map.do' method='post' target='mFrame'>
@@ -206,11 +206,10 @@ function addMarker(point, pId, pCName, pIcon, pStatus, pX, pY, pType)
 				mkrs.push(marker);
 				if('2' == pStatus)
 				{
-					marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+					//marker.setAnimation(BMAP_ANIMATION_BOUNCE);
 				}
 			break;
 	}
-	
 }
 
 //状态更新

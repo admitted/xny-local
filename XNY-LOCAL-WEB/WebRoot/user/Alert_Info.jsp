@@ -109,7 +109,7 @@
 			</td>
 			<td width='30%' align='right'>				
 				<img id="img1" src="../skin/images/mini_button_search.gif"  onClick='doSelect()' style='cursor:hand;'>
-				<img id="img2" src="../skin/images/excel.gif"               onClick='doExport()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='070202' ctype='1'/>">
+				<img id="img2" src="../skin/images/excel.gif"               onClick='doExport()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='050102' ctype='1'/>">
 			</td>
 		</tr>
 		<tr height='30' valign='middle'>
@@ -246,8 +246,8 @@
 		</tr>
 	</table>
 </div>
-<input type="hidden" name="Cmd" value="0">
-<input type="hidden" name="Sid" value="<%=Sid%>">
+<input type="hidden" name="Cmd"   value="0">
+<input type="hidden" name="Sid"   value="<%=Sid%>">
 <input type="hidden" name="Id"    value="">
 <input type="hidden" name="Level" value="">
 <input type="hidden" name="BTime" value="">
@@ -292,7 +292,7 @@ function doSelect()
 		return;
 	}**/
 	
-	Alert_Info.Id.value = Alert_Info.Func_Cpm_Id.value;
+	Alert_Info.Id.value    = Alert_Info.Func_Cpm_Id.value;
 	Alert_Info.Level.value = Alert_Info.Func_Sub_Id.value;
 	Alert_Info.BTime.value = Alert_Info.BDate.value + " 00:00:00";
 	Alert_Info.ETime.value = Alert_Info.EDate.value + " 23:59:59";
@@ -389,7 +389,7 @@ function callbackForName()
 		var str = "";
 		if(resp != null)
 		{
-			location.href = "../../files/excel/" + resp + ".xls";
+			location.href = "../files/excel/" + resp + ".xls";
 		}
 	}
 }

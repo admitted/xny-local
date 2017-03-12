@@ -94,7 +94,8 @@
 								  <input name='EDate' type='text' style='width:90px;height:18px;' value='<%=EDate%>' onClick='WdatePicker({readOnly:true})' class='Wdate' maxlength='10'>
 							 </td>
 							 <td width='30%' align='right'>		
-								  <img id="img1" src="../skin/images/mini_button_search.gif" onClick='doSelect()' style="cursor:hand;">
+								  <img id="img1" src="../skin/images/mini_button_search.gif" onClick='doSelect()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='020101' ctype='1'/>">
+								  <img id="img2" src="../skin/images/excel.gif"              onClick='doExport()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='020102' ctype='1'/>">
 							 </td>
 				</tr>
 				<tr height='30' valign='middle'>
@@ -298,7 +299,7 @@ function doExport()
 		}		
 		//设置回调函数
 		req.onreadystatechange = callbackForName;
-		var url = "Acc_Sale_Sta_Export.do?Sid=<%=Sid%>&Id="+window.parent.frames.lFrame.document.getElementById('id').value+"&Level="+window.parent.frames.lFrame.document.getElementById('level').value+"&BTime="+Acc_Sale_Sta.BDate.value+" 00:00:00"+"&ETime="+Acc_Sale_Sta.EDate.value+" 23:59:59"+"&CurrPage=<%=currStatus.getCurrPage()%>";
+		var url = "Acc_Sale_Export.do?Cmd=0&Sid=<%=Sid%>&Cpm_Id="+Acc_Sale_Sta.Func_Cpm_Id.value+"&BTime="+Acc_Sale_Sta.BDate.value+" 00:00:00"+"&ETime="+Acc_Sale_Sta.EDate.value+" 23:59:59"+"&CurrPage=<%=currStatus.getCurrPage()%>";
 		req.open("post",url,true);
 		req.send(null);
 		return true;
@@ -313,7 +314,7 @@ function callbackForName()
 		var str = "";
 		if(resp != null)
 		{
-			location.href = "../../files/excel/" + resp + ".xls";
+			location.href = "../files/excel/" + resp + ".xls";
 		}
 	}
 }

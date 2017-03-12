@@ -95,7 +95,7 @@
 			</td>
 			<td width='30%' align='right'>		
 				<img id="img1" src="../skin/images/mini_button_search.gif" onClick='doSelect()' style="cursor:hand;">
-				<img id="img2" src="../skin/images/excel.gif"              onClick='doExport()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='050202' ctype='1'/>">
+				<img id="img2" src="../skin/images/excel.gif"              onClick='doExport()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='050102' ctype='1'/>">
 			</td>
 		</tr>
 		<tr height='30' valign='middle'>
@@ -245,7 +245,6 @@ function doSelect()
 	}
 	
 	Env_His.Id.value = Env_His.Func_Cpm_Id.value;
-	Env_His.Level.value = 2;
 	Env_His.BTime.value = Env_His.BDate.value + " 00:00:00";
 	Env_His.ETime.value = Env_His.EDate.value + " 23:59:59";
 	Env_His.submit();
@@ -281,7 +280,6 @@ function GoPage(pPage)
 		pPage = <%=currStatus.getTotalPages()%>;
 	}
 	Env_His.Id.value = Env_His.Func_Cpm_Id.value;
-	Env_His.Level.value = 2;
 	Env_His.BTime.value = Env_His.BDate.value + " 00:00:00";
 	Env_His.ETime.value = Env_His.EDate.value + " 23:59:59";
 	Env_His.CurrPage.value = pPage;
@@ -326,7 +324,7 @@ function doExport()
 		}		
 		//设置回调函数
 		req.onreadystatechange = callbackForName;
-		var url = "Env_His_Export.do?Sid=<%=Sid%>&Id="+window.parent.frames.lFrame.document.getElementById('id').value+"&Level="+window.parent.frames.lFrame.document.getElementById('level').value+"&BTime="+Env_His.BDate.value+" 00:00:00"+"&ETime="+Env_His.EDate.value+" 23:59:59"+"&CurrPage=<%=currStatus.getCurrPage()%>";
+		var url = "Env_His_Export.do?Sid=<%=Sid%>&Id="+ Env_His.Func_Cpm_Id.value+"&BTime="+Env_His.BDate.value+" 00:00:00"+"&ETime="+Env_His.EDate.value+" 23:59:59"+"&CurrPage=<%=currStatus.getCurrPage()%>";
 		req.open("post",url,true);
 		req.send(null);
 		return true;
@@ -340,8 +338,8 @@ function callbackForName()
 		var resp = req.responseText;			
 		var str = "";
 		if(resp != null)
-		{
-			location.href = "../../files/excel/" + resp + ".xls";
+		{ //http://121.41.52.236/xny/files/excel/20160824122424.xls
+			location.href = "../files/excel/" + resp + ".xls";
 		}
 	}
 }

@@ -183,7 +183,7 @@ public class AccDataBean extends RmiBean
 		    
 		    CategoryAxis categoryAxis = new CategoryAxis();
 		    categoryAxis.axisLine().onZero(false);
-		    categoryAxis.axisLabel().formatter("{value} 号");
+//		    categoryAxis.axisLabel().formatter("{value} 号");
 		    categoryAxis.boundaryGap(false);
 		    
 		    option.xAxis(categoryAxis);
@@ -457,13 +457,15 @@ public class AccDataBean extends RmiBean
 			case 6://某月有数据的站点有哪些个
 			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, (t.e_value - sum(t.value)) as b_value , t.e_value, sum(t.value) value , t.unit,  t.des " +
 					 " FROM view_acc_data_day t  " + 
-					 " WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
+					 " where instr('"+ Cpm_Id +"', t.cpm_id) > 0 " +
+					 " and (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
 			         " group by cpm_id order by t.cpm_id";
 				   break;
 			case 9://某月详细数据
 			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, t.b_value , t.e_value, t.e_value - t.b_value as value , t.unit,  t.des " +
 					 " FROM view_acc_data_day t  " + 
-					 " WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
+					 " where instr('"+ Cpm_Id +"', t.cpm_id) > 0 " +
+					 " and (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
 			         " order by t.cpm_id ,t.ctime";
 				   break;
 			case 20://数据图表

@@ -68,8 +68,9 @@
 		<table width="100%" style='margin:auto;' border=0 cellPadding=0 cellSpacing=0 bordercolor="#3491D6" borderColorDark="#ffffff">
 				<tr height='25px' class='sjtop'>
 						   <td width='70%' align='left'>
-								  场站站点: 全部 &nbsp;&nbsp;
+								  &nbsp;
 									<!--
+									场站站点: 全部 &nbsp;
 									<select  name='Func_Cpm_Id' style='width:100px;height:20px' onChange="doSelect()" >					
 											    <%					
 													if( Manage_List.length() > 0 && null != User_Device_Detail)
@@ -93,7 +94,8 @@
 								  
 							 </td>
 							 <td width='30%' align='right'>		
-								  <img id="img1" src="../skin/images/mini_button_search.gif" onClick='doSelect()'  onChange='doSelect()'  style="cursor:hand;">
+								  <img id="img1" src="../skin/images/mini_button_search.gif" onClick='doSelect()'  style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='030301' ctype='1'/>">
+								  <img id="img2" src="../skin/images/excel.gif"              onClick='doExport()'  style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='030302' ctype='1'/>">
 							 </td>
 				</tr>
 				<tr height='30' valign='middle'>
@@ -248,7 +250,7 @@ function doExport()
 		}		
 		//设置回调函数
 		req.onreadystatechange = callbackForName;
-		var url = "Acc_Data_Month_Export.do?Sid=<%=Sid%>&Id="+window.parent.frames.lFrame.document.getElementById('id').value+"&Level="+window.parent.frames.lFrame.document.getElementById('level').value+"&BTime="+Acc_Data_Month.BDate.value+" 00:00:00"+"&CurrPage=<%=currStatus.getCurrPage()%>";
+		var url = "Acc_Data_Export.do?Sid=<%=Sid%>&Cmd=2&BTime="+Acc_Data_Month.BDate.value+" 00:00:00"+"&CurrPage=<%=currStatus.getCurrPage()%>";
 		req.open("post",url,true);
 		req.send(null);
 		return true;
@@ -263,7 +265,7 @@ function callbackForName()
 		var str = "";
 		if(resp != null)
 		{
-			location.href = "../../files/excel/" + resp + ".xls";
+			location.href = "../files/excel/" + resp + ".xls";
 		}
 	}
 }

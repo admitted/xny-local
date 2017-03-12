@@ -16,7 +16,6 @@
 <script type="text/javascript" src="../skin/js/My97DatePicker/WdatePicker.js"></script>
 </head>
 
-
 <%
 	String       Sid                = CommUtil.StrToGB2312(request.getParameter("Sid"));
 	ArrayList    User_FP_Role       = (ArrayList)session.getAttribute("User_FP_Role_" + Sid);
@@ -39,14 +38,7 @@
 			}
 		}
 	}
-	
-  CurrStatus currStatus = (CurrStatus)session.getAttribute("CurrStatus_" + Sid);
-  String     BDate      = currStatus.getVecDate().get(0).toString().substring(0,10);
-	String     EDate      = currStatus.getVecDate().get(1).toString().substring(0,10);
-  ArrayList  Acc_Data_Sta    = (ArrayList)session.getAttribute("Acc_Data_Sta_" + Sid);
-  int        sn         = 0; 
-  String     Manage_List = "";
-  
+	String     Manage_List = "";
 	if(ManageId.length() > 0 && null != User_Manage_Role)
 	{
 			Iterator iterator = User_Manage_Role.iterator();
@@ -63,6 +55,14 @@
 	}
 	String Dept_Id = UserInfo.getDept_Id();
 	if(Dept_Id.length()>3){Manage_List = Dept_Id; }
+	
+  CurrStatus currStatus = (CurrStatus)session.getAttribute("CurrStatus_" + Sid);
+  String     BDate      = currStatus.getVecDate().get(0).toString().substring(0,10);
+	String     EDate      = currStatus.getVecDate().get(1).toString().substring(0,10);
+  ArrayList  Acc_Data_Sta    = (ArrayList)session.getAttribute("Acc_Data_Sta_" + Sid);
+  int        sn         = 0; 
+  
+  
 %>
 <body style=" background:#CADFFF">
 <form name="Acc_Data_Sta"  action="Acc_Data.do" method="post" target="mFrame">
@@ -70,7 +70,7 @@
 		<table width="100%" style='margin:auto;' border=0 cellPadding=0 cellSpacing=0 bordercolor="#3491D6" borderColorDark="#ffffff">
 				<tr height='25px' class='sjtop'>
 						   <td width='70%' align='left'>
-								  加气站点:
+								  场站站点:
 									<select  name='Func_Cpm_Id' style='width:100px;height:20px' onChange="doSelect()" >					
 											    <%					
 													if( Manage_List.length() > 0 && null != User_Device_Detail)
@@ -93,7 +93,8 @@
 								  <input name='EDate' type='text' style='width:90px;height:18px;' value='<%=EDate%>' onClick='WdatePicker({readOnly:true})' class='Wdate' maxlength='10'>
 							 </td>
 							 <td width='30%' align='right'>		
-								  <img id="img1" src="../skin/images/mini_button_search.gif" onClick='doSelect()' style="cursor:hand;">
+								  <img id="img1" src="../skin/images/mini_button_search.gif" onClick='doSelect()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='030101' ctype='1'/>">
+								  <img id="img2" src="../skin/images/excel.gif"              onClick='doExport()' style="cursor:hand;display:<Limit:limitValidate userrole='<%=FpList%>' fpid='030102' ctype='1'/>">
 							 </td>
 				</tr>
 				<tr height='30' valign='middle'>
@@ -260,6 +261,7 @@ function GoPage(pPage)
 var req = null;
 function doExport()
 {	
+	
 	var days = new Date(Acc_Data_Sta.EDate.value.replace(/-/g, "/")).getTime() - new Date(Acc_Data_Sta.BDate.value.replace(/-/g, "/")).getTime();
 	var dcnt = parseInt(days/(1000*60*60*24));
 	if(dcnt < 0)
@@ -295,7 +297,7 @@ function doExport()
 		}		
 		//设置回调函数
 		req.onreadystatechange = callbackForName;
-		var url = "Acc_Data_Sta_Export.do?Sid=<%=Sid%>&Id="+window.parent.frames.lFrame.document.getElementById('id').value+"&Level="+window.parent.frames.lFrame.document.getElementById('level').value+"&BTime="+Acc_Data_Sta.BDate.value+" 00:00:00"+"&ETime="+Acc_Data_Sta.EDate.value+" 23:59:59"+"&CurrPage=<%=currStatus.getCurrPage()%>";
+		var url = "Acc_Data_Export.do?Sid=<%=Sid%>&Cmd=0&Cpm_Id="+Acc_Data_Sta.Func_Cpm_Id.value+"&BTime="+Acc_Data_Sta.BDate.value+" 00:00:00"+"&ETime="+Acc_Data_Sta.EDate.value+" 23:59:59"+"&CurrPage=<%=currStatus.getCurrPage()%>";
 		req.open("post",url,true);
 		req.send(null);
 		return true;
@@ -310,7 +312,7 @@ function callbackForName()
 		var str = "";
 		if(resp != null)
 		{
-			location.href = "../../files/excel/" + resp + ".xls";
+			location.href = "../files/excel/" + resp + ".xls";
 		}
 	}
 }

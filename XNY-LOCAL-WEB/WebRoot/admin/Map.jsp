@@ -51,9 +51,7 @@
 	
 %>
 <body style="background:#CADFFF">
-<form name="Map" action="Map.do" method="post" target="mFrame">
 	<div id="container"></div>
-</form>
 </body>
 <SCRIPT LANGUAGE=javascript>
 //ºÊ»›–‘

@@ -17,14 +17,6 @@
 	ArrayList    User_FP_Role       = (ArrayList)session.getAttribute("User_FP_Role_" + Sid);
 	UserInfoBean UserInfo           = (UserInfoBean)session.getAttribute("UserInfo_" + Sid);
 	ArrayList    User_Manage_Role   = (ArrayList)session.getAttribute("User_Manage_Role_" + Sid);
-	String       HP_LoginId         = UserInfo.getHP_LoginId();
-	String       HP_LoginPwd        = UserInfo.getHP_LoginPwd();
-	String       HP_LoginIp         = UserInfo.getHP_LoginIp();
-	String       HP_LoginPort       = UserInfo.getHP_LoginPort();
-	if(null == HP_LoginId){HP_LoginId = "";}
-	if(null == HP_LoginPwd){HP_LoginPwd = "";}
-	if(null == HP_LoginIp){HP_LoginIp = "";}
-	if(null == HP_LoginPort){HP_LoginPort = "";}
 	
 	//功能权限
 	String FpId = UserInfo.getFp_Role();
@@ -60,7 +52,6 @@
 			}
 	}
 	String Dept_Id = UserInfo.getDept_Id();
-	
 	if(Dept_Id.length()>3){Manage_List = Dept_Id; }
 	
 	String p3 = CommUtil.StrToGB2312(request.getParameter("p3"));
@@ -70,17 +61,17 @@
 	}		
 	ArrayList User_User_Info  = (ArrayList)session.getAttribute("User_User_Info_" + Sid);
 	String SYS_List = "";
-								if( null != User_User_Info )
-								{
-									Iterator iterator = User_User_Info.iterator();
-									while(iterator.hasNext())
-									{
-										UserInfoBean usertBean = (UserInfoBean)iterator.next();		
-										String sys = 	usertBean.getSys_Id();							
-										SYS_List  = SYS_List+sys;
-									
-									}
-								}
+	if( null != User_User_Info )
+	{
+		Iterator iterator = User_User_Info.iterator();
+		while(iterator.hasNext())
+		{
+			UserInfoBean usertBean = (UserInfoBean)iterator.next();		
+			String sys = 	usertBean.getSys_Id();							
+			SYS_List  = SYS_List+sys;
+		
+		}
+	}
 	
 										
 %>
@@ -89,6 +80,7 @@
 <div id="PARENT" >
 	<ul id="nav">
 		<li id="li01" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='01' ctype='1'/>"><a href="#" onClick="doGIS()"            >GIS监控</a></li>
+		<li id="li06" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='06' ctype='1'/>"><a href="#" onClick="doData()"           >用量统计</a></li>
 		<li id="li02" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='02' ctype='1'/>"><a href="#" onClick="DoMenu('UserMenu2')">销售统计</a></li>
 			 <ul id="UserMenu2" class="collapsed">
 				 <li id="Display0201"><a href="#" onClick="doAcc_Sale_Sta()"		 	  style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0201' ctype='1'/>">站点销售表</a></li>
@@ -110,9 +102,9 @@
 		
     <li id="li05" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='05' ctype='1'/>"><a href="#" onClick="doAlert_Info()"    >告警管理</a></li>
 	   <!-- <ul id="UserMenu5" class="collapsed">
-				<li id="Display0501"><a href="#" onClick="dolinkage_Info()"       style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0501' ctype='1'/>" >告警日志</a></li>
-	   		<li id="Display0502"><a href="#" onClick="doAlert_Info()"       style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0502' ctype='1'/>" >联动日志</a></li> 
-	   	</ul>--> 
+				<li id="Display0501"><a href="#" onClick="dolinkage_Info()"         style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0501' ctype='1'/>" >告警日志</a></li>
+	   		<li id="Display0502"><a href="#" onClick="doAlert_Info()"           style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0502' ctype='1'/>" >联动日志</a></li> 
+	   	</ul>-->  
 	</ul>
 </div>
 </body>
@@ -169,14 +161,21 @@ function DoDisplay(emid)
 	 LastsubID = emid;
 }
 
-
+/*****************************************************GIS图*****************************************************************/
+//GIS图
 function doGIS()
 {
 	window.parent.frames.mFrame.location = 'MapMain_Map.jsp?Sid=<%=Sid%>';
 }
 
+/*****************************************************站点用气量*************************************************************/
+//站点用气量
+function doData()
+{
+	window.parent.frames.mFrame.location = 'doTables.do?Cmd=9&Cpm_Id=<%=Manage_List%>&Sid=<%=Sid%>';
+}
 
-/****************************************销售统计*****************************************************************/
+/*****************************************************销售统计*************************************************************/
 //站点用气表
 function doAcc_Sale_Sta()
 {
@@ -190,6 +189,7 @@ function doAcc_Sale_Day()
 
 function doAcc_Sale_Month()
 {
+	var TDay = new Date().format("yyyy-MM-dd");
 	window.parent.frames.mFrame.location = 'Acc_Sale.do?Cmd=2&Cpm_Id=<%=Manage_List%>&Sid=<%=Sid%>&Func_Sub_Id=1';
 }
 
@@ -214,12 +214,12 @@ function doAcc_Data_Month()
 //实时数据
 function doEnv()
 {
-	window.parent.frames.mFrame.location = 'Env.do?Cmd=0&Id=<%=Manage_List%>&Level=2&Sid=<%=Sid%>&Func_Sub_Id=1';
+	window.parent.frames.mFrame.location = 'Env.do?Cmd=0&Id=<%=Manage_List%>&Sid=<%=Sid%>&Func_Sub_Id=1';
 }
 //历史数据
 function doHis()
 {
-	window.parent.frames.mFrame.location = 'Env.do?Cmd=2&Level=2&Sid=<%=Sid%>&Cpm_Id=<%=Manage_List%>&Id=<%=Manage_List%>&Func_Sub_Id=9&Func_Corp_Id=9999&Func_Sel_Id=9';
+	window.parent.frames.mFrame.location = 'Env.do?Cmd=2&Sid=<%=Sid%>&Cpm_Id=<%=Manage_List%>&Id=<%=Manage_List%>&Func_Sub_Id=9&Func_Corp_Id=9999&Func_Sel_Id=9';
 }
 //数据图表
 function doGra()
@@ -228,13 +228,13 @@ function doGra()
 	window.parent.frames.mFrame.location = "Graph.do?Cmd=20&Id=0100000001&Sid=<%=Sid%>&Level="+'4'+"&BTime="+TDay+"&Func_Sub_Id=1";
 }
 
-/**************************************************告警管理*****************************************************************/
+/**************************************************告警管理***************************************************************/
 //告警日志
 function doAlert_Info()
 {
 	window.parent.frames.mFrame.location = "Alert_Info.do?Cmd=0&Sid=<%=Sid%>&Cpm_Id=<%=Manage_List%>&Id=<%=Manage_List%>&Func_Sub_Id=9&Func_Corp_Id=9999&Func_Sel_Id=9";
-	
 }
+
 //联动日志
 function doLinkage_Info()
 {

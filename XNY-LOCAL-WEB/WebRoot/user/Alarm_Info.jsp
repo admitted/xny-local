@@ -122,7 +122,7 @@
 						Iterator iterator = Alarm_Info.iterator();
 						while(iterator.hasNext())
 						{
-							LinkageInfoBean Bean = (LinkageInfoBean)iterator.next();
+							AlarmInfoBean Bean = (AlarmInfoBean)iterator.next();
 							String Cpm_Name = Bean.getCpm_Name();
 							String S_Id = Bean.getS_Id();
 							String S_CName = Bean.getS_CName();

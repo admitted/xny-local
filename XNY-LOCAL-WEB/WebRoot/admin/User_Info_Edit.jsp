@@ -44,10 +44,7 @@
 	String Job_Position = "";
 	String Pwd = "";
 	String FpId = "";
-	String HP_LoginId = "";
-	String HP_LoginPwd = "";
-	String HP_LoginIp = "";
-	String HP_LoginPort = "";
+	
 	if(User_Info != null)
 	{
 		Iterator iterator = User_Info.iterator();
@@ -68,17 +65,10 @@
 					Job_Position = statBean.getJob_Position();
 					Pwd = statBean.getPwd();
 					FpId = statBean.getFp_Role();
-					HP_LoginId = statBean.getHP_LoginId();
-					HP_LoginPwd = statBean.getHP_LoginPwd();
-					HP_LoginIp = statBean.getHP_LoginIp();
-					HP_LoginPort = statBean.getHP_LoginPort();
 					
 					if(Job_Id == null){Job_Id = "";}
 	        if(Job_Position == null){Job_Position = "";}
-	        if(HP_LoginId == null){HP_LoginId = "";}
-	        if(HP_LoginPwd == null){HP_LoginPwd = "";}
-	        if(HP_LoginIp == null){HP_LoginIp = "";}
-	        if(HP_LoginPort == null){HP_LoginPort = "";}
+	       
 			}
 		}
  	}
@@ -237,28 +227,6 @@
 								</select>
 							</td>						
 						</tr>
-						<!--
-						<tr height='30'>	
-							<td width='20%' align='center'>华平账号</td>
-							<td width='30%' align='left'>
-								<input type='text' name='HP_LoginId'  style='width:96%;height:18px;' value='<%=HP_LoginId%>' maxlength='32'>
-							</td>
-							<td width='20%' align='center'>华平密码</td>
-							<td width='30%' align='left'>
-								<input type='text' name='HP_LoginPwd' style='width:96%;height:18px;' value='<%=HP_LoginPwd%>' maxlength='32'>
-							</td>
-						</tr>
-						<tr height='30'>	
-							<td width='20%' align='center'>华平 IP</td>
-							<td width='30%' align='left'>
-								<input type='text' name='HP_LoginIp'   style='width:96%;height:18px;' value='<%=HP_LoginIp%>' maxlength='20'>
-							</td>
-							<td width='20%' align='center'>华平Port</td>
-							<td width='30%' align='left'>
-								<input type='text' name='HP_LoginPort' style='width:96%;height:18px;' value='<%=HP_LoginPort%>' maxlength='5'>
-							</td>
-						</tr>
-						-->
 					</table>
 				</td>
 			</tr>
