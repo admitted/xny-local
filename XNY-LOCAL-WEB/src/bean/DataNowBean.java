@@ -38,7 +38,8 @@ public class DataNowBean extends RmiBean
 		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
 		
-		msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
+		if(currStatus.getCmd() != 1)
+			msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
 
 		switch(currStatus.getCmd())
 		{
@@ -79,12 +80,18 @@ public class DataNowBean extends RmiBean
 		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
 		
-		msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
-		request.getSession().setAttribute("Device_Atrr_" + Sid, ((Object)msgBean.getMsg()));
+		PrintWriter outprint = response.getWriter();
+		String Resp = "9999";
+		
+		msgBean = pRmi.RmiExec(14, this, 0);
+		if(msgBean.getStatus() == MsgBean.STA_SUCCESS)
+		{
+			Resp = "0000";
+		}
 		
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
-		currStatus.setJsp("Device_Detail_Alert.jsp?Sid=" + Sid);
-		response.sendRedirect(currStatus.getJsp());
+		outprint.write(Resp);
+
 	}
 
 	
