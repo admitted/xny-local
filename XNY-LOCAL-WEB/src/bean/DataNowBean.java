@@ -80,6 +80,9 @@ public class DataNowBean extends RmiBean
 		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
 		
+		//解决乱码问题
+//		Abn_Des =  new String(Abn_Des.getBytes("UTF-8"),"GBK");
+		
 		PrintWriter outprint = response.getWriter();
 		String Resp = "9999";
 		
