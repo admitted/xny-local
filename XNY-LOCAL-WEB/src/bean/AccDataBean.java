@@ -213,28 +213,6 @@ public class AccDataBean extends RmiBean
 		response.sendRedirect(currStatus.getJsp());
 	}
 	
-	//折线图
-	public void doGraphs(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
-	{
-		getHtmlData(request);
-		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
-		currStatus.getHtmlData(request, pFromZone);
-		
-		//各站用气量月-每天显示
-		//查出此月有数据的站点
-    	msgBean = pRmi.RmiExec(6, this, 0);
-    	request.getSession().setAttribute("Acc_Data_Cpm_" + Sid, ((Object)msgBean.getMsg()));
-    	
-    	//查出此月有数据的站点的月详细数据
-    	msgBean = pRmi.RmiExec(9, this, 0);
-    	request.getSession().setAttribute("Acc_Data_Cpm_Month_" + Sid, ((Object)msgBean.getMsg()));
-    	currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
-		 
-		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
-	   	response.sendRedirect(currStatus.getJsp());
-	   
-	}
-	
 	/**
 	 * 导出Excel表格
 	 * @param request

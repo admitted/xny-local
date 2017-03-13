@@ -11,6 +11,10 @@ import rmi.Rmi;
 import rmi.RmiBean;
 import util.*;
 
+/**
+ * @author cui
+ *
+ */
 public class DataNowBean extends RmiBean 
 {	
 	public final static long serialVersionUID = RmiBean.RMI_DATA_NOW;
@@ -46,7 +50,12 @@ public class DataNowBean extends RmiBean
 			case 0:// 查询
 				request.getSession().setAttribute("Device_Atrr_" + Sid, ((Object)msgBean.getMsg()));
 				currStatus.setJsp("Device_Detail_Scene.jsp?Sid=" + Sid + "&Cpm_Id=" + Cpm_Id + "&Scene_Img=" + Scene_Img);
-				break;			
+				break;
+			case 1:// 查询单个站点设备
+				msgBean = pRmi.RmiExec(0, this, 0);
+				request.getSession().setAttribute("Device_Atrr_" + Sid, ((Object)msgBean.getMsg()));
+				currStatus.setJsp("Device_Detail_Alert.jsp?Sid=" + Sid);
+				break;
 		}
 		
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
@@ -55,7 +64,32 @@ public class DataNowBean extends RmiBean
 	}
 	
 	
-	/** 获取状态 RealStatus、doDefence、doRightClick
+	/**
+	 * 站级信息-告警信息配置
+	 * @param request
+	 * @param response
+	 * @param pRmi
+	 * @param pFromZone
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public void doDetailAlert(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
+	{
+		getHtmlData(request);
+		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus.getHtmlData(request, pFromZone);
+		
+		msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
+		request.getSession().setAttribute("Device_Atrr_" + Sid, ((Object)msgBean.getMsg()));
+		
+		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
+		currStatus.setJsp("Device_Detail_Alert.jsp?Sid=" + Sid);
+		response.sendRedirect(currStatus.getJsp());
+	}
+
+	
+	/** 
+	 * 获取状态 RealStatus、doDefence、doRightClick
 	 * RealStatus:当前状态     doDefence:左点击查看接口    doRightClick:右点击事件
 	 * @param request
 	 * @param response
@@ -80,12 +114,9 @@ public class DataNowBean extends RmiBean
 			Resp = ((String)msgBean.getMsg());
 		}
 		
-		
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 		outprint.write(Resp);
 	}
-
-
 
 	public String getSql(int pCmd)
 	{
@@ -93,10 +124,15 @@ public class DataNowBean extends RmiBean
 		switch (pCmd)
 		{		
 			case 0:
-				Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, t.value, t.unit, t.lev, t.des, t.sign, t.pos_x, t.pos_y " +
+				Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, t.value, t.unit, t.lev, t.des," 	+ 
+					  " t.sign, t.pos_x, t.pos_y , t.stand_low, t.stand_high, t.abn_des" +
 				  	  " from view_data_now t " +
 				  	  " where instr('"+ Cpm_Id +"', t.cpm_id) > 0 " +
 				  	  " order by t.id, t.attr_id , t.ctime desc ";
+				break;
+			case 14://告警信息配置
+				Sql = " update data_now t set t.stand_low = '"+ Stand_Low +"', t.stand_high = '"+ Stand_High +"' , t.abn_des = '"+ Abn_Des +"'" +
+					  " where t.cpm_id = '"+ Cpm_Id +"' and t.id = '"+ Id +"'  and  t.attr_id = '"+ Attr_Id +"' ";
 				break;
 			case 15://地图拖拽同步更新
 				Sql = " update data_now t set t.pos_x = '"+ Pos_X +"', t.pos_y = '"+ Pos_Y +"' " +
@@ -140,6 +176,9 @@ public class DataNowBean extends RmiBean
 			setSign(pRs.getString(13));
 			setPos_X(pRs.getString(14));
 			setPos_Y(pRs.getString(15));
+			setStand_Low(pRs.getString(16));
+			setStand_High(pRs.getString(17));
+			setAbn_Des(pRs.getString(18));
 		} 
 		catch (SQLException sqlExp) 
 		{
@@ -171,13 +210,16 @@ public class DataNowBean extends RmiBean
 			setSign(CommUtil.StrToGB2312(request.getParameter("Sign")));
 			setPos_X(CommUtil.StrToGB2312(request.getParameter("Pos_X")));
 			setPos_Y(CommUtil.StrToGB2312(request.getParameter("Pos_Y")));
+			setScene_Img(CommUtil.StrToGB2312(request.getParameter("Scene_Img")));
+			setStand_Low(CommUtil.StrToGB2312(request.getParameter("Stand_Low")));
+			setStand_High(CommUtil.StrToGB2312(request.getParameter("Stand_High")));
+			setAbn_Des(CommUtil.StrToGB2312(request.getParameter("Abn_Des")));
 			
 			setSid(CommUtil.StrToGB2312(request.getParameter("Sid")));
 			setLevel(CommUtil.StrToGB2312(request.getParameter("Level")));
 			setYear(CommUtil.StrToGB2312(request.getParameter("Year")));
 			setMonth(CommUtil.StrToGB2312(request.getParameter("Month")));		
 			setFunc_Cpm_Id(CommUtil.StrToGB2312(request.getParameter("Func_Cpm_Id")));
-			setScene_Img(CommUtil.StrToGB2312(request.getParameter("Scene_Img")));
 		}
 		catch (Exception Exp) 
 		{
@@ -202,13 +244,46 @@ public class DataNowBean extends RmiBean
 	private String Pos_X;
 	private String Pos_Y;
 	private String Scene_Img;
+	private String Stand_Low;
+	private String Stand_High;
+	private String Abn_Des;
 	
-
 	private String Sid;
 	private String Level;
 	private String Year;
 	private String Month;
-		
+	
+	
+	public String getStand_Low()
+	{
+		return Stand_Low;
+	}
+
+	public void setStand_Low(String stand_Low)
+	{
+		Stand_Low = stand_Low;
+	}
+
+	public String getStand_High()
+	{
+		return Stand_High;
+	}
+
+	public void setStand_High(String stand_High)
+	{
+		Stand_High = stand_High;
+	}
+
+	public String getAbn_Des()
+	{
+		return Abn_Des;
+	}
+
+	public void setAbn_Des(String abn_Des)
+	{
+		Abn_Des = abn_Des;
+	}
+
 	public String getScene_Img()
 	{
 		return Scene_Img;

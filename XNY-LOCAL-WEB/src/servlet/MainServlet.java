@@ -188,6 +188,16 @@ public class MainServlet extends HttpServlet
         	new DeviceDetailBean().ExecCmd(request, response, m_Rmi, false);
         else if (strUrl.equalsIgnoreCase("Device_doDragging.do"))				 //站级信息-地图拖拽接口
         	new DeviceDetailBean().doDragging(request, response, m_Rmi, false);
+        else if (strUrl.equalsIgnoreCase("Device_Detail_Alert.do"))				 //站级信息-告警信息查询
+        	new DataNowBean().ExecCmd(request, response, m_Rmi, false);
+        else if (strUrl.equalsIgnoreCase("Device_Detail_Alert_Update.do"))	     //站级信息-告警信息配置
+        	new DataNowBean().doDetailAlert(request, response, m_Rmi, false);
+        else if (strUrl.equalsIgnoreCase("Device_Detail_Scene.do"))				 //场景图上传
+        	new DeviceDetailBean().DetailSenceUp(request, response, m_Rmi, false ,Config);  
+        else if (strUrl.equalsIgnoreCase("Device_Detail_Map.do"))				 //设备属性查找
+        	new DataNowBean().ToPo(request, response, m_Rmi, false);  
+        else if (strUrl.equalsIgnoreCase("Device_Detail_Draging.do"))			 //设备属性-添加修改删除查找
+        	new DataNowBean().ExecCmd(request, response, m_Rmi, false);
         else if (strUrl.equalsIgnoreCase("User_Info.do"))				         //人员信息
         	new UserInfoBean().ExecCmd(request, response, m_Rmi, false);
         else if (strUrl.equalsIgnoreCase("IdCheck.do"))						 	 //人员信息-帐号检测
@@ -229,21 +239,14 @@ public class MainServlet extends HttpServlet
         else if (strUrl.equalsIgnoreCase("Acc_Data.do"))				         //流量统计
             new AccDataBean().ExecCmd(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("doTables.do"))				         //流量月报表
-            new AccDataBean().doTables(request, response, m_Rmi, false);  
-        else if (strUrl.equalsIgnoreCase("doGraphs.do"))				         //流量月折线图
-            new AccDataBean().doGraphs(request, response, m_Rmi, false);  
+            new AccDataBean().doTables(request, response, m_Rmi, false);   
         else if (strUrl.equalsIgnoreCase("Acc_Data_Export.do"))				     //累积流量导出
         	new AccDataBean().ExportToExcel(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("Acc_Sale.do"))				         //销售数据
         	new AccSaleBean().ExecCmd(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("Acc_Sale_Export.do"))				     //销售数据导出
         	new AccSaleBean().ExportToExcel(request, response, m_Rmi, false);  
-        else if (strUrl.equalsIgnoreCase("Device_Detail_Scene.do"))				 //场景图上传
-        	new DeviceDetailBean().DetailSenceUp(request, response, m_Rmi, false ,Config);  
-        else if (strUrl.equalsIgnoreCase("Device_Detail_Map.do"))				 //设备属性查找
-        	new DataNowBean().ToPo(request, response, m_Rmi, false);  
-        else if (strUrl.equalsIgnoreCase("Device_Detail_Draging.do"))			 //设备属性-添加修改删除查找
-        	new DataNowBean().ExecCmd(request, response, m_Rmi, false);  
+          
     }
     
     /** 
