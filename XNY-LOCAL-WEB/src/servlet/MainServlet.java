@@ -208,7 +208,7 @@ public class MainServlet extends HttpServlet
         	new UserRoleBean().RoleOP(request, response, m_Rmi, false);
         else if (strUrl.equalsIgnoreCase("User_Position.do"))				 	 //人员信息-岗位管理
         	new UserPositionBean().ExecCmd(request, response, m_Rmi, false);
-        
+       
         /**************************************user-ToPo*********************************************/
         else if (strUrl.equalsIgnoreCase("ToPo.do"))						     //GIS监控
         	new DeviceDetailBean().ToPo(request, response, m_Rmi, false);
@@ -246,7 +246,6 @@ public class MainServlet extends HttpServlet
         	new AccSaleBean().ExecCmd(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("Acc_Sale_Export.do"))				     //销售数据导出
         	new AccSaleBean().ExportToExcel(request, response, m_Rmi, false);  
-          
     }
     
     /** 
