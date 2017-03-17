@@ -141,7 +141,8 @@ public class AccDataBean extends RmiBean
 						AccDataBean CpmDataBean = (AccDataBean) cpmDataIterator.next();
 						if (CpmBean.getCpm_Id().equals(CpmDataBean.getCpm_Id()))
 						{   
-							daysDataMap.put(Integer.parseInt(CpmDataBean.getCTime().substring(8, 10)), CpmDataBean.getValue());
+							daysDataMap.put(Integer.parseInt(CpmDataBean.getCTime().substring(8, 10)), (int)Math.floor(Float.parseFloat(CpmDataBean.getValue()))+"");
+							System.out.println(Math.floor(Float.parseFloat(CpmDataBean.getValue()))+"");
 						}
 					}
 				}
