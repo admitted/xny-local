@@ -1,6 +1,5 @@
 package bean;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -44,7 +43,6 @@ import com.github.abel533.echarts.code.Trigger;
 import com.github.abel533.echarts.feature.MagicType;
 import com.github.abel533.echarts.series.Line;
 
-
 /** 
  * 累积流量数据处理bean(每天的流量用量) 
  * AccDataBean数据处理bean
@@ -68,7 +66,8 @@ public class AccDataBean extends RmiBean
 		super.className = "AccDataBean";
 	}
 	
-	/** 累积流量 查询
+	/** 
+	 * 累积流量 查询
 	 * @param request
 	 * @param response
 	 * @param pRmi
@@ -109,7 +108,15 @@ public class AccDataBean extends RmiBean
 	   
 	}
 	
-	//月报表详细
+	/**
+	 * 月用气量报表详细 
+	 * @param request
+	 * @param response
+	 * @param pRmi
+	 * @param pFromZone
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	public void doTables(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
 	{
 		getHtmlData(request);
@@ -124,7 +131,7 @@ public class AccDataBean extends RmiBean
 		msgBean = pRmi.RmiExec(9, this, 0);
 		ArrayList<?> Acc_Data_Cpm_Month = (ArrayList<?>) msgBean.getMsg();
 
-		// 将获取到的CPM_Data 按照 CPM站点分解
+		// 将获取到的Acc_Data_Cpm 按照 CPM站点分解
 		Map<String, Map> CpmMap = new HashMap<String, Map>();
 		if (null != Acc_Data_Cpm)
 		{

@@ -243,7 +243,9 @@ public class MainServlet extends HttpServlet
         else if (strUrl.equalsIgnoreCase("Acc_Data_Export.do"))				     //累积流量导出
         	new AccDataBean().ExportToExcel(request, response, m_Rmi, false);  
         else if (strUrl.equalsIgnoreCase("Acc_Sale.do"))				         //销售数据
-        	new AccSaleBean().ExecCmd(request, response, m_Rmi, false);  
+        	new AccSaleBean().ExecCmd(request, response, m_Rmi, false); 
+        else if (strUrl.equalsIgnoreCase("doSaleTables.do"))				     //销售月报表
+        	new AccSaleBean().doSaleTables(request, response, m_Rmi, false); 
         else if (strUrl.equalsIgnoreCase("Acc_Sale_Export.do"))				     //销售数据导出
         	new AccSaleBean().ExportToExcel(request, response, m_Rmi, false);  
     }
