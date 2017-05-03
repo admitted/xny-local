@@ -20,7 +20,6 @@
 <!--Zdialog-->
 <script type='text/javascript' src='../skin/js/zDrag.js'   charset='gb2312'></script>
 <script type='text/javascript' src='../skin/js/zDialog.js' charset='gb2312'></script>
-
 <script language=javascript>document.oncontextmenu=function(){window.event.returnValue=false;};</script>
 <style type='text/css'>
 html,body{width:100%; height:100%; margin:0; padding:0;}
@@ -93,12 +92,16 @@ html,body{width:100%; height:100%; margin:0; padding:0;}
 <body style='background:#bbbdbb'>
 <form name='Map' action='Map.do' method='post' target='mFrame'>
 	<div id='container'></div>
-	<div id='news_info' style='position:absolute;width:284px;height:100%;right:16px;top:0px;filter:alpha(Opacity=80);-moz-opacity:0.5;opacity:0.5;background-color:#bbbdbb;'>
+	<!-- 	消息栏start -->
+	<div id='news_info' style='position:absolute;width:484px;height:100%;right:16px;top:0px;filter:alpha(Opacity=80);-moz-opacity:0.5;opacity:0.5;background-color:#bbbdbb;'>
 		&nbsp;
 	</div>
+	<!-- 	消息栏end   -->
+	<!-- 	收起框start -->
 	<div id='menu_info' style='position:absolute;width:16px;height:100%;right:0px;top:0px;filter:alpha(Opacity=80);-moz-opacity:0.5;opacity:0.5;background-color:#bbbdbb;'>
 		<img id='news_img' src='../skin/images/map2close.gif' style='width:16px;height:16px;cursor:hand;' title='收起' onclick='doOpen()'>
 	</div>
+	<!-- 	收起框end   -->
 </form>
 </body>
 <SCRIPT LANGUAGE=javascript>
@@ -113,7 +116,7 @@ function setHeight()
 	document.getElementById('container').style.height = document.body.offsetHeight + 'px';
 	
 	if(document.getElementById('news_info').style.display == '')
-		document.getElementById('container').style.width = document.body.offsetWidth - 300 + 'px';
+		document.getElementById('container').style.width = document.body.offsetWidth - 500 + 'px';
 	else
 		document.getElementById('container').style.width = document.body.offsetWidth - 16  + 'px';
 }
@@ -136,13 +139,11 @@ function doOpen()
 	setHeight();
 }
 
-
-
 //载入地图
 var map = new BMap.Map("container");                      //创建地图实例
 //map.setMapType(BMAP_HYBRID_MAP);                        //默认类型为卫星、路网一体
 var point = new BMap.Point(<%=Longitude%>, <%=Latitude%>);//创建中心点坐标，默认为第一家企业
-map.centerAndZoom(point, 12);                             //初始化地图，设置中心点坐标和地图级别
+map.centerAndZoom(point, 10);                             //初始化地图，设置中心点坐标和地图级别
 map.addControl(new BMap.NavigationControl());             //添加一个平移缩放控件，位置可偏移、形状可改变
 map.addControl(new BMap.ScaleControl());                  //添加一个比例尺控件，位置可偏移[var opts = {offset: new BMap.Size(150, 5)};map.addControl(new BMap.ScaleControl(opts));]
 map.addControl(new BMap.OverviewMapControl());            //添加一个缩略图控件，位置可偏移
@@ -210,6 +211,74 @@ function addMarker(point, pId, pCName, pIcon, pStatus, pX, pY, pType)
 				}
 			break;
 	}
+}
+
+setTimeout("doNews()", 1000);
+setInterval("doNews()", 15*1000);
+function doNews()
+{
+	var objHTML = "<div style='height:403px;text-align:center;border:1px solid #0068a6;overflow-x:no;overflow-y:auto;'>";
+	if(window.XMLHttpRequest)
+  {
+    reqNews = new XMLHttpRequest();
+  }
+	else if(window.ActiveXObject)
+	{
+    reqNews = new ActiveXObject('Microsoft.XMLHTTP');
+  }
+	reqNews.onreadystatechange = function()
+	{
+	  var state = reqNews.readyState;
+	  if(state == 4)
+	  {
+	    if(reqNews.status == 200)
+	    {
+	      var Resp = reqNews.responseText;
+	      if(null != Resp && Resp.length >= 4 && Resp.substring(0,4) == '0000')
+	      {
+	      	  var list = Resp.substring(4).split('^');
+	      		var objHTML = '<table width=100% border=0>';
+	      		objHTML += "<table align='center' style='margin:auto'  cellpadding='0' cellspacing='0' border='1' width='97%'>";
+  					objHTML += "  <tr height='30px'>";
+  					objHTML += "    <td width='10%' align='center' colspan='5' style='background:#a1d1fa;'><b>站点数据异常实时提醒</b></td>";
+  					objHTML += "  </tr>";
+  					objHTML += "  <tr height='25px'>";
+  					objHTML += "    <td width='10%' align='center' style='background:#a1d1fa;'>站点</td>";
+  					objHTML += "    <td width='10%' align='center' style='background:#a1d1fa;'>设备</td>";
+  					objHTML += "    <td width='10%' align='center' style='background:#a1d1fa;'>属性</td>";
+  					objHTML += "    <td width='15%' align='center' style='background:#a1d1fa;'>时间</td>";
+  					objHTML += "    <td width='15%' align='center' style='background:#a1d1fa;'>描述</td>";
+  					objHTML += "  </tr>";
+	      		for(var i=0; i<list.length && list[i].length>0; i++)
+						{
+						var sublist = list[i].split('~');
+						var str_CType = '';
+						switch(parseInt(sublist[7]))
+						{
+							case 1:
+									str_CType = '系统告警';
+								break;
+							case 2:
+									str_CType = '数据告警';
+								break;
+						}
+						objHTML += "<tr height='25px'>";
+    				objHTML += "  <td width='10%' align='center'>"+ sublist[2] +"</td>";
+    				objHTML += "  <td width='10%' align='center'>"+ sublist[4] +"</td>";
+    				objHTML += "  <td width='10%' align='center' style='background:red;'>"+ sublist[6] +"</td>";
+    				objHTML += "  <td width='15%' align='center' style='background:red;'>"+ sublist[8] +"</td>";
+    				objHTML += "  <td width='15%' align='left'>"  + sublist[9] +"</td>";
+    				objHTML += "</tr>";
+						}
+	      		objHTML += '</table>';
+	      		document.getElementById('news_info').innerHTML = objHTML;
+	      }     
+	    }
+	  }
+	};
+	var url = 'ToPo.do?Cmd=22&Sid=<%=Sid%>&Id=<%=IdList%>&CType=1&currtime='+new Date();
+	reqNews.open('post',url,false);
+	reqNews.send(null);
 }
 
 //状态更新
@@ -375,29 +444,6 @@ function doAla()
 	parent.location = 'log/Main.jsp?Sid=<%=Sid%>&p3=1';
 }
 
-//链接销售统计
-/**function doPro()
-{
-	if('<Limit:limitValidate userrole='<%=FpList%>' fpid='02' ctype='1'/>' == 'none')
-	{
-		alert('您无权限查看销售统计!');
-		return;
-	}
-	parent.location = 'pro/Main.jsp?Sid=<%=Sid%>&p3=1';
-}
-**/
-
-//链接生产数据
-function doDat()
-{
-	if('<Limit:limitValidate userrole='<%=FpList%>' fpid='04' ctype='1'/>' == 'none')
-	{
-		alert('您无权限查看生产数据!');
-		return;
-	}
-	parent.location = 'env/Main.jsp?Sid=<%=Sid%>&p3=1';
-}
-
 //人工处理
 var reqIgnore = null;
 function doIgnored(pId, pCName, pStatus, pSN, pOperator, pCpm_Id, pDId, pAttr_Id)
@@ -534,7 +580,7 @@ function doDefence(pId, pCName, pStatus)
 	showMessageBox(pHead, messContent , 600, 500);
 }
 
-//实时数据
+//xny 实时数据
 function doEnv(pCpm_Id,pCpm_Name)
 {
 	  var Pdiag    = new Dialog();

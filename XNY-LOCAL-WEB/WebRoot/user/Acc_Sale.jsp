@@ -5,7 +5,6 @@
 <%@ page import="java.lang.*" %>
 <%@ page import="java.math.*" %>
 <%@ page import="java.text.*" %>
-<%@ page import="com.github.abel533.echarts.*" %>
 <%@ page import="com.alibaba.fastjson.JSON" %>
 <%@ taglib uri="/WEB-INF/limitvalidatetag.tld" prefix="Limit"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -18,7 +17,6 @@
 		<script type="text/javascript" src="../skin/js/My97DatePicker/WdatePicker.js"></script>
 		<script type="text/javascript" src="../skin/js/util.js"></script>
 		<script type="text/javascript" src="../skin/js/day.js"></script>
-		<script type="text/javascript" src="../skin/js/echart/echarts.min.js"></script>
 		<script type="text/javascript" src="../skin/js/jquery.min.js"></script>
 		
 		<script type="text/javascript">
@@ -46,17 +44,17 @@
 				    }
 				}
 				
-				//查询函数
+				// select
 				function doSelect()
 				{
-					var month = doTables.Month.value
+					var month = doSaleTables.Month.value
 					if (month < 10) {
 						month = '0'+ month;
 					}
-					doTables.Cpm_Id.value = doTables.Func_Cpm_Id.value;
-					doTables.BTime.value = doTables.Year.value + '-' + month + '-01 00:00:00';
-				  doTables.ETime.value = new Date().format("yyyy-MM-dd");
-				  doTables.submit();
+					doSaleTables.Cpm_Id.value = doSaleTables.Func_Cpm_Id.value;
+					doSaleTables.BTime.value  = doSaleTables.Year.value + '-' + month + '-01 00:00:00';
+				  doSaleTables.ETime.value  = new Date().format("yyyy-MM-dd");
+				  doSaleTables.submit();
 				}
 				//isBrowser();
 				function isBrowser(){
@@ -176,8 +174,8 @@
 		CurrStatus currStatus = (CurrStatus)session.getAttribute("CurrStatus_" + Sid);
 		String   BDate  = currStatus.getVecDate().get(0).toString().substring(0,10);
 		String   EDate  = currStatus.getVecDate().get(1).toString().substring(0,10);
-		int Year  = Integer.parseInt(BDate.substring(0,4));
-	  int Month = Integer.parseInt(BDate.substring(5,7));
+		int 		 Year  = Integer.parseInt(BDate.substring(0,4));
+	  int      Month = Integer.parseInt(BDate.substring(5,7));
 	  int thatMonthDays = CommUtil.getDaysOfMonth(BDate);
 		int cnt = 0;
 		int sn = 0;
@@ -186,7 +184,7 @@
 	  Map<String, JSON>   GraphMaps = (Map)session.getAttribute("GraphMaps_" + Sid);                                                                       
 %>
 <body style=" background:#CADFFF">
-<form name="doTables"  action="doTables.do" method="post" target="mFrame">
+<form name="doSaleTables"  action="doSaleTables.do" method="post" target="mFrame">
 		<div id="down_bg_2">
 				<table width="100%" style='margin:auto;' border=0 cellPadding=0 cellSpacing=0 bordercolor="#3491D6" borderColorDark="#ffffff">
 						<tr height='25px' class='sjtop'>
@@ -285,14 +283,6 @@
 						</tr>
 			  </table>
 			 
-				 <%
-				    for(String s : CpmMap.keySet()){
-				        cnt++;
-				 %>
-				        <div id="GraphsCpm_<%=cnt%>" style="width:1000px;height:300px;"></div>
-				 <%
-				    }
-				 %>
 		</div>
 		<input name="Cmd"           type="hidden" value="9">
 		<input name="Sid"           type="hidden" value="<%=Sid%>">
@@ -311,27 +301,6 @@ if(1 == fBrowserRedirect() || 2 == fBrowserRedirect())
 {
 	  document.getElementById('img2').style.display = 'none';
 }
-
-//折线图初始化
-var cnt = 0;
-<%
-  for(String key :GraphMaps.keySet()){
-     Iterator iterator = User_Device_Detail.iterator();
-		 while(iterator.hasNext()){
-					DeviceDetailBean statBean = (DeviceDetailBean)iterator.next();
-					if(Manage_List.contains(statBean.getId()) && key.equals(statBean.getId())){
-%>  
-					    cnt++;
-					    var myChart = echarts.init(document.getElementById('GraphsCpm_'+cnt));
-							//alert('<%=GraphMaps.get(key)%>');
-							var option = <%=GraphMaps.get(key)%>;
-							myChart.setOption(option);  
-				      myChart.hideLoading();  
-<%
-          }
-      }
-	}
-%>
 
 </SCRIPT>
 </html>

@@ -121,7 +121,7 @@
 							</td>
 							<td width='20%' align='center'>加气价格</td>
 							<td width='30%' align='left'>
-								<input type='text' name='Unit_Price' style='width:90%;height:18px;' value='' maxlength='6'>
+								<input type='text' name='Unit_Price' style='width:90%;height:18px;' value='' maxlength='20'>
 							</td>
 						</tr>
 					</table>
@@ -165,6 +165,11 @@ function doAdd()
   if(Device_Detail_Add.CTime.value.Trim().length < 1)
   {
     alert("请输入投运时间!");
+    return;
+  }
+  if(Device_Detail_Add.Unit_Price.value.Trim().length < 1)
+  {
+    alert("请输入加气价格!");
     return;
   }
   if(confirm("信息无误,确定提交?"))

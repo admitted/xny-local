@@ -79,8 +79,10 @@
 <body style="background:#0B80CC;">
 <div id="PARENT" >
 	<ul id="nav">
-		<li id="li01" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='01' ctype='1'/>"><a href="#" onClick="doGIS()"            >GIS监控</a></li>
-		<li id="li06" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='06' ctype='1'/>"><a href="#" onClick="doData()"           >用量统计</a></li>
+		<li id="li01" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='01' ctype='1'/>"><a id="a0101"  href="#" onClick="doGIS();DoDisplay(this.id);"            >GIS监控</a></li>
+		<li id="li06" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='06' ctype='1'/>"><a id="a0601"  href="#" onClick="doData();DoDisplay(this.id);"           >用量统计</a></li>
+		<li id="li07" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='07' ctype='1'/>"><a id="a0701"  href="#" onClick="doSale();DoDisplay(this.id);"         	 >销售统计</a></li>
+		<!--
 		<li id="li02" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='02' ctype='1'/>"><a href="#" onClick="DoMenu('UserMenu2')">销售统计</a></li>
 			 <ul id="UserMenu2" class="collapsed">
 				 <li id="Display0201"><a href="#" onClick="doAcc_Sale_Sta()"		 	  style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0201' ctype='1'/>">站点销售表</a></li>
@@ -93,14 +95,16 @@
 				 <li id="Display0302"><a href="#" onClick="doAcc_Data_Day()"			  style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0302' ctype='1'/>">日用气总表</a></li>
 				 <li id="Display0303"><a href="#" onClick="doAcc_Data_Month()"			style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0303' ctype='1'/>">月用气总表</a></li>			
 	   	 </ul>
+	  -->
+ 	 	
  	 	<li id="li04" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='04' ctype='1'/>"><a href="#" onClick="DoMenu('UserMenu4')">生产数据</a></li>
 			 <ul id="UserMenu4" class="collapsed">
-				 <li id="Display0401"><a href="#" onClick="doEnv()"                 style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0401' ctype='1'/>">实时数据</a></li>
-	   		 <li id="Display0402"><a href="#" onClick="doHis()"                 style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0402' ctype='1'/>">历史数据</a></li>
+				 <li id="Display0401"><a id="a0401" href="#" onClick="doEnv();DoDisplay(this.id);"                 style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0401' ctype='1'/>">实时数据</a></li>
+	   		 <li id="Display0402"><a id="a0402" href="#" onClick="doHis();DoDisplay(this.id);"                 style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0402' ctype='1'/>">历史数据</a></li>
 				<!-- <li id="Display0403"><a href="#" onClick="doGra()"                                                                                                >数据图表</a></li>-->
 			 </ul>
 		
-    <li id="li05" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='05' ctype='1'/>"><a href="#" onClick="doAlert_Info()"    >告警管理</a></li>
+    <li id="li05" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='05' ctype='1'/>"><a id="a0501" href="#" onClick="doAlert_Info();DoDisplay(this.id);"    >告警管理</a></li>
 	   <!-- <ul id="UserMenu5" class="collapsed">
 				<li id="Display0501"><a href="#" onClick="dolinkage_Info()"         style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0501' ctype='1'/>" >告警日志</a></li>
 	   		<li id="Display0502"><a href="#" onClick="doAlert_Info()"           style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0502' ctype='1'/>" >联动日志</a></li> 
@@ -160,6 +164,18 @@ function DoDisplay(emid)
 	 }
 	 LastsubID = emid;
 }
+//菜单颜色变化
+var LastsubID = "a0101";
+DoDisplay(LastsubID);
+function DoDisplay(emid)
+{
+    document.getElementById(emid).style.color = "red" ;
+    if ((LastsubID != "") && (emid != LastsubID)) //关闭上一个
+    {
+        document.getElementById(LastsubID).style.color = "" ;
+    }
+    LastsubID = emid;
+}
 
 /*****************************************************GIS图*****************************************************************/
 //GIS图
@@ -173,6 +189,12 @@ function doGIS()
 function doData()
 {
 	window.parent.frames.mFrame.location = 'doTables.do?Cmd=9&Cpm_Id=<%=Manage_List%>&Sid=<%=Sid%>';
+}
+
+//站点销售表
+function doSale()
+{
+	window.parent.frames.mFrame.location = 'doSaleTables.do?Cmd=9&Cpm_Id=<%=Manage_List%>&Sid=<%=Sid%>';
 }
 
 /*****************************************************销售统计*************************************************************/

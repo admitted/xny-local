@@ -10,6 +10,8 @@
 <link type="text/css" href="../skin/css/style.css" rel="stylesheet"/>
 <script type="text/javascript" src="../skin/js/util.js"></script>
 <script type="text/javascript" src="../skin/js/My97DatePicker/WdatePicker.js"></script>
+<script type='text/javascript' src='../skin/js/zDrag.js' charset='gb2312'></script>
+<script type='text/javascript' src='../skin/js/zDialog.js' charset='gb2312'></script>
 <script language=javascript>document.oncontextmenu=function(){window.event.returnValue=false;};</script>
 <STYLE>
 	.mydiv {
@@ -86,7 +88,7 @@
 %>
 <body style="background:#CADFFF">
 <form name="Device_Detail_Edit" action="Device_Detail.do" method="post" target="mFrame">
-<DIV id=objDiv class=mydiv style="MARGIN: auto; DISPLAY: none">
+<DIV id="detail_Div" class=mydiv style="MARGIN: auto; DISPLAY: none">
 	<IFRAME id=childFrame style="HEIGHT: 100%; WIDTH: 100%" src="Device_Detail_Draging.do?Sid=<%=Sid%>&Cpm_Id=<%=Id%>&Scene_Img=<%=Scene_Img%>" frameBorder=0 allowTransparency name=childFrame scrolling=no></IFRAME>
 </DIV>
 <div id="down_bg_2">
@@ -95,9 +97,10 @@
 		<table width="60%" style='margin:auto;' border=0 cellPadding=0 cellSpacing=0 bordercolor="#3491D6" borderColorDark="#ffffff">
 			<tr height='30'>
 				<td width='100%' align='right'>
-					<img src="../skin/images/mini_button_equip.gif" style='cursor:hand;' onClick='doScene()'>
-					<img src="../skin/images/mini_button_submit.gif" style='cursor:hand;' onClick='doEdit()'>
-					<img src="../skin/images/button10.gif"           style='cursor:hand;' onclick='doNO()'>
+					<img src="../skin/images/mini_button_equip.gif"       style="cursor:pointer;" onClick="doScene()">
+					<img src="../skin/images/mini_button_equip_alert.gif" style="cursor:pointer;" onClick="doAlert('<%=Id%>')">
+					<img src="../skin/images/mini_button_submit.gif"      style="cursor:pointer;" onClick="doEdit()">
+					<img src="../skin/images/button10.gif"                style="cursor:pointer;" onclick="doNO()">
 				</td>
 			</tr>
 			<tr height='30'>
@@ -200,8 +203,22 @@ function doNO()
 }
 function doScene()
 {
-	document.getElementById('objDiv').style.display = 'block';
+	document.getElementById('detail_Div').style.display = 'block';
 }
+
+//站级信息-告警信息配置
+function doAlert(pCpm_Id)
+{
+	  //alert(pCpm_Id);
+    var Pdiag = new Dialog();
+    Pdiag.Top = "50%";
+    Pdiag.Width = 900;
+    Pdiag.Height = 500;
+    Pdiag.Title = "告警信息配置";
+    Pdiag.URL = 'Device_Detail_Alert.do?Sid=<%=Sid%>&Cpm_Id=' + pCpm_Id+'&Cmd=1';
+    Pdiag.show();
+}
+
 function doEdit()
 {
   if(Device_Detail_Edit.Id.value.Trim().length != 10)
@@ -227,6 +244,11 @@ function doEdit()
   if(Device_Detail_Edit.CTime.value.Trim().length < 1)
   {
     alert("请输入投运时间!");
+    return;
+  }
+  if(Device_Detail_Edit.Unit_Price.value.Trim().length < 1)
+  {
+    alert("请输入加气价格!");
     return;
   }
   if(confirm("信息无误,确定提交?"))
