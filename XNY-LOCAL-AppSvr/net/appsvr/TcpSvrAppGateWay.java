@@ -162,7 +162,7 @@ public class TcpSvrAppGateWay extends TcpSvrBase
 		{
 			ByteArrayOutputStream boutStream = new ByteArrayOutputStream();
 			DataOutputStream doutStream = new DataOutputStream(boutStream);
-			doutStream.writeInt(CommUtil.converseInt(CmdUtil.MSGHDRLEN)); // 包头长度
+			doutStream.writeInt(CommUtil.converseInt(CmdUtil.MSGHDRLEN)); 		 // 包头长度
 			doutStream.writeInt(CommUtil.converseInt(CmdUtil.COMM_ACTIVE_TEST)); // 链接测试
 			doutStream.writeInt(0); // 成功状态 0 
 			doutStream.writeInt(CommUtil.converseInt(GetSeq())); // 序列号
