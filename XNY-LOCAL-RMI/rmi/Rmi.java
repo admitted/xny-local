@@ -1,6 +1,7 @@
 package rmi;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+
 import util.*;
 
 /**远程方法调用接口
@@ -24,4 +25,8 @@ public interface Rmi extends Remote
 	 * @see rmi.Rmi#RmiExec(int, rmi.RmiBean, int, int)
 	 */
 	public MsgBean RmiExec(int pCmd, RmiBean pBean, int CurrPage) throws RemoteException;
+
+	//动作指令
+	public String Client(int i, String pId, String string) throws RemoteException;
+	
 }

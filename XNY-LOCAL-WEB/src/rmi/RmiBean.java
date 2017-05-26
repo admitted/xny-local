@@ -13,7 +13,7 @@ import util.*;
  *     将对象从B传送到A，就需要实现序列化接口
  */
 public abstract class RmiBean implements Serializable
-{	
+{
 	public final static String UPLOAD_PATH = "/www/XNY-LOCAL/XNY-LOCAL-WEB/files/excel/";
 	
 	/**************************system**********************/
@@ -39,6 +39,7 @@ public abstract class RmiBean implements Serializable
 	public static final int RMI_ACC_DATA    	        = 33;//累积流量数据
 	public static final int RMI_ACC_SALE    	        = 34;//销售数据
 	public static final int RMI_DATA_NOW			    = 35;
+	public static final int RMI_DEV_CTRL			    = 36;
 	
 
 	public MsgBean msgBean = null;
