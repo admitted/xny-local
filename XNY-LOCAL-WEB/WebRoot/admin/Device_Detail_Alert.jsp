@@ -66,8 +66,8 @@
             <td align=left><%=CTime%></td>
             <td align=center><%=Value%></td>
             <td align=center><%=Unit%></td>
-            <td align=center><input type='text' id='Stand_Low_<%=sn%>'  name='Stand_Low_<%=sn%>'  style='width:90%;height:18px;' value='<%=Stand_Low.equals("-888")?"":Stand_Low%>'  maxlength='20'></td>
-            <td align=center><input type='text' id='Stand_High_<%=sn%>' name='Stand_High_<%=sn%>' style='width:90%;height:18px;' value='<%=Stand_High.equals("-888")?"":Stand_High%>' maxlength='20'></td>
+            <td align=center><input type='text' id='Stand_Low_<%=sn%>'  name='Stand_Low_<%=sn%>'  style='width:90%;height:18px;' value='<%="-888".equals(Stand_Low)?"":Stand_Low%>'  maxlength='20'></td>
+            <td align=center><input type='text' id='Stand_High_<%=sn%>' name='Stand_High_<%=sn%>' style='width:90%;height:18px;' value='<%="-888".equals(Stand_High)?"":Stand_High%>' maxlength='20'></td>
             <td align=center><input type='text' id='Abn_Des_<%=sn%>'    name='Abn_Des_<%=sn%>'    style='width:90%;height:18px;' value='<%=Abn_Des%>'    maxlength='128'></td>
             <td align=center>
             	  <a href="#" title="µ„ª˜±‡º≠" onClick="doEdit('<%=Cpm_Id%>','<%=Id%>','<%=Attr_Id%>','<%=sn%>')"><font color=gray><U>Ã·Ωª</U></font></a>

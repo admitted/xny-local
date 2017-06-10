@@ -80,8 +80,8 @@
 <div id="PARENT" >
 	<ul id="nav">
 		<li id="li01" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='01' ctype='1'/>"><a id="a0101"  href="#" onClick="doGIS();DoDisplay(this.id);"            >GIS监控</a></li>
-		<li id="li06" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='06' ctype='1'/>"><a id="a0601"  href="#" onClick="doData();DoDisplay(this.id);"           >用量统计</a></li>
-		<li id="li07" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='07' ctype='1'/>"><a id="a0701"  href="#" onClick="doSale();DoDisplay(this.id);"         	 >销售统计</a></li>
+		<li id="li02" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='02' ctype='1'/>"><a id="a0201"  href="#" onClick="doData();DoDisplay(this.id);"           >用量统计</a></li>
+		<li id="li03" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='03' ctype='1'/>"><a id="a0301"  href="#" onClick="doSale();DoDisplay(this.id);"         	 >销售统计</a></li>
 		<!--
 		<li id="li02" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='02' ctype='1'/>"><a href="#" onClick="DoMenu('UserMenu2')">销售统计</a></li>
 			 <ul id="UserMenu2" class="collapsed">
@@ -109,6 +109,8 @@
 				<li id="Display0501"><a href="#" onClick="dolinkage_Info()"         style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0501' ctype='1'/>" >告警日志</a></li>
 	   		<li id="Display0502"><a href="#" onClick="doAlert_Info()"           style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='0502' ctype='1'/>" >联动日志</a></li> 
 	   	</ul>-->  
+	  <li id="li06" style="display:<Limit:limitValidate userrole='<%=FpList%>' fpid='06' ctype='1'/>"><a id="a0601" href="#" onClick="doControl();DoDisplay(this.id);" >设备控制</a></li>
+	
 	</ul>
 </div>
 </body>
@@ -261,6 +263,13 @@ function doAlert_Info()
 function doLinkage_Info()
 {
 	window.parent.frames.mFrame.location = "linkage_Info.do?Cmd=0&Sid=<%=Sid%>";
+}
+
+/**************************************************设备控制***************************************************************/
+
+function doControl()
+{
+	window.parent.frames.mFrame.location = "Dev_Ctrl.do?Cmd=0&Sid=<%=Sid%>&Func_Cpm_Id=<%=Manage_List%>";
 }
 
 </script>

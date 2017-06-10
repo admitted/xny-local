@@ -19,9 +19,8 @@ import java.sql.CallableStatement;//用于执行sql存储过程的接口
 import util.*;
 
 import java.util.*;
-
-import net.TPCClient;
 import bean.*;
+import net.APCClient;
 import oracle.jdbc.OracleTypes;
 
 /** RmiImpl implements Rmi 
@@ -40,7 +39,7 @@ public class RmiImpl extends UnicastRemoteObject implements Rmi
 	public final static long serialVersionUID = 1001;
 	
 	private DBUtil m_DBUtil = null;	
-	private TPCClient m_TPCClient = null;	
+	private APCClient m_TPCClient = null;	
 	
 	/** 空参构造器
 	 * @throws RemoteException
