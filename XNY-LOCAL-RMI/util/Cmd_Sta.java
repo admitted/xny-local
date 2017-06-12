@@ -26,9 +26,9 @@ public class Cmd_Sta
 
 //	===========远程控制========================================================
 	public static final int CMD_DEVICE_CTRL				    = 3002;	//动作下发
-	public static final int CMD_DEVICE_SYN				    = 3003;	//远程同步
-	public static final int CMD_DEVICE_ON				    = 3004;	//远程闭合
-	public static final int CMD_DEVICE_OFF				    = 3005;	//远程断开
+	public static final int CMD_DEVICE_3003				    = 3003;	//
+	public static final int CMD_DEVICE_3004				    = 3004;	//
+	public static final int CMD_DEVICE_3005				    = 3005;	//
 
 //	====================系统状态	
 	public static final int STA_SUCCESS						= 0000;	//成功	

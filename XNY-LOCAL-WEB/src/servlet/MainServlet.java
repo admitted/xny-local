@@ -248,6 +248,14 @@ public class MainServlet extends HttpServlet
         	new AccSaleBean().doSaleTables(request, response, m_Rmi, false); 
         else if (strUrl.equalsIgnoreCase("Acc_Sale_Export.do"))				     //销售数据导出
         	new AccSaleBean().ExportToExcel(request, response, m_Rmi, false);  
+        
+        /**************************************user-Control***************************************************/
+        else if (strUrl.equalsIgnoreCase("Dev_Ctrl.do"))				     	//查询
+        	new DevCtrlBean().ExecCmd(request, response, m_Rmi, false);  
+        else if (strUrl.equalsIgnoreCase("Control.do"))				     		//控制
+        	new DevCtrlBean().Control(request, response, m_Rmi, false);  
+        else if (strUrl.equalsIgnoreCase("synchronous.do"))				     	//同步
+        	new DevCtrlBean().synchronous(request, response, m_Rmi, false);  
     }
     
     /** 

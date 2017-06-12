@@ -6,8 +6,11 @@ import java.io.InputStreamReader;
 import java.rmi.registry.LocateRegistry;
 import java.util.Hashtable;
 import java.util.Properties;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
+
+import net.TPCClient;
 import rmi.*;
 import util.*;
 
@@ -17,6 +20,7 @@ public class Main extends Thread
 	private DBUtil		m_DBUtil	= null;
 	private String		m_OnBack	= "";
 	private RmiImpl		m_RmiImpl	= null;
+	private TPCClient m_TPCClient = null;
 
 	public static void main(String[] args)
 	{
@@ -54,8 +58,12 @@ public class Main extends Thread
 			{
 				System.out.println("m_DBUtil init failed!");
 			}
-
-			m_RmiImpl.Init(m_DBUtil);
+			m_TPCClient = new TPCClient("Config.ini");
+			if(!m_TPCClient.init())
+			{
+				System.out.println("m_TPCClient init failed!");
+			}
+			m_RmiImpl.Init(m_DBUtil, m_TPCClient);
 
 			this.start();
 			Runtime.getRuntime().addShutdownHook(new Thread() {

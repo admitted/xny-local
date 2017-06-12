@@ -5,16 +5,29 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.fastjson.JSON;
+import com.github.abel533.echarts.Option;
+import com.github.abel533.echarts.axis.CategoryAxis;
+import com.github.abel533.echarts.axis.ValueAxis;
+import com.github.abel533.echarts.code.Magic;
+import com.github.abel533.echarts.code.Tool;
+import com.github.abel533.echarts.code.Trigger;
+import com.github.abel533.echarts.feature.MagicType;
+import com.github.abel533.echarts.series.Line;
 
 import jxl.Workbook;
 import jxl.format.Alignment;
@@ -91,6 +104,59 @@ public class AccSaleBean extends RmiBean
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 	   	response.sendRedirect(currStatus.getJsp());
 	   
+	}
+	
+	/**
+	 * 月销售额 报表详细 
+	 * @param request
+	 * @param response
+	 * @param pRmi
+	 * @param pFromZone
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public void doSaleTables(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
+	{
+		getHtmlData(request);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus.getHtmlData(request, pFromZone);
+
+		// 各站用气量月-每天显示
+		// 查出此月有数据的站点
+		msgBean = pRmi.RmiExec(6, this, 0);
+		ArrayList<?> Acc_Data_Cpm = (ArrayList<?>) msgBean.getMsg();
+		// 查出此月有数据的站点的月详细数据
+		msgBean = pRmi.RmiExec(9, this, 0);
+		ArrayList<?> Acc_Sale_Cpm_Month = (ArrayList<?>) msgBean.getMsg();
+
+		// 将获取到的Acc_Data_Cpm 按照 CPM站点分解
+		Map<String, Map> CpmMap = new HashMap<String, Map>();
+		if (null != Acc_Data_Cpm)
+		{
+			Iterator<?> cpmIterator = Acc_Data_Cpm.iterator();
+			while (cpmIterator.hasNext())
+			{
+				Map<Integer, String> daysDataMap = new HashMap<Integer, String>();
+				AccSaleBean CpmBean = (AccSaleBean) cpmIterator.next();
+				if (null != Acc_Sale_Cpm_Month)
+				{
+					Iterator<?> cpmDataIterator = Acc_Sale_Cpm_Month.iterator();
+					while (cpmDataIterator.hasNext())
+					{
+						AccSaleBean CpmSaleBean = (AccSaleBean) cpmDataIterator.next();
+						if (CpmBean.getCpm_Id().equals(CpmSaleBean.getCpm_Id()))
+						{   
+							daysDataMap.put(Integer.parseInt(CpmSaleBean.getCTime().substring(8, 10)),  new BigDecimal(Float.parseFloat(CpmSaleBean.getSalary())).setScale(2, RoundingMode.UP).doubleValue()+"");
+						}
+					}
+				}
+				CpmMap.put(CpmBean.getCpm_Id(), daysDataMap);
+			}
+		}
+		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
+		request.getSession().setAttribute("CpmMap_" + Sid, CpmMap);
+		currStatus.setJsp("Acc_Sale.jsp?Sid=" + Sid);
+		response.sendRedirect(currStatus.getJsp());
 	}
 	
 	/**
@@ -297,7 +363,7 @@ public class AccSaleBean extends RmiBean
 		String Sql = "";
 		switch (pCmd)
 		{
-			case 0://累积銷售 (历史) 站点销售表
+			case 0://累计销售 (历史) 站点销售表
 			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.ctime, t.unit_price, t.value, t.salary, t.des " +
 					 " from view_Acc_Sale_day t " +
 					 " where instr('"+ Cpm_Id +"', t.cpm_id) > 0 " +
@@ -315,6 +381,20 @@ public class AccSaleBean extends RmiBean
 			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.ctime, t.unit_price, sum(t.value) value, sum(t.salary) salary, t.des " +
 					 " from (SELECT * FROM view_acc_sale_day WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))  ORDER BY ctime DESC) t " + 
 					 " GROUP BY CPM_ID ";
+			   break;
+			case 6://某月有数据的站点有哪些个
+			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.ctime, t.unit_price, t.value, t.salary, t.des " +
+					 " from view_Acc_Sale_day t " +
+					 " where instr('"+ Cpm_Id +"', t.cpm_id) > 0 " +
+					 " and (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
+			         " group by cpm_id order by t.cpm_id";
+			   break;
+			case 9://某月详细数据
+			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.ctime, t.unit_price, t.value, t.salary, t.des " +
+					 " from view_Acc_Sale_day t " +
+					 " where instr('"+ Cpm_Id +"', t.cpm_id) > 0 " +
+					 " and (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
+			         " order by t.cpm_id ,t.ctime";
 			   break;
 		}
 		return Sql;

@@ -19,7 +19,7 @@ public interface Rmi extends Remote
 	 **case 0: 查询 ;
 	 * case 1: 增删改 ;
 	 * case 2: Function函数调用 ;
-	 * case 3: Package调用 ;
+	 * case 3: Package调用 ;   ?oracle.jdbc操作?
 	 * case 4: Producer调用 ;
 	 * @param PageSize TODO
 	 * @see rmi.Rmi#RmiExec(int, rmi.RmiBean, int, int)
@@ -27,6 +27,6 @@ public interface Rmi extends Remote
 	public MsgBean RmiExec(int pCmd, RmiBean pBean, int CurrPage) throws RemoteException;
 
 	//动作指令
-	public String Client(int i, String pId, String string) throws RemoteException;
+	public String Client(int i, String pId, String string, String str2) throws RemoteException;
 	
 }

@@ -1,28 +1,36 @@
 package bean;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 import rmi.Rmi;
 import rmi.RmiBean;
 import util.*;
 
 public class DevCtrlBean extends RmiBean 
-{
+{	
 	public final static long serialVersionUID = RmiBean.RMI_DEV_CTRL;
 	public long getClassId()
 	{
 		return serialVersionUID;
 	}
 	
-	public DevCtrlBean()
+	public DevCtrlBean() 
 	{
 		super.className = "DevCtrlBean";
 	}
@@ -30,137 +38,85 @@ public class DevCtrlBean extends RmiBean
 	public void ExecCmd(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
 	{
 		getHtmlData(request);
-		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
 		
 		msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
-		switch(currStatus.getCmd())
+		switch (currStatus.getCmd())
 		{
-			case 40://添加/编辑
-				
-			case 0://查询
-		    	request.getSession().setAttribute("Equip_Info_" + Sid, ((Object)msgBean.getMsg()));
+			case 0:// 查询
+				request.getSession().setAttribute("Dev_Ctrl_" + Sid, (Object) msgBean.getMsg());
+				currStatus.setJsp("Dev_Ctrl.jsp?Sid=" + Sid);
+				break;
+		}
 
-		    	currStatus.setJsp("Equip_Info.jsp?Sid=" + Sid);		    
-		    	break;
-		}
-		//查询DeviceDetail
-		DataNowBean dataNowBean = new DataNowBean();
-    	
-    	
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
-	   	response.sendRedirect(currStatus.getJsp());
+		response.sendRedirect(currStatus.getJsp());
 	}
 	
-	public void IdCheck(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone)
+	public void Control(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
 	{
-		try 
-		{
-			getHtmlData(request);
-			currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
-			currStatus.getHtmlData(request, pFromZone);
-			
-			PrintWriter outprint = response.getWriter();
-			String Resp = "3006";
-			
-			msgBean = pRmi.RmiExec(2, this, 0);//查找是否有该设备存在
-			System.out.println("msgBean.getStatus():" + msgBean.getStatus());
-			switch(msgBean.getStatus())
-			{
-				case 0://已存在
-					Resp = "3006";
-					break;
-				default://可用
-					Resp = "0000";
-					break;
-			}
-			
-			request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
-			outprint.write(Resp);
-		}
-		catch (Exception Ex)
-		{
-			Ex.printStackTrace();
-		}
-	}
-	
-	//设备通道  闭合指令
-	public void Restart(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone)
-	{
-		try
-		{
-			getHtmlData(request);
-			currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
-			currStatus.getHtmlData(request, pFromZone);
-			
-			PrintWriter outprint = response.getWriter();
-			String Resp = "3006";
-			
-			Resp = pRmi.Client(0001,PId,"");
-			
-			request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
-			outprint.write(Resp);
-		}
-		catch (RemoteException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	//设备通道  断开指令
-	public void Compare_Time(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone)
-	{
-		try
-		{
-			getHtmlData(request);
-			currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
-			currStatus.getHtmlData(request, pFromZone);
-			
-			PrintWriter outprint = response.getWriter();
-			String Resp = "3006";
-			
-			Resp = pRmi.Client(0002,PId," ");
-			
-			request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
-			outprint.write(Resp);
-		}
-		catch (RemoteException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+		getHtmlData(request);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus.getHtmlData(request, pFromZone);
 		
+		PrintWriter outprint = response.getWriter();
+		String Resp = "3006";
+		String data = "";
+		//data = "003101000100020001"; //通道1开
+		
+		data = dev_Type + dev_Id + act_Id;
+		System.out.println("data[" + data + "]");
+		switch (currStatus.getCmd()) 
+		{
+				case 1:	//远程控制
+					Resp = pRmi.Client(3002, cpm_Id, oprator, data);
+					break;
+		}
+		
+		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
+		outprint.write(Resp);
+		System.out.println(Resp);
+	}
+	
+	public void synchronous(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
+	{
+		getHtmlData(request);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus.getHtmlData(request, pFromZone);
+		
+		PrintWriter outprint = response.getWriter();
+		String Resp = "3006";
+		switch (currStatus.getCmd()) 
+		{
+			case 2: // 设备同步
+				Resp = pRmi.Client(3003, cpm_Id, oprator, "");
+				break;
+			case 3:	// 属性同步
+				Resp = pRmi.Client(3004, cpm_Id, oprator, "");
+				break;
+			case 4:	// 动作同步
+				Resp = pRmi.Client(3005, cpm_Id, oprator, "");
+				break;
+		}
+		
+		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
+		outprint.write(Resp);
+		System.out.println(Resp);
+	}
+	
+	
+	
 	public String getSql(int pCmd)
 	{
 		String Sql = "";
-		switch (pCmd)
+		switch (pCmd) 
 		{
-			case 0://查询                
-				Sql = " select  t.tid, t.pid, t.cname, t.tel, t.project_Id, t.project_name, t.g_id, t.ctime, t.value " +
-					  " from view_equip_info t order by t.ctime";
+				case 0:
+					Sql = " select t.cpm_id, t.cpm_brief, t.dev_type, t.dev_id, t.dev_name, t.attr_id, t.attr_name, t.value, t.action " + 
+						  " from view_dev_attr t " + 
+						  " where instr('"+ currStatus.getFunc_Cpm_Id() +"', t.cpm_id) > 0 ";
 				break;
-			case 1://查询device_deatail                
-				Sql = " select  t.tid, t.pid, t.cname, t.demo, t.pwd, t.onoff " +
-					  " from device_detail t order by t.tid";
-				break;
-			case 2://设备ID检测
-				Sql = " select  t.tid, t.pid, t.cname, t.tel, t.project_Id, t.project_name, t.g_id, t.ctime, t.value " +
-					  " from view_equip_info t " +
-					  " where upper(TId) = upper('"+ TId +"') ";
-				break;
-			
 		}
 		return Sql;
 	}
@@ -170,15 +126,15 @@ public class DevCtrlBean extends RmiBean
 		boolean IsOK = true;
 		try
 		{
-			setTId(pRs.getString(1));
-			setPId(pRs.getString(2));
-			setCName(pRs.getString(3));
-			setTel(pRs.getString(4));
-			setProject_Id(pRs.getString(5));
-			setProject_Name(pRs.getString(6));
-			setG_Id(pRs.getString(7));
-			setCTime(pRs.getString(8));
-			setValue(pRs.getString(9));
+			setCpm_Id(pRs.getString(1));
+			setCpm_Brief(pRs.getString(2));
+			setDev_Type(pRs.getString(3));
+			setDev_Id(pRs.getString(4));
+			setDev_Name(pRs.getString(5));
+			setAttr_Id(pRs.getString(6));
+			setAttr_Name(pRs.getString(7));
+			setValue(pRs.getString(8));
+			setAction(pRs.getString(9));
 		}
 		catch (SQLException sqlExp)
 		{
@@ -187,162 +143,157 @@ public class DevCtrlBean extends RmiBean
 		return IsOK;
 	}
 	
-	public boolean getHtmlData(HttpServletRequest request)
+	public boolean getHtmlData(HttpServletRequest request) 
 	{
 		boolean IsOK = true;
 		try
 		{
-			setTId(CommUtil.StrToGB2312(request.getParameter("TId")));
-			setPId(CommUtil.StrToGB2312(request.getParameter("PId")));
-			setCName(CommUtil.StrToGB2312(request.getParameter("CName")));
-			setTel(CommUtil.StrToGB2312(request.getParameter("Tel")));
-			setProject_Id(CommUtil.StrToGB2312(request.getParameter("Project_Id")));
-			setProject_Name(CommUtil.StrToGB2312(request.getParameter("Project_Name")));
-			setG_Id(CommUtil.StrToGB2312(request.getParameter("G_Id")));
-			setCTime(CommUtil.StrToGB2312(request.getParameter("CTime")));
-			setValue(CommUtil.StrToGB2312(request.getParameter("Value")));
+			setCpm_Id(CommUtil.StrToGB2312(request.getParameter("cpm_Id")));
+			setCpm_Brief(CommUtil.StrToGB2312(request.getParameter("cpm_Brief")));
+			setDev_Type(CommUtil.StrToGB2312(request.getParameter("dev_Type")));
+			setDev_Id(CommUtil.StrToGB2312(request.getParameter("dev_Id")));
+			setDev_Name(CommUtil.StrToGB2312(request.getParameter("dev_Name")));
+			setAttr_Id(CommUtil.StrToGB2312(request.getParameter("attr_Id")));
+			setAttr_Name(CommUtil.StrToGB2312(request.getParameter("attr_Name")));
+			setValue(CommUtil.StrToGB2312(request.getParameter("value")));
+			setAction(CommUtil.StrToGB2312(request.getParameter("action")));
+			setAct_Id(CommUtil.StrToGB2312(request.getParameter("act_Id")));
+			
 			setSid(CommUtil.StrToGB2312(request.getParameter("Sid")));
-			setPre_Id(CommUtil.StrToGB2312(request.getParameter("Pre_Id")));
-			setPre_Project_Id(CommUtil.StrToGB2312(request.getParameter("Pre_Project_Id")));
-			setAfter_Id(CommUtil.StrToGB2312(request.getParameter("After_Id")));
-			setAfter_Project_Id(CommUtil.StrToGB2312(request.getParameter("After_Project_Id")));
+			setOprator(CommUtil.StrToGB2312(request.getParameter("oprator")));
 		}
-		catch (Exception Exp)
+		catch (Exception Exp) 
 		{
 			Exp.printStackTrace();
 		}
 		return IsOK;
 	}
 	
-	private String TId;
-	private String PId;
-	private String CName;
-	private String Tel;
-	private String Project_Id;
-	private String Project_Name;
-	private String G_Id;
-	private String CTime;
-	private String Value;
-	
 	private String Sid;
-	private String Pre_Id;
-	private String After_Id;
-	private String Pre_Project_Id;
-	private String After_Project_Id;
-    
-	public String getPId()
-	{
-		return PId;
-	}
-
-	public void setPId(String pId)
-	{
-		PId = pId;
-	}
-
-	public String getTel()
-	{
-		return Tel;
-	}
-
-	public void setTel(String tel)
-	{
-		Tel = tel;
-	}
 	
-	public String getPre_Id() {
-		return Pre_Id;
-	}
-
-	public void setPre_Id(String pre_Id) {
-		Pre_Id = pre_Id;
-	}
-
-	public String getAfter_Id() {
-		return After_Id;
-	}
-
-	public void setAfter_Id(String after_Id) {
-		After_Id = after_Id;
-	}
-
-	public String getPre_Project_Id() {
-		return Pre_Project_Id;
-	}
-
-	public void setPre_Project_Id(String pre_Project_Id) {
-		Pre_Project_Id = pre_Project_Id;
-	}
-
-	public String getAfter_Project_Id() {
-		return After_Project_Id;
-	}
-
-	public void setAfter_Project_Id(String after_Project_Id) {
-		After_Project_Id = after_Project_Id;
-	}
-
-	public String getG_Id() {
-		return G_Id;
-	}
-
-	public void setG_Id(String g_Id) {
-		G_Id = g_Id;
-	}
+	private String cpm_Id;
+	private String cpm_Brief;
+	private String dev_Type;
+	private String dev_Id;
+	private String dev_Name;
+	private String attr_Id;
+	private String attr_Name;
+	private String value;
+	private String action;
 	
-	public String getCTime()
+	private String act_Id;
+	private String oprator;
+	
+	public String getAct_Id()
 	{
-		return CTime;
+		return act_Id;
 	}
 
-	public void setCTime(String cTime)
+	public void setAct_Id(String act_Id)
 	{
-		CTime = cTime;
+		this.act_Id = act_Id;
 	}
 
-	public String getProject_Name() {
-		return Project_Name;
+	public String getOprator()
+	{
+		return oprator;
 	}
 
-	public void setProject_Name(String project_Name) {
-		Project_Name = project_Name;
+	public void setOprator(String oprator)
+	{
+		this.oprator = oprator;
+	}
+
+	public String getDev_Type()
+	{
+		return dev_Type;
+	}
+
+	public void setDev_Type(String dev_Type)
+	{
+		this.dev_Type = dev_Type;
+	}
+
+	public String getDev_Id()
+	{
+		return dev_Id;
+	}
+
+	public void setDev_Id(String dev_Id)
+	{
+		this.dev_Id = dev_Id;
+	}
+
+	public String getDev_Name()
+	{
+		return dev_Name;
+	}
+
+	public void setDev_Name(String dev_Name)
+	{
+		this.dev_Name = dev_Name;
+	}
+
+	public String getAttr_Id()
+	{
+		return attr_Id;
+	}
+
+	public void setAttr_Id(String attr_Id)
+	{
+		this.attr_Id = attr_Id;
+	}
+
+	public String getAttr_Name()
+	{
+		return attr_Name;
+	}
+
+	public void setAttr_Name(String attr_Name)
+	{
+		this.attr_Name = attr_Name;
 	}
 
 	public String getValue()
 	{
-		return Value;
+		return value;
 	}
 
 	public void setValue(String value)
 	{
-		Value = value;
+		this.value = value;
 	}
 
-	public String getTId() {
-		return TId;
+	public String getAction()
+	{
+		return action;
 	}
 
-	public void setTId(String tid) {
-		TId = tid;
+	public void setAction(String action)
+	{
+		this.action = action;
 	}
 
-	public String getCName() {
-		return CName;
+	public String getCpm_Brief()
+	{
+		return cpm_Brief;
 	}
 
-	public void setCName(String cName) {
-		CName = cName;
+	public void setCpm_Brief(String cpm_Brief)
+	{
+		this.cpm_Brief = cpm_Brief;
 	}
-
-	public String getProject_Id() {
-		return Project_Id;
-	}
-
-	public void setProject_Id(String project_Id) {
-		Project_Id = project_Id;
-	}
-
 	
+	public String getCpm_Id()
+	{
+		return cpm_Id;
+	}
+
+	public void setCpm_Id(String cpm_Id)
+	{
+		this.cpm_Id = cpm_Id;
+	}
+
 	public String getSid() {
 		return Sid;
 	}
@@ -350,6 +301,4 @@ public class DevCtrlBean extends RmiBean
 	public void setSid(String sid) {
 		Sid = sid;
 	}
-	
-	
 }

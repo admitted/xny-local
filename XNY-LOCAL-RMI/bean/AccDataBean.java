@@ -1,6 +1,5 @@
 package bean;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,7 +9,9 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +30,18 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import rmi.Rmi;
 import rmi.RmiBean;
-import util.*;
+import util.CommUtil;
+import util.CurrStatus;
 
+import com.alibaba.fastjson.JSON;
+import com.github.abel533.echarts.Option;
+import com.github.abel533.echarts.axis.CategoryAxis;
+import com.github.abel533.echarts.axis.ValueAxis;
+import com.github.abel533.echarts.code.Magic;
+import com.github.abel533.echarts.code.Tool;
+import com.github.abel533.echarts.code.Trigger;
+import com.github.abel533.echarts.feature.MagicType;
+import com.github.abel533.echarts.series.Line;
 
 /** 
  * 累积流量数据处理bean(每天的流量用量) 
@@ -55,7 +66,8 @@ public class AccDataBean extends RmiBean
 		super.className = "AccDataBean";
 	}
 	
-	/** 累积流量 查询
+	/** 
+	 * 累积流量 查询
 	 * @param request
 	 * @param response
 	 * @param pRmi
@@ -68,13 +80,14 @@ public class AccDataBean extends RmiBean
 		getHtmlData(request);
 		currStatus = (CurrStatus)request.getSession().getAttribute("CurrStatus_" + Sid);
 		currStatus.getHtmlData(request, pFromZone);
-		
+		System.out.println("1");
 		switch(currStatus.getCmd())
 		{
 		    case 0://各站点：累积流量
 		    	msgBean = pRmi.RmiExec(currStatus.getCmd(), this, 0);
 		    	request.getSession().setAttribute("Acc_Data_Sta_" + Sid, ((Object)msgBean.getMsg()));
 		    	currStatus.setJsp("Acc_Data_Sta.jsp?Sid=" + Sid);	
+		    	System.out.println("2");
 		    	break;
 		    case 1://日用量总表
 		    	msgBean = pRmi.RmiExec(currStatus.getCmd(), this, currStatus.getCurrPage());
@@ -88,21 +101,123 @@ public class AccDataBean extends RmiBean
 		    	request.getSession().setAttribute("Acc_Data_Month_" + Sid, ((Object)msgBean.getMsg()));
 		    	currStatus.setJsp("Acc_Data_Month.jsp?Sid=" + Sid);
 		    	break;
-		    case 9://各站用气量月-每天显示
-		    	//查出此月有数据的站点
-		    	msgBean = pRmi.RmiExec(6, this, 0);
-		    	request.getSession().setAttribute("Acc_Data_Cpm_" + Sid, ((Object)msgBean.getMsg()));
-		    	
-		    	//查出此月有数据的站点的月详细数据
-		    	msgBean = pRmi.RmiExec(9, this, 0);
-		    	request.getSession().setAttribute("Acc_Data_Cpm_Month_" + Sid, ((Object)msgBean.getMsg()));
-		    	currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
-		    	break;
 		}
-		
+		System.out.println("3");
 		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
 	   	response.sendRedirect(currStatus.getJsp());
 	   
+	}
+	
+	/**
+	 * 月用气量报表详细 
+	 * @param request
+	 * @param response
+	 * @param pRmi
+	 * @param pFromZone
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public void doTables(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone) throws ServletException, IOException
+	{
+		getHtmlData(request);
+		currStatus = (CurrStatus) request.getSession().getAttribute("CurrStatus_" + Sid);
+		currStatus.getHtmlData(request, pFromZone);
+
+		// 各站用气量月-每天显示
+		// 查出此月有数据的站点
+		msgBean = pRmi.RmiExec(6, this, 0);
+		ArrayList<?> Acc_Data_Cpm = (ArrayList<?>) msgBean.getMsg();
+		// 查出此月有数据的站点的月详细数据
+		msgBean = pRmi.RmiExec(9, this, 0);
+		ArrayList<?> Acc_Data_Cpm_Month = (ArrayList<?>) msgBean.getMsg();
+
+		// 将获取到的Acc_Data_Cpm 按照 CPM站点分解
+		Map<String, Map> CpmMap = new HashMap<String, Map>();
+		if (null != Acc_Data_Cpm)
+		{
+			Iterator<?> cpmIterator = Acc_Data_Cpm.iterator();
+			while (cpmIterator.hasNext())
+			{
+				Map<Integer, String> daysDataMap = new HashMap<Integer, String>();
+				AccDataBean CpmBean = (AccDataBean) cpmIterator.next();
+				if (null != Acc_Data_Cpm_Month)
+				{
+					Iterator<?> cpmDataIterator = Acc_Data_Cpm_Month.iterator();
+					while (cpmDataIterator.hasNext())
+					{
+						AccDataBean CpmDataBean = (AccDataBean) cpmDataIterator.next();
+						if (CpmBean.getCpm_Id().equals(CpmDataBean.getCpm_Id()))
+						{   
+							daysDataMap.put(Integer.parseInt(CpmDataBean.getCTime().substring(8, 10)), (int)Math.floor(Float.parseFloat(CpmDataBean.getValue()))+"");
+						}
+					}
+				}
+				CpmMap.put(CpmBean.getCpm_Id(), daysDataMap);
+			}
+		}
+		
+		/**
+	     *  GraphMaps <String, Option>  :< 站点 ， option对象> 
+	     *  查到的数据进行 data 数据 无此日期的 以0填充
+ 	     *  返回 GraphMaps
+	     * */
+		int thatMonthDays = CommUtil.getDaysOfMonth(currStatus.getVecDate().get(0).toString().substring(0,10));
+		Map<String, JSON> GraphMaps = new HashMap<String, JSON>();
+		
+		for(String CPM : CpmMap.keySet()){
+			String Cpm_Name = "";
+			if (null != Acc_Data_Cpm)
+			{
+				Iterator<?> cpmIterator = Acc_Data_Cpm.iterator();
+				while (cpmIterator.hasNext())
+				{
+					AccDataBean CpmBean = (AccDataBean) cpmIterator.next();
+					if(CPM.equals(CpmBean.getCpm_Id()))
+						Cpm_Name = CpmBean.getCpm_Name();
+				}
+			}
+			Map<Integer, String> dataMap = CpmMap.get(CPM);
+			Option option = new Option(); 
+			// 标题 和 legend 说明
+			option.title(Cpm_Name); 
+		    option.toolbox().show(true).feature(Tool.mark, Tool.dataView, new MagicType(Magic.line, Magic.bar), Tool.restore, Tool.saveAsImage);
+		    option.calculable(true);
+		    option.tooltip().trigger(Trigger.axis).formatter("站点用气 : <br/>{b}号 : {c}m3");
+		    
+		    ValueAxis valueAxis = new ValueAxis();
+		    valueAxis.axisLabel().formatter("{value} m3");
+		    option.yAxis(valueAxis);
+		    
+		    CategoryAxis categoryAxis = new CategoryAxis();
+		    categoryAxis.axisLine().onZero(false);
+//		    categoryAxis.axisLabel().formatter("{value} 号");
+		    categoryAxis.boundaryGap(false);
+		    
+		    option.xAxis(categoryAxis);
+		    Line line = new Line();
+		    line.smooth(true).name("用量(m3)与日期变化").itemStyle().normal().lineStyle().shadowColor("rgba(0,0,0,0.4)");
+		    for(int i = 1; i <= thatMonthDays ; i++ ){
+		    	// X轴添加当月日期数据
+		    	categoryAxis.data(i); 
+		    	// 数据轴添加数据
+		    	if(null == dataMap.get(i))
+		    		line.data("0");
+		    	else
+		    		line.data(dataMap.get(i));
+		    }
+		    option.series(line);
+		    option.grid().x(80); 
+		    GraphMaps.put(CPM, (JSON) JSON.toJSON(option));
+		}
+//		System.out.println(GraphMaps);
+//		for(String s :GraphMaps.keySet()){
+//			System.out.println(GraphMaps.get(s));
+//		}
+		request.getSession().setAttribute("CurrStatus_" + Sid, currStatus);
+		request.getSession().setAttribute("CpmMap_" + Sid, CpmMap);
+		request.getSession().setAttribute("GraphMaps_" + Sid, GraphMaps);
+		currStatus.setJsp("Acc_Data.jsp?Sid=" + Sid);
+		response.sendRedirect(currStatus.getJsp());
 	}
 	
 	/**
@@ -327,13 +442,15 @@ public class AccDataBean extends RmiBean
 			case 6://某月有数据的站点有哪些个
 			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, (t.e_value - sum(t.value)) as b_value , t.e_value, sum(t.value) value , t.unit,  t.des " +
 					 " FROM view_acc_data_day t  " + 
-					 " WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
+					 " where instr('"+ Cpm_Id +"', t.cpm_id) > 0 " +
+					 " and (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
 			         " group by cpm_id order by t.cpm_id";
 				   break;
 			case 9://某月详细数据
 			   Sql = " select t.sn, t.cpm_id, t.cpm_name, t.id, t.cname, t.attr_id, t.attr_name, t.ctime, t.b_value , t.e_value, t.e_value - t.b_value as value , t.unit,  t.des " +
 					 " FROM view_acc_data_day t  " + 
-					 " WHERE (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
+					 " where instr('"+ Cpm_Id +"', t.cpm_id) > 0 " +
+					 " and (DATE_FORMAT(ctime, '%Y-%m') = DATE_FORMAT('"+currStatus.getVecDate().get(0).toString()+"', '%Y-%m'))"+
 			         " order by t.cpm_id ,t.ctime";
 				   break;
 			case 20://数据图表

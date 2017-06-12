@@ -182,10 +182,10 @@ public class AccDataBean extends RmiBean
 			option.title(Cpm_Name); 
 		    option.toolbox().show(true).feature(Tool.mark, Tool.dataView, new MagicType(Magic.line, Magic.bar), Tool.restore, Tool.saveAsImage);
 		    option.calculable(true);
-		    option.tooltip().trigger(Trigger.axis).formatter("站点用气 : <br/>{b}号 : {c}t");
+		    option.tooltip().trigger(Trigger.axis).formatter("站点用气 : <br/>{b}号 : {c}m3");
 		    
 		    ValueAxis valueAxis = new ValueAxis();
-		    valueAxis.axisLabel().formatter("{value} t");
+		    valueAxis.axisLabel().formatter("{value} m3");
 		    option.yAxis(valueAxis);
 		    
 		    CategoryAxis categoryAxis = new CategoryAxis();
@@ -195,7 +195,7 @@ public class AccDataBean extends RmiBean
 		    
 		    option.xAxis(categoryAxis);
 		    Line line = new Line();
-		    line.smooth(true).name("用量(t)与日期变化").itemStyle().normal().lineStyle().shadowColor("rgba(0,0,0,0.4)");
+		    line.smooth(true).name("用量(m3)与日期变化").itemStyle().normal().lineStyle().shadowColor("rgba(0,0,0,0.4)");
 		    for(int i = 1; i <= thatMonthDays ; i++ ){
 		    	// X轴添加当月日期数据
 		    	categoryAxis.data(i); 

@@ -271,34 +271,6 @@ public class UserInfoBean extends RmiBean
 	   	response.sendRedirect(currStatus.getJsp());
 	}
 	
-	//解析 IP地址
-	public String getAddressByIP(String strIP)
-	{
-		try
-		{
-			URL url = new URL("http://ip.taobao.com/service/getIpInfo.php?ip=" + strIP);
-			URLConnection conn = url.openConnection();
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "GBK"));
-			String line = null;
-			StringBuffer result = new StringBuffer();
-			while ((line = reader.readLine()) != null)
-			{
-				result.append(line);
-			}
-			reader.close();
-			strIP = result.substring(result.indexOf("该IP所在地为："));
-			strIP = strIP.substring(strIP.indexOf("：") + 1);
-			String province = strIP.substring(6, strIP.indexOf("省"));
-			String city = strIP.substring(strIP.indexOf("省") + 1, strIP.indexOf("市"));
-			return province + city;
-		}
-		catch (IOException e)
-		{
-			return "读取失败";
-		}
-	}
-	
 	//帐号检测
 	public void IdCheck(HttpServletRequest request, HttpServletResponse response, Rmi pRmi, boolean pFromZone)
 	{

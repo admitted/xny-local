@@ -19,8 +19,9 @@ import java.sql.CallableStatement;//用于执行sql存储过程的接口
 import util.*;
 
 import java.util.*;
+
+import net.TPCClient;
 import bean.*;
-import net.APCClient;
 import oracle.jdbc.OracleTypes;
 
 /** RmiImpl implements Rmi 
@@ -39,7 +40,7 @@ public class RmiImpl extends UnicastRemoteObject implements Rmi
 	public final static long serialVersionUID = 1001;
 	
 	private DBUtil m_DBUtil = null;	
-	private APCClient m_TPCClient = null;	
+	private TPCClient m_TPCClient = null;	
 	
 	/** 空参构造器
 	 * @throws RemoteException
@@ -51,8 +52,9 @@ public class RmiImpl extends UnicastRemoteObject implements Rmi
 	/** 初始化数据库连接池
 	 * @param pDbUtil
 	 */
-	public void Init(DBUtil pDbUtil) {
+	public void Init(DBUtil pDbUtil, TPCClient pTPCClient) {
 		m_DBUtil = pDbUtil;
+		m_TPCClient = pTPCClient;
 	}
 	
 	/** RMI测试
@@ -209,7 +211,9 @@ public class RmiImpl extends UnicastRemoteObject implements Rmi
 					case RmiBean.RMI_ACC_SALE:
 						rmiBean = new AccSaleBean();
 						break;
-						
+					case RmiBean.RMI_DEV_CTRL:
+						rmiBean = new DevCtrlBean();
+						break;
 				}
 				rmiBean.getData(rs);
 				alist.add(rmiBean);
@@ -492,34 +496,58 @@ public class RmiImpl extends UnicastRemoteObject implements Rmi
 		return alist;
 	}
 	
-	public String Client(int pCmd, String pClient_Id, String pOprator)throws RemoteException
+	@Override
+	public String Client(int pCmd, String pClientId, String pOprator, String pData) throws RemoteException
 	{
-		System.out.println("pCmd["+pCmd+"]\npClient_Id["+pClient_Id+"]");
+		// TODO Auto-generated method stub
+		System.out.println("pCmd["+pCmd+"]\npClientId["+pClientId+"]");
 		String ret = "9999";
 		switch(pCmd)
 		{
-			case Cmd_Sta.CMD_DEVICE_ON:
+			case Cmd_Sta.CMD_DEVICE_CTRL:	// 远程控制
 			{	
-				String SendData = CommUtil.StrBRightFillSpace(" ", 20)				//保留字
-								+ "0000"											//执行状态
-								+ "000" + Cmd_Sta.CMD_DEVICE_ON						//处理指令
-								+ CommUtil.StrBRightFillSpace(pClient_Id, 10)		//DTU编号
-								+ CommUtil.StrBRightFillSpace(pOprator, 10);		//操作人员
-				System.out.println("SendData["+SendData+"]");
+				String SendData = CommUtil.StrBRightFillSpace(" ", 20)
+						+ "0000"
+						+ Cmd_Sta.CMD_DEVICE_CTRL
+						+ CommUtil.StrBRightFillSpace(pClientId, 10)
+						+ CommUtil.StrBRightFillSpace(pOprator, 10)
+						+ pData;
 				if(m_TPCClient.SetSendMsg(SendData, 1))
 				{
 					ret = "0000";
 				}
 				break;
 			}
-			case Cmd_Sta.CMD_DEVICE_OFF:
+			case Cmd_Sta.CMD_DEVICE_3003:	// 设备同步
 			{
 				String SendData = CommUtil.StrBRightFillSpace(" ", 20)
-								+ "0000"
-								+ "000" + Cmd_Sta.CMD_DEVICE_OFF
-								+ CommUtil.StrBRightFillSpace(pClient_Id, 10)
-								+ CommUtil.StrBRightFillSpace(pOprator, 10);
-				System.out.println("SendData["+SendData+"]");
+						+ "0000"
+						+ Cmd_Sta.CMD_DEVICE_3003
+						+ CommUtil.StrBRightFillSpace(pClientId, 10);
+				if(m_TPCClient.SetSendMsg(SendData, 1))
+				{
+					ret = "0000";
+				}
+				break;
+			}
+			case Cmd_Sta.CMD_DEVICE_3004:	// 属性同步
+			{
+				String SendData = CommUtil.StrBRightFillSpace(" ", 20)
+						+ "0000"
+						+ Cmd_Sta.CMD_DEVICE_3004
+						+ CommUtil.StrBRightFillSpace(pClientId, 10);
+				if(m_TPCClient.SetSendMsg(SendData, 1))
+				{
+					ret = "0000";
+				}
+				break;
+			}
+			case Cmd_Sta.CMD_DEVICE_3005:	// 动作同步
+			{
+				String SendData = CommUtil.StrBRightFillSpace(" ", 20)
+						+ "0000"
+						+ Cmd_Sta.CMD_DEVICE_3005
+						+ CommUtil.StrBRightFillSpace(pClientId, 10);
 				if(m_TPCClient.SetSendMsg(SendData, 1))
 				{
 					ret = "0000";

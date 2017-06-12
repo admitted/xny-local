@@ -27,6 +27,6 @@ public interface Rmi extends Remote
 	public MsgBean RmiExec(int pCmd, RmiBean pBean, int CurrPage) throws RemoteException;
 
 	//¶¯×÷Ö¸Áî
-	public String Client(int i, String pId, String string) throws RemoteException;
+	public String Client(int i, String pId, String string, String str2) throws RemoteException;
 	
 }
